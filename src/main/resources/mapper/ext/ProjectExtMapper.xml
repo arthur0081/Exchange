@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.back.ProjectExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.ProjectListDto">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="symbol_name" jdbcType="VARCHAR" property="symbolName" />
+    <result column="pro_name" jdbcType="VARCHAR" property="proName" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+
+  <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
+    select count(1) from project p, t_simbol t, project_coin pc
+        where p.symbol = t.id and t.commodity = pc.id
+    <if test="projectName != null">
+      and p.name = #{projectName,jdbcType=VARCHAR}
+    </if>
+    <if test=" projectStatus != null">
+      and p.status = #{projectStatus,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    select
+        p.id, t.name symbol_name, p.name pro_name, pc.amount, p.status from project p, t_simbol t, project_coin pc
+    where
+        p.symbol = t.id and t.commodity = pc.id
+    <if test="projectName != null">
+        and p.name = #{projectName,jdbcType=VARCHAR}
+    </if>
+    <if test=" projectStatus != null">
+        and p.status = #{projectStatus,jdbcType=VARCHAR}
+    </if>
+        limit #{pageSize} offset #{start}
+  </select>
+
+</mapper>

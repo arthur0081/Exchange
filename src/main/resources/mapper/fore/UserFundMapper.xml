@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.fore.UserFundMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.UserFund">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="order_locked" jdbcType="NUMERIC" property="orderLocked" />
+    <result column="withdraw_locked" jdbcType="NUMERIC" property="withdrawLocked" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, coin, amount, order_locked, withdraw_locked
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_fund
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_user_fund
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.UserFund">
+    insert into t_user_fund (id, user_id, coin, 
+      amount, order_locked, withdraw_locked
+      )
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, #{coin,jdbcType=VARCHAR}, 
+      #{amount,jdbcType=NUMERIC}, #{orderLocked,jdbcType=NUMERIC}, #{withdrawLocked,jdbcType=NUMERIC}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.UserFund">
+    insert into t_user_fund
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="orderLocked != null">
+        order_locked,
+      </if>
+      <if test="withdrawLocked != null">
+        withdraw_locked,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="orderLocked != null">
+        #{orderLocked,jdbcType=NUMERIC},
+      </if>
+      <if test="withdrawLocked != null">
+        #{withdrawLocked,jdbcType=NUMERIC},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.UserFund">
+    update t_user_fund
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="orderLocked != null">
+        order_locked = #{orderLocked,jdbcType=NUMERIC},
+      </if>
+      <if test="withdrawLocked != null">
+        withdraw_locked = #{withdrawLocked,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.UserFund">
+    update t_user_fund
+    set user_id = #{userId,jdbcType=INTEGER},
+      coin = #{coin,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=NUMERIC},
+      order_locked = #{orderLocked,jdbcType=NUMERIC},
+      withdraw_locked = #{withdrawLocked,jdbcType=NUMERIC}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByUserId" parameterType="int" resultMap="BaseResultMap">
+    select * from t_user_fund where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

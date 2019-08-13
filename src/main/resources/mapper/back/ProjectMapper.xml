@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.ProjectMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.Project">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="invest_amount" jdbcType="NUMERIC" property="investAmount" />
+    <result column="collect_amount" jdbcType="NUMERIC" property="collectAmount" />
+    <result column="invest_tender" jdbcType="VARCHAR" property="investTender" />
+    <result column="project_type" jdbcType="VARCHAR" property="projectType" />
+    <result column="fund_use" jdbcType="VARCHAR" property="fundUse" />
+    <result column="invest_period" jdbcType="INTEGER" property="investPeriod" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="expect_year_bonus" jdbcType="NUMERIC" property="expectYearBonus" />
+    <result column="bonus_share_period" jdbcType="VARCHAR" property="bonusSharePeriod" />
+    <result column="bonus_compute_time" jdbcType="TIMESTAMP" property="bonusComputeTime" />
+    <result column="receipt_way" jdbcType="VARCHAR" property="receiptWay" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="payback_way" jdbcType="VARCHAR" property="paybackWay" />
+    <result column="payback_time" jdbcType="TIMESTAMP" property="paybackTime" />
+    <result column="payback_time_period" jdbcType="VARCHAR" property="paybackTimePeriod" />
+    <result column="tender_admin" jdbcType="VARCHAR" property="tenderAdmin" />
+    <result column="admin_fee" jdbcType="NUMERIC" property="adminFee" />
+    <result column="hold_cost" jdbcType="VARCHAR" property="holdCost" />
+    <result column="bonus_fee" jdbcType="NUMERIC" property="bonusFee" />
+    <result column="bonus_resource" jdbcType="VARCHAR" property="bonusResource" />
+    <result column="guarantee" jdbcType="VARCHAR" property="guarantee" />
+    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+    <result column="perimeter_match" jdbcType="VARCHAR" property="perimeterMatch" />
+    <result column="market_analysis" jdbcType="CHAR" property="marketAnalysis" />
+    <result column="city_condition" jdbcType="VARCHAR" property="cityCondition" />
+    <result column="cost_analysis" jdbcType="VARCHAR" property="costAnalysis" />
+    <result column="bonus_analysis" jdbcType="VARCHAR" property="bonusAnalysis" />
+    <result column="risk_analysis" jdbcType="VARCHAR" property="riskAnalysis" />
+    <result column="admin_introduction" jdbcType="VARCHAR" property="adminIntroduction" />
+    <result column="project_platform_account" jdbcType="VARCHAR" property="projectPlatformAccount" />
+    <result column="symbol" jdbcType="BIGINT" property="symbol" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_user" jdbcType="BIGINT" property="modifyUser" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="area_type" jdbcType="INTEGER" property="areaType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, addr, invest_amount, collect_amount, invest_tender, project_type, fund_use,
+    invest_period, start_time, expect_year_bonus, bonus_share_period, bonus_compute_time, 
+    receipt_way, end_time, payback_way, payback_time, payback_time_period, tender_admin, 
+    admin_fee, hold_cost, bonus_fee, bonus_resource, guarantee, brief_introduction, perimeter_match, 
+    market_analysis, city_condition, cost_analysis, bonus_analysis, risk_analysis, admin_introduction, 
+    project_platform_account, symbol, status, create_user, create_time, modify_user,
+    modify_time, other, area_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from project
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from project
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.Project">
+    insert into project (id, name, addr,
+      invest_amount, collect_amount, invest_tender, 
+      project_type, fund_use, invest_period, 
+      start_time, expect_year_bonus, bonus_share_period, 
+      bonus_compute_time, receipt_way, end_time, 
+      payback_way, payback_time, payback_time_period, 
+      tender_admin, admin_fee, hold_cost, 
+      bonus_fee, bonus_resource, guarantee, 
+      brief_introduction, perimeter_match, market_analysis, 
+      city_condition, cost_analysis, bonus_analysis, 
+      risk_analysis, admin_introduction, project_platform_account, 
+      symbol, status, create_user,
+      create_time, modify_user, modify_time, 
+      other, area_type)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR}, 
+      #{investAmount,jdbcType=NUMERIC}, #{collectAmount,jdbcType=NUMERIC}, #{investTender,jdbcType=VARCHAR}, 
+      #{projectType,jdbcType=VARCHAR}, #{fundUse,jdbcType=VARCHAR}, #{investPeriod,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{expectYearBonus,jdbcType=NUMERIC}, #{bonusSharePeriod,jdbcType=VARCHAR}, 
+      #{bonusComputeTime,jdbcType=TIMESTAMP}, #{receiptWay,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{paybackWay,jdbcType=VARCHAR}, #{paybackTime,jdbcType=TIMESTAMP}, #{paybackTimePeriod,jdbcType=VARCHAR}, 
+      #{tenderAdmin,jdbcType=VARCHAR}, #{adminFee,jdbcType=NUMERIC}, #{holdCost,jdbcType=VARCHAR}, 
+      #{bonusFee,jdbcType=NUMERIC}, #{bonusResource,jdbcType=VARCHAR}, #{guarantee,jdbcType=VARCHAR}, 
+      #{briefIntroduction,jdbcType=VARCHAR}, #{perimeterMatch,jdbcType=VARCHAR}, #{marketAnalysis,jdbcType=CHAR}, 
+      #{cityCondition,jdbcType=VARCHAR}, #{costAnalysis,jdbcType=VARCHAR}, #{bonusAnalysis,jdbcType=VARCHAR}, 
+      #{riskAnalysis,jdbcType=VARCHAR}, #{adminIntroduction,jdbcType=VARCHAR}, #{projectPlatformAccount,jdbcType=VARCHAR}, 
+      #{symbol,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{modifyUser,jdbcType=BIGINT}, #{modifyTime,jdbcType=TIMESTAMP}, 
+      #{other,jdbcType=VARCHAR}, #{areaType,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Project">
+    insert into project
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="addr != null">
+        addr,
+      </if>
+      <if test="investAmount != null">
+        invest_amount,
+      </if>
+      <if test="collectAmount != null">
+        collect_amount,
+      </if>
+      <if test="investTender != null">
+        invest_tender,
+      </if>
+      <if test="projectType != null">
+        project_type,
+      </if>
+      <if test="fundUse != null">
+        fund_use,
+      </if>
+      <if test="investPeriod != null">
+        invest_period,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="expectYearBonus != null">
+        expect_year_bonus,
+      </if>
+      <if test="bonusSharePeriod != null">
+        bonus_share_period,
+      </if>
+      <if test="bonusComputeTime != null">
+        bonus_compute_time,
+      </if>
+      <if test="receiptWay != null">
+        receipt_way,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="paybackWay != null">
+        payback_way,
+      </if>
+      <if test="paybackTime != null">
+        payback_time,
+      </if>
+      <if test="paybackTimePeriod != null">
+        payback_time_period,
+      </if>
+      <if test="tenderAdmin != null">
+        tender_admin,
+      </if>
+      <if test="adminFee != null">
+        admin_fee,
+      </if>
+      <if test="holdCost != null">
+        hold_cost,
+      </if>
+      <if test="bonusFee != null">
+        bonus_fee,
+      </if>
+      <if test="bonusResource != null">
+        bonus_resource,
+      </if>
+      <if test="guarantee != null">
+        guarantee,
+      </if>
+      <if test="briefIntroduction != null">
+        brief_introduction,
+      </if>
+      <if test="perimeterMatch != null">
+        perimeter_match,
+      </if>
+      <if test="marketAnalysis != null">
+        market_analysis,
+      </if>
+      <if test="cityCondition != null">
+        city_condition,
+      </if>
+      <if test="costAnalysis != null">
+        cost_analysis,
+      </if>
+      <if test="bonusAnalysis != null">
+        bonus_analysis,
+      </if>
+      <if test="riskAnalysis != null">
+        risk_analysis,
+      </if>
+      <if test="adminIntroduction != null">
+        admin_introduction,
+      </if>
+      <if test="projectPlatformAccount != null">
+        project_platform_account,
+      </if>
+      <if test="symbol != null">
+        symbol,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifyUser != null">
+        modify_user,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+      <if test="other != null">
+        other,
+      </if>
+      <if test="areaType != null">
+        area_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="investAmount != null">
+        #{investAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="collectAmount != null">
+        #{collectAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="investTender != null">
+        #{investTender,jdbcType=VARCHAR},
+      </if>
+      <if test="projectType != null">
+        #{projectType,jdbcType=VARCHAR},
+      </if>
+      <if test="fundUse != null">
+        #{fundUse,jdbcType=VARCHAR},
+      </if>
+      <if test="investPeriod != null">
+        #{investPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectYearBonus != null">
+        #{expectYearBonus,jdbcType=NUMERIC},
+      </if>
+      <if test="bonusSharePeriod != null">
+        #{bonusSharePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusComputeTime != null">
+        #{bonusComputeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptWay != null">
+        #{receiptWay,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paybackWay != null">
+        #{paybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackTime != null">
+        #{paybackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paybackTimePeriod != null">
+        #{paybackTimePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderAdmin != null">
+        #{tenderAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="adminFee != null">
+        #{adminFee,jdbcType=NUMERIC},
+      </if>
+      <if test="holdCost != null">
+        #{holdCost,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusFee != null">
+        #{bonusFee,jdbcType=NUMERIC},
+      </if>
+      <if test="bonusResource != null">
+        #{bonusResource,jdbcType=VARCHAR},
+      </if>
+      <if test="guarantee != null">
+        #{guarantee,jdbcType=VARCHAR},
+      </if>
+      <if test="briefIntroduction != null">
+        #{briefIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="perimeterMatch != null">
+        #{perimeterMatch,jdbcType=VARCHAR},
+      </if>
+      <if test="marketAnalysis != null">
+        #{marketAnalysis,jdbcType=CHAR},
+      </if>
+      <if test="cityCondition != null">
+        #{cityCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="costAnalysis != null">
+        #{costAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusAnalysis != null">
+        #{bonusAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="riskAnalysis != null">
+        #{riskAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="adminIntroduction != null">
+        #{adminIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="projectPlatformAccount != null">
+        #{projectPlatformAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="symbol != null">
+        #{symbol,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        #{modifyUser,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="other != null">
+        #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="areaType != null">
+        #{areaType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.Project">
+    update project
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="investAmount != null">
+        invest_amount = #{investAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="collectAmount != null">
+        collect_amount = #{collectAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="investTender != null">
+        invest_tender = #{investTender,jdbcType=VARCHAR},
+      </if>
+      <if test="projectType != null">
+        project_type = #{projectType,jdbcType=VARCHAR},
+      </if>
+      <if test="fundUse != null">
+        fund_use = #{fundUse,jdbcType=VARCHAR},
+      </if>
+      <if test="investPeriod != null">
+        invest_period = #{investPeriod,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="expectYearBonus != null">
+        expect_year_bonus = #{expectYearBonus,jdbcType=NUMERIC},
+      </if>
+      <if test="bonusSharePeriod != null">
+        bonus_share_period = #{bonusSharePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusComputeTime != null">
+        bonus_compute_time = #{bonusComputeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="receiptWay != null">
+        receipt_way = #{receiptWay,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paybackWay != null">
+        payback_way = #{paybackWay,jdbcType=VARCHAR},
+      </if>
+      <if test="paybackTime != null">
+        payback_time = #{paybackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paybackTimePeriod != null">
+        payback_time_period = #{paybackTimePeriod,jdbcType=VARCHAR},
+      </if>
+      <if test="tenderAdmin != null">
+        tender_admin = #{tenderAdmin,jdbcType=VARCHAR},
+      </if>
+      <if test="adminFee != null">
+        admin_fee = #{adminFee,jdbcType=NUMERIC},
+      </if>
+      <if test="holdCost != null">
+        hold_cost = #{holdCost,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusFee != null">
+        bonus_fee = #{bonusFee,jdbcType=NUMERIC},
+      </if>
+      <if test="bonusResource != null">
+        bonus_resource = #{bonusResource,jdbcType=VARCHAR},
+      </if>
+      <if test="guarantee != null">
+        guarantee = #{guarantee,jdbcType=VARCHAR},
+      </if>
+      <if test="briefIntroduction != null">
+        brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="perimeterMatch != null">
+        perimeter_match = #{perimeterMatch,jdbcType=VARCHAR},
+      </if>
+      <if test="marketAnalysis != null">
+        market_analysis = #{marketAnalysis,jdbcType=CHAR},
+      </if>
+      <if test="cityCondition != null">
+        city_condition = #{cityCondition,jdbcType=VARCHAR},
+      </if>
+      <if test="costAnalysis != null">
+        cost_analysis = #{costAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="bonusAnalysis != null">
+        bonus_analysis = #{bonusAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="riskAnalysis != null">
+        risk_analysis = #{riskAnalysis,jdbcType=VARCHAR},
+      </if>
+      <if test="adminIntroduction != null">
+        admin_introduction = #{adminIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="projectPlatformAccount != null">
+        project_platform_account = #{projectPlatformAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="symbol != null">
+        symbol = #{symbol,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        modify_user = #{modifyUser,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="other != null">
+        other = #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="areaType != null">
+        area_type = #{areaType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.Project">
+    update project
+    set name = #{name,jdbcType=VARCHAR},
+      addr = #{addr,jdbcType=VARCHAR},
+      invest_amount = #{investAmount,jdbcType=NUMERIC},
+      collect_amount = #{collectAmount,jdbcType=NUMERIC},
+      invest_tender = #{investTender,jdbcType=VARCHAR},
+      project_type = #{projectType,jdbcType=VARCHAR},
+      fund_use = #{fundUse,jdbcType=VARCHAR},
+      invest_period = #{investPeriod,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      expect_year_bonus = #{expectYearBonus,jdbcType=NUMERIC},
+      bonus_share_period = #{bonusSharePeriod,jdbcType=VARCHAR},
+      bonus_compute_time = #{bonusComputeTime,jdbcType=TIMESTAMP},
+      receipt_way = #{receiptWay,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      payback_way = #{paybackWay,jdbcType=VARCHAR},
+      payback_time = #{paybackTime,jdbcType=TIMESTAMP},
+      payback_time_period = #{paybackTimePeriod,jdbcType=VARCHAR},
+      tender_admin = #{tenderAdmin,jdbcType=VARCHAR},
+      admin_fee = #{adminFee,jdbcType=NUMERIC},
+      hold_cost = #{holdCost,jdbcType=VARCHAR},
+      bonus_fee = #{bonusFee,jdbcType=NUMERIC},
+      bonus_resource = #{bonusResource,jdbcType=VARCHAR},
+      guarantee = #{guarantee,jdbcType=VARCHAR},
+      brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+      perimeter_match = #{perimeterMatch,jdbcType=VARCHAR},
+      market_analysis = #{marketAnalysis,jdbcType=CHAR},
+      city_condition = #{cityCondition,jdbcType=VARCHAR},
+      cost_analysis = #{costAnalysis,jdbcType=VARCHAR},
+      bonus_analysis = #{bonusAnalysis,jdbcType=VARCHAR},
+      risk_analysis = #{riskAnalysis,jdbcType=VARCHAR},
+      admin_introduction = #{adminIntroduction,jdbcType=VARCHAR},
+      project_platform_account = #{projectPlatformAccount,jdbcType=VARCHAR},
+      symbol = #{symbol,jdbcType=BIGINT},
+      status = #{status,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_user = #{modifyUser,jdbcType=BIGINT},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      other = #{other,jdbcType=VARCHAR},
+      area_type = #{areaType,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectBySymbolId" resultMap="BaseResultMap">
+    select
+        <include refid="Base_Column_List" />
+    from
+        project
+    where
+          symbol = #{symbolId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

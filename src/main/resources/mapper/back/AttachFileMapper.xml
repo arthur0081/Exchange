@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.AttachFileMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.AttachFile">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="ref_id" jdbcType="BIGINT" property="refId" />
+    <result column="is_del" jdbcType="VARCHAR" property="isDel" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_user" jdbcType="BIGINT" property="modifyUser" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, type, file_name, file_path, ref_id, is_del, create_user, create_time, modify_user,
+    modify_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from attach_file
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from attach_file
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.AttachFile">
+    insert into attach_file (id, type, file_name,
+      file_path, ref_id, is_del, 
+      create_user, create_time, modify_user, 
+      modify_time)
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, 
+      #{filePath,jdbcType=VARCHAR}, #{refId,jdbcType=BIGINT}, #{isDel,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{modifyUser,jdbcType=BIGINT}, 
+      #{modifyTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.AttachFile">
+    insert into attach_file
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
+      <if test="refId != null">
+        ref_id,
+      </if>
+      <if test="isDel != null">
+        is_del,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifyUser != null">
+        modify_user,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="refId != null">
+        #{refId,jdbcType=BIGINT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        #{modifyUser,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.AttachFile">
+    update attach_file
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null">
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="refId != null">
+        ref_id = #{refId,jdbcType=BIGINT},
+      </if>
+      <if test="isDel != null">
+        is_del = #{isDel,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyUser != null">
+        modify_user = #{modifyUser,jdbcType=BIGINT},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.AttachFile">
+    update attach_file
+    set type = #{type,jdbcType=VARCHAR},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      file_path = #{filePath,jdbcType=VARCHAR},
+      ref_id = #{refId,jdbcType=BIGINT},
+      is_del = #{isDel,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_user = #{modifyUser,jdbcType=BIGINT},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">
+    insert into attach_file
+        (type, file_name, file_path, ref_id, is_del, create_user, create_time)
+    values
+    <foreach collection="list" item="item" index="index" separator="," close=";">
+      (#{item.type,jdbcType=VARCHAR}, #{item.fileName,jdbcType=VARCHAR}, #{item.filePath,jdbcType=VARCHAR},
+      #{item.refId,jdbcType=BIGINT},#{item.isDel,jdbcType=VARCHAR}, #{item.createUser,jdbcType=BIGINT},
+      #{item.createTime,jdbcType=TIMESTAMP}
+      )
+    </foreach>
+  </insert>
+
+  <select id="selectByTypeAndRefId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from attach_file
+        where ref_id = #{refId,jdbcType=BIGINT} and #{type,jdbcType=VARCHAR} and is_deal = 'N'
+  </select>
+
+  <update id="deleteByTypeAndRefId" >
+    update attach_file set is_del = 'Y' where ref_id = #{refId,jdbcType=BIGINT} and #{type,jdbcType=VARCHAR}
+  </update>
+</mapper>

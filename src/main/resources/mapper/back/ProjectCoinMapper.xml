@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.ProjectCoinMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.ProjectCoin">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="verbose_name" jdbcType="VARCHAR" property="verboseName" />
+    <result column="precision" jdbcType="BIGINT" property="precision" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, verbose_name, precision, amount
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from project_coin
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from project_coin
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
+    insert into project_coin (id, name, verbose_name,
+      precision, amount)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{verboseName,jdbcType=VARCHAR}, 
+      #{precision,jdbcType=BIGINT}, #{amount,jdbcType=NUMERIC})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
+    insert into project_coin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="verboseName != null">
+        verbose_name,
+      </if>
+      <if test="precision != null">
+        precision,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="verboseName != null">
+        #{verboseName,jdbcType=VARCHAR},
+      </if>
+      <if test="precision != null">
+        #{precision,jdbcType=BIGINT},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
+    update project_coin
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="verboseName != null">
+        verbose_name = #{verboseName,jdbcType=VARCHAR},
+      </if>
+      <if test="precision != null">
+        precision = #{precision,jdbcType=BIGINT},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
+    update project_coin
+    set name = #{name,jdbcType=VARCHAR},
+      verbose_name = #{verboseName,jdbcType=VARCHAR},
+      precision = #{precision,jdbcType=BIGINT},
+      amount = #{amount,jdbcType=NUMERIC}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
+    select count(1) from project_coin
+  </select>
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    select * from project_coin limit #{pageSize} offset #{start}
+  </select>
+
+  <select id="getProjectCoins" resultMap="BaseResultMap">
+    select * from project_coin
+  </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.back.BoughtAmountExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.BoughtAmountDto">
+    <id column="id" jdbcType="INTEGER" property="projectId" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+  </resultMap>
+
+  <select id="getBoughtAmount" parameterType="com.slabs.exchange.model.dto.ForeProjectDto" resultMap="BaseResultMap">
+    select
+           project_id id, sum(usdt) amount
+    from
+           bought_amount
+    where
+           project_id
+    in
+    <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+      #{item.projectId,jdbcType=INTEGER},
+    </foreach>
+    group by
+            project_id
+  </select>
+
+ <select id="getAmountByProjectId" parameterType="int" resultMap="BaseResultMap">
+   select
+        project_id id, sum(usdt) amount
+   from
+        bought_amount
+   where
+        project_id = #{projectId,jdbcType=INTEGER}
+   group by
+        project_id
+ </select>
+
+</mapper>

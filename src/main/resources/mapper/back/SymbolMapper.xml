@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.SymbolMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.Symbol">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="currency" jdbcType="INTEGER" property="currency" />
+    <result column="commodity" jdbcType="INTEGER" property="commodity" />
+    <result column="price_unit" jdbcType="NUMERIC" property="priceUnit" />
+    <result column="amount_unit" jdbcType="NUMERIC" property="amountUnit" />
+    <result column="min_amount" jdbcType="NUMERIC" property="minAmount" />
+    <result column="min_value" jdbcType="NUMERIC" property="minValue" />
+    <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
+    <result column="taker_fee" jdbcType="NUMERIC" property="takerFee" />
+    <result column="maker_fee" jdbcType="NUMERIC" property="makerFee" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, currency, commodity, price_unit, amount_unit, min_amount, min_value,
+    init_price, taker_fee, maker_fee
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_symbol
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_symbol
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.Symbol">
+    insert into t_symbol (id, name, currency,
+      commodity, price_unit, amount_unit, 
+      min_amount, min_value, init_price, 
+      taker_fee, maker_fee)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{currency,jdbcType=INTEGER}, 
+      #{commodity,jdbcType=INTEGER}, #{priceUnit,jdbcType=NUMERIC}, #{amountUnit,jdbcType=NUMERIC}, 
+      #{minAmount,jdbcType=NUMERIC}, #{minValue,jdbcType=NUMERIC}, #{initPrice,jdbcType=NUMERIC}, 
+      #{takerFee,jdbcType=NUMERIC}, #{makerFee,jdbcType=NUMERIC})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Symbol">
+    insert into t_symbol
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="currency != null">
+        currency,
+      </if>
+      <if test="commodity != null">
+        commodity,
+      </if>
+      <if test="priceUnit != null">
+        price_unit,
+      </if>
+      <if test="amountUnit != null">
+        amount_unit,
+      </if>
+      <if test="minAmount != null">
+        min_amount,
+      </if>
+      <if test="minValue != null">
+        min_value,
+      </if>
+      <if test="initPrice != null">
+        init_price,
+      </if>
+      <if test="takerFee != null">
+        taker_fee,
+      </if>
+      <if test="makerFee != null">
+        maker_fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null">
+        #{currency,jdbcType=INTEGER},
+      </if>
+      <if test="commodity != null">
+        #{commodity,jdbcType=INTEGER},
+      </if>
+      <if test="priceUnit != null">
+        #{priceUnit,jdbcType=NUMERIC},
+      </if>
+      <if test="amountUnit != null">
+        #{amountUnit,jdbcType=NUMERIC},
+      </if>
+      <if test="minAmount != null">
+        #{minAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="minValue != null">
+        #{minValue,jdbcType=NUMERIC},
+      </if>
+      <if test="initPrice != null">
+        #{initPrice,jdbcType=NUMERIC},
+      </if>
+      <if test="takerFee != null">
+        #{takerFee,jdbcType=NUMERIC},
+      </if>
+      <if test="makerFee != null">
+        #{makerFee,jdbcType=NUMERIC},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.Symbol">
+    update t_symbol
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null">
+        currency = #{currency,jdbcType=INTEGER},
+      </if>
+      <if test="commodity != null">
+        commodity = #{commodity,jdbcType=INTEGER},
+      </if>
+      <if test="priceUnit != null">
+        price_unit = #{priceUnit,jdbcType=NUMERIC},
+      </if>
+      <if test="amountUnit != null">
+        amount_unit = #{amountUnit,jdbcType=NUMERIC},
+      </if>
+      <if test="minAmount != null">
+        min_amount = #{minAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="minValue != null">
+        min_value = #{minValue,jdbcType=NUMERIC},
+      </if>
+      <if test="initPrice != null">
+        init_price = #{initPrice,jdbcType=NUMERIC},
+      </if>
+      <if test="takerFee != null">
+        taker_fee = #{takerFee,jdbcType=NUMERIC},
+      </if>
+      <if test="makerFee != null">
+        maker_fee = #{makerFee,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.Symbol">
+    update t_symbol
+    set name = #{name,jdbcType=VARCHAR},
+      currency = #{currency,jdbcType=INTEGER},
+      commodity = #{commodity,jdbcType=INTEGER},
+      price_unit = #{priceUnit,jdbcType=NUMERIC},
+      amount_unit = #{amountUnit,jdbcType=NUMERIC},
+      min_amount = #{minAmount,jdbcType=NUMERIC},
+      min_value = #{minValue,jdbcType=NUMERIC},
+      init_price = #{initPrice,jdbcType=NUMERIC},
+      taker_fee = #{takerFee,jdbcType=NUMERIC},
+      maker_fee = #{makerFee,jdbcType=NUMERIC}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

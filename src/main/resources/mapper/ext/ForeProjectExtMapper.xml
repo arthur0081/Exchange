@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.fore.ForeProjectExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.ForeProjectDto">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="collect_amount" jdbcType="NUMERIC" property="collectAmount" />
+    <result column="invest_period" jdbcType="INTEGER" property="investPeriod" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="expect_year_bonus" jdbcType="NUMERIC" property="expectYearBonus" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="symbol" jdbcType="BIGINT" property="symbol" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="symbol_name" jdbcType="VARCHAR" property="symbolName" />
+  </resultMap>
+
+    <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
+        select count(1) from project p, symbol s where s.id = p.symbol
+        <if test="areaType != null">
+            and p.area_type = #{areaType,jdbcType=INTEGER}
+        </if>
+        and p.status = 'on_sale'
+        or p.status = 'end_sale'
+        or p.status = 'pre_sale'
+        and p.start_time > now()
+    </select>
+
+    <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+        select p.id, p.name, p.collect_amount, p.invest_period,p.start_time,
+               p.expect_year_bonus, p.end_time, p.symbol, p.status, s.name symbol_name
+         from
+            project p, symbol s where s.id = p.symbol
+        <if test="areaType != null">
+            and p.area_type = #{areaType,jdbcType=INTEGER}
+        </if>
+        and p.status = 'on_sale'
+        or p.status = 'end_sale'
+        or p.status = 'pre_sale'
+        and p.start_time > now()
+        limit #{pageSize} offset #{start}
+    </select>
+
+</mapper>
