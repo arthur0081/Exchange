@@ -340,13 +340,15 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         projectDto.setAttachList(attachFiles);
 
         // 得到当前登陆用户的id
-        Integer userId = ShiroUtils.getUserId().intValue();
+        Integer userId = ShiroUtils.getUserId();
 
         // 得到当前登陆用户的账户余额(user_fund表)
-        UserFund userFund = userFundMapper.selectByUserId(userId);
+        UserFund userFund = userFundMapper.selectByUserIdAndUsdt(userId);
 
         // 得到当前登陆用户的钱包地址(wallet表)
         Wallet wallet = walletMapper.selectByUserId(userId);
+
+
         Map<String, Object> data = new HashMap<>();
         data.put("projectDto", projectDto);
         data.put("userFund", userFund);

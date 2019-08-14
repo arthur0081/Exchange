@@ -13,10 +13,11 @@
     <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
     <result column="taker_fee" jdbcType="NUMERIC" property="takerFee" />
     <result column="maker_fee" jdbcType="NUMERIC" property="makerFee" />
+    <result column="valid" jdbcType="INTEGER" property="valid" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, currency, commodity, price_unit, amount_unit, min_amount, min_value,
-    init_price, taker_fee, maker_fee
+    id, name, currency, commodity, price_unit, amount_unit, min_amount, min_value, 
+    init_price, taker_fee, maker_fee, valid
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -29,14 +30,16 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.slabs.exchange.model.entity.Symbol">
-    insert into t_symbol (id, name, currency,
+    insert into t_symbol (id, name, currency, 
       commodity, price_unit, amount_unit, 
       min_amount, min_value, init_price, 
-      taker_fee, maker_fee)
+      taker_fee, maker_fee, valid
+      )
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{currency,jdbcType=INTEGER}, 
       #{commodity,jdbcType=INTEGER}, #{priceUnit,jdbcType=NUMERIC}, #{amountUnit,jdbcType=NUMERIC}, 
       #{minAmount,jdbcType=NUMERIC}, #{minValue,jdbcType=NUMERIC}, #{initPrice,jdbcType=NUMERIC}, 
-      #{takerFee,jdbcType=NUMERIC}, #{makerFee,jdbcType=NUMERIC})
+      #{takerFee,jdbcType=NUMERIC}, #{makerFee,jdbcType=NUMERIC}, #{valid,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Symbol">
     insert into t_symbol
@@ -74,6 +77,9 @@
       <if test="makerFee != null">
         maker_fee,
       </if>
+      <if test="valid != null">
+        valid,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -108,6 +114,9 @@
       </if>
       <if test="makerFee != null">
         #{makerFee,jdbcType=NUMERIC},
+      </if>
+      <if test="valid != null">
+        #{valid,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -144,6 +153,9 @@
       <if test="makerFee != null">
         maker_fee = #{makerFee,jdbcType=NUMERIC},
       </if>
+      <if test="valid != null">
+        valid = #{valid,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -158,7 +170,8 @@
       min_value = #{minValue,jdbcType=NUMERIC},
       init_price = #{initPrice,jdbcType=NUMERIC},
       taker_fee = #{takerFee,jdbcType=NUMERIC},
-      maker_fee = #{makerFee,jdbcType=NUMERIC}
+      maker_fee = #{makerFee,jdbcType=NUMERIC},
+      valid = #{valid,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

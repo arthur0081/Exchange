@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.TradeMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.Trade">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="taker_id" jdbcType="BIGINT" property="takerId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="side" jdbcType="VARCHAR" property="side" />
+    <result column="price" jdbcType="NUMERIC" property="price" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="fee" jdbcType="NUMERIC" property="fee" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="symbol_id" jdbcType="INTEGER" property="symbolId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, taker_id, user_id, side, price, amount, fee, time, symbol_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_trade
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_trade
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.Trade">
+    insert into t_trade (id, taker_id, user_id, 
+      side, price, amount, 
+      fee, time, symbol_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{takerId,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, 
+      #{side,jdbcType=VARCHAR}, #{price,jdbcType=NUMERIC}, #{amount,jdbcType=NUMERIC}, 
+      #{fee,jdbcType=NUMERIC}, #{time,jdbcType=TIMESTAMP}, #{symbolId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Trade">
+    insert into t_trade
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="takerId != null">
+        taker_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="side != null">
+        side,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="symbolId != null">
+        symbol_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="takerId != null">
+        #{takerId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="side != null">
+        #{side,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=NUMERIC},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=NUMERIC},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="symbolId != null">
+        #{symbolId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.Trade">
+    update t_trade
+    <set>
+      <if test="takerId != null">
+        taker_id = #{takerId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="side != null">
+        side = #{side,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=NUMERIC},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=NUMERIC},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="symbolId != null">
+        symbol_id = #{symbolId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.Trade">
+    update t_trade
+    set taker_id = #{takerId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=INTEGER},
+      side = #{side,jdbcType=VARCHAR},
+      price = #{price,jdbcType=NUMERIC},
+      amount = #{amount,jdbcType=NUMERIC},
+      fee = #{fee,jdbcType=NUMERIC},
+      time = #{time,jdbcType=TIMESTAMP},
+      symbol_id = #{symbolId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getLatestTrade" parameterType="java.util.List" resultMap="BaseResultMap">
+    select
+           *
+    from
+         (select
+                 price, amount, symbol_id, row_number() over(partition by symbol_id order by time desc) as row
+         from
+             t_trade
+         where
+               symbol_id
+        in
+            <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+                #{item, jdbcType=INTEGER},
+            </foreach>
+        ) t
+    where row = 1;
+  </select>
+</mapper>

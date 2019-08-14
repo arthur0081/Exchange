@@ -16,9 +16,9 @@ public class OauthInfoDto implements IBaseDto {
 
 
     @ApiModelProperty(notes = "角色Id")
-    private Long roleId;
+    private Integer roleId;
     @ApiModelProperty(notes = "用户ID")
-    private Long userId;
+    private Integer userId;
     @ApiModelProperty(notes = "账户")
     private String account;
     @ApiModelProperty(notes = "用户token")

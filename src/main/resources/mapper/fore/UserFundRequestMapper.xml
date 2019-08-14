@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.fore.UserFundRequestMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.UserFundRequest">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="debitor" jdbcType="INTEGER" property="debitor" />
+    <result column="creditor" jdbcType="INTEGER" property="creditor" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="txid" jdbcType="VARCHAR" property="txid" />
+    <result column="operation" jdbcType="VARCHAR" property="operation" />
+    <result column="time" jdbcType="ARRAY" property="time" />
+    <result column="pg_txid" jdbcType="BIGINT" property="pgTxid" />
+    <result column="extra" jdbcType="VARCHAR" property="extra" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, coin, debitor, creditor, amount, txid, operation, time, pg_txid, extra
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user_fund_request
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user_fund_request
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.UserFundRequest">
+    insert into t_user_fund_request (id, coin, debitor, 
+      creditor, amount, txid, 
+      operation, time, pg_txid, 
+      extra)
+    values (#{id,jdbcType=INTEGER}, #{coin,jdbcType=VARCHAR}, #{debitor,jdbcType=INTEGER}, 
+      #{creditor,jdbcType=INTEGER}, #{amount,jdbcType=NUMERIC}, #{txid,jdbcType=VARCHAR}, 
+      #{operation,jdbcType=VARCHAR}, #{time,jdbcType=ARRAY}, #{pgTxid,jdbcType=BIGINT}, 
+      #{extra,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.UserFundRequest">
+    insert into t_user_fund_request
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="debitor != null">
+        debitor,
+      </if>
+      <if test="creditor != null">
+        creditor,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="txid != null">
+        txid,
+      </if>
+      <if test="operation != null">
+        operation,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="pgTxid != null">
+        pg_txid,
+      </if>
+      <if test="extra != null">
+        extra,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="debitor != null">
+        #{debitor,jdbcType=INTEGER},
+      </if>
+      <if test="creditor != null">
+        #{creditor,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="txid != null">
+        #{txid,jdbcType=VARCHAR},
+      </if>
+      <if test="operation != null">
+        #{operation,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=ARRAY},
+      </if>
+      <if test="pgTxid != null">
+        #{pgTxid,jdbcType=BIGINT},
+      </if>
+      <if test="extra != null">
+        #{extra,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.UserFundRequest">
+    update t_user_fund_request
+    <set>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="debitor != null">
+        debitor = #{debitor,jdbcType=INTEGER},
+      </if>
+      <if test="creditor != null">
+        creditor = #{creditor,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="txid != null">
+        txid = #{txid,jdbcType=VARCHAR},
+      </if>
+      <if test="operation != null">
+        operation = #{operation,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=ARRAY},
+      </if>
+      <if test="pgTxid != null">
+        pg_txid = #{pgTxid,jdbcType=BIGINT},
+      </if>
+      <if test="extra != null">
+        extra = #{extra,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.UserFundRequest">
+    update t_user_fund_request
+    set coin = #{coin,jdbcType=VARCHAR},
+      debitor = #{debitor,jdbcType=INTEGER},
+      creditor = #{creditor,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=NUMERIC},
+      txid = #{txid,jdbcType=VARCHAR},
+      operation = #{operation,jdbcType=VARCHAR},
+      time = #{time,jdbcType=ARRAY},
+      pg_txid = #{pgTxid,jdbcType=BIGINT},
+      extra = #{extra,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="count" parameterType="int" resultType="int">
+    select count(1) from t_user_fund_request where debitor = #{debitor,jdbcType=INTEGER}
+  </select>
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    select
+           *
+    from
+         t_user_fund_request
+    where
+          debitor = #{debitor,jdbcType=INTEGER}
+    limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
+  </select>
+
+</mapper>

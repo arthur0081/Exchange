@@ -3,6 +3,8 @@ package com.slabs.exchange.mapper.back;
 import com.slabs.exchange.model.entity.Symbol;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface SymbolMapper {
 
@@ -17,4 +19,6 @@ public interface SymbolMapper {
     int updateByPrimaryKeySelective(Symbol record);
 
     int updateByPrimaryKey(Symbol record);
+
+    List<Symbol> getAllValid();
 }

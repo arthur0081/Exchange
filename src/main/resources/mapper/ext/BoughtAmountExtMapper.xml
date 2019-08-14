@@ -6,7 +6,7 @@
     <result column="amount" jdbcType="NUMERIC" property="amount" />
   </resultMap>
 
-  <select id="getBoughtAmount" parameterType="com.slabs.exchange.model.dto.ForeProjectDto" resultMap="BaseResultMap">
+  <select id="getBoughtAmount" parameterType="java.util.List" resultMap="BaseResultMap">
     select
            project_id id, sum(usdt) amount
     from
@@ -15,7 +15,7 @@
            project_id
     in
     <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-      #{item.projectId,jdbcType=INTEGER},
+      #{item.id,jdbcType=INTEGER},
     </foreach>
     group by
             project_id

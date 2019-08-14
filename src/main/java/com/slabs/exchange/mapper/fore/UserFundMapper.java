@@ -3,6 +3,8 @@ package com.slabs.exchange.mapper.fore;
 import com.slabs.exchange.model.entity.UserFund;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserFundMapper {
 
@@ -18,5 +20,7 @@ public interface UserFundMapper {
 
     int updateByPrimaryKey(UserFund record);
 
-    UserFund selectByUserId(Integer userId);
+    List<UserFund> selectByUserId(Integer userId);
+
+    UserFund selectByUserIdAndUsdt(Integer userId);
 }

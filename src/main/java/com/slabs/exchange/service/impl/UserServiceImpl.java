@@ -12,17 +12,19 @@ import com.slabs.exchange.model.dto.UserListDto;
 import com.slabs.exchange.model.entity.Role;
 import com.slabs.exchange.model.entity.User;
 import com.slabs.exchange.model.entity.UserRole;
-import com.slabs.exchange.model.entity.Wallet;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.JWTUtil;
+import com.slabs.exchange.util.Sha256;
 import com.slabs.exchange.util.ShiroUtils;
+import okhttp3.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -152,6 +154,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
     public ResponseBean register(UserDto userDto) {
         // 插入用户基础信息
         User user = map(userDto, User.class);
+
         user.setPassword(userDto.getPassword());
         user.setFundPassword(userDto.getFundPassword());
 
@@ -161,7 +164,35 @@ public class UserServiceImpl extends BaseService implements IUserService {
         //TODO 调用钱包api
 
         user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
+        user.setInvitationCode(null);
         userMapper.insert(user);
+
+        // 给注册用户插入邀请码(唯一性)
+        String invitationCode = Sha256.getSHA256(user.getId().toString()).substring(0, 8);
+        user.setInvitationCode(invitationCode);
+        userMapper.updateByPrimaryKeySelective(user);
+
+        if (userDto.getInvitationCode() == null || userDto.getInvitationCode().equals("")) {
+            // do nothing
+        } else {
+            // 给主动邀请的人发放 平台币，直接调用充值接口。
+            // todo
+            User user1 = userMapper.selectByInvitationCode(userDto.getInvitationCode());
+
+            //对方ip地址
+            MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+            String requestBody = "{}";
+            Request request = new Request.Builder()
+                    .url("充值接口ip地址")
+                    .post(RequestBody.create(mediaType, requestBody))
+                    .build();
+            OkHttpClient okHttpClient = new OkHttpClient();
+            try {
+                Response response = okHttpClient.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);

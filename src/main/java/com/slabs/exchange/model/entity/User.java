@@ -35,5 +35,7 @@ public class User implements Serializable {
 
     private String walletAddr;
 
+    private String invitationCode;
+
     private static final long serialVersionUID = 1L;
 }

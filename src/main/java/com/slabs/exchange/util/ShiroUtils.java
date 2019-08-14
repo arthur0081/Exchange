@@ -43,11 +43,11 @@ public class ShiroUtils {
         return (OauthInfoDto) SecurityUtils.getSubject().getPrincipal();
     }
 
-    public static Long getUserId() {
+    public static Integer getUserId() {
         OauthInfoDto oauthInfoDto = getOauthInfoDto();
 
         if (ObjectUtils.isEmpty(oauthInfoDto)) {
-            return 1L;
+            return 1;
         } else {
             return getOauthInfoDto().getUserId();
         }

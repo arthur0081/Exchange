@@ -1,8 +1,8 @@
 package com.slabs.exchange.common.enums;
 
 public enum  CoinEnum {
-    USDT("USDT", "稳定币"),
-    HOS("HOS", "平台币");
+    USDT("usdt", "稳定币"),
+    HOS("hos", "平台币");
 
     private String key;
     private String value;

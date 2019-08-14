@@ -30,5 +30,7 @@ public class UserDto {
 
     private List<Integer> roleList;
 
+    private String invitationCode;
+
     private static final long serialVersionUID = 1L;
 }

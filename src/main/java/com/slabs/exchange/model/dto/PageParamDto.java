@@ -41,5 +41,10 @@ public class PageParamDto implements Serializable {
      */
     private Integer areaType = 1;
 
+    /**
+     * 债务人id
+     */
+    private Integer debitor;
+
     private static final long serialVersionUID = 1L;
 }

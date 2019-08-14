@@ -20,4 +20,6 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     User queryByAccount(String account);
+
+    User selectByInvitationCode(String invitationCode);
 }
