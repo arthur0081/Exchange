@@ -76,11 +76,11 @@ public class MyRealm extends AuthorizingRealm {
         OauthInfoDto oauthInfoDto = new OauthInfoDto();
         List<UserRole> ur = userRoleMapper.selectByUserId(userTemp.getId());
         Integer roleId = ur.get(0).getRoleId();
-        oauthInfoDto.setRoleId(roleId.longValue());
+        oauthInfoDto.setRoleId(roleId);
         oauthInfoDto.setAccount(userTemp.getAccount());
-        oauthInfoDto.setUserId(userTemp.getId().longValue());
+        oauthInfoDto.setUserId(userTemp.getId());
 
-        List<String> permissions = this.roleService.queryNamesByRoleId(roleId.longValue());
+        List<String> permissions = this.roleService.queryNamesByRoleId(roleId);
         //加入权限
         oauthInfoDto.setPermissions(permissions);
         SimpleAuthenticationInfo sainfo=new SimpleAuthenticationInfo(

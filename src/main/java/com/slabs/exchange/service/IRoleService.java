@@ -15,5 +15,5 @@ public interface IRoleService {
 
     ResponseBean preUpdate(RoleDto roleDto);
 
-    List<String> queryNamesByRoleId(Long userId);
+    List<String> queryNamesByRoleId(Integer userId);
 }

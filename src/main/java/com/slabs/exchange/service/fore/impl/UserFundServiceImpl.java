@@ -76,22 +76,26 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
                     BigDecimal perPrice = trade.getPrice().divide(trade.getAmount());
                     for (UserFund uf: userFunds) {
                         //计算其他币转换usdt
-                        calculateMoney(foreUserFundDtos, amount, lock, coinName, perPrice, uf);
+                        Map<String, BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, coinName, perPrice, uf);
                         // usdt则不用换算
+                        amount = map.get("amount");
+                        lock = map.get("lock");
                         if (CoinEnum.USDT.getKey().equals(uf.getCoin())) {
-                            amount.add(uf.getAmount());
-                            lock.add(uf.getOrderLocked().add(uf.getWithdrawLocked()));
+                            amount = amount.add(uf.getAmount());
+                            lock = lock.add(uf.getOrderLocked().add(uf.getWithdrawLocked()));
                         }
                     }
                     // 如果某个具体的币没有交易的话，则使用初始价格作为换算关系
                 } else {
-                    //1，得到初始价格
+                    //1.初始价格
                     for (Symbol symbol: symbols) {
                         if (symId.equals(symbol.getId())) {
                             BigDecimal initPrice = symbol.getInitPrice();
                             for (UserFund uf: userFunds) {
-                                //计算其他币转换usdt
-                                calculateMoney(foreUserFundDtos, amount, lock, coinName, initPrice, uf);
+                                //2.计算其他币转换usdt
+                                Map<String,BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, coinName, initPrice, uf);
+                                amount = map.get("amount");
+                                lock = map.get("lock");
                             }
                         }
                     }
@@ -116,25 +120,37 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
      * @param perPrice
      * @param uf
      */
-    private void calculateMoney(List<ForeUserFundDto> foreUserFundDtos, BigDecimal amount, BigDecimal lock, String coinName, BigDecimal perPrice, UserFund uf) {
+    private Map<String, BigDecimal> calculateMoney(List<ForeUserFundDto> foreUserFundDtos, BigDecimal amount, BigDecimal lock, String coinName, BigDecimal perPrice, UserFund uf) {
+        Map<String, BigDecimal> map = new HashMap<>();
         if (coinName.equals(uf.getCoin())) {
             BigDecimal ufAmount = uf.getAmount();
             BigDecimal ufOrderLock = uf.getOrderLocked();
             BigDecimal ufWithdrawLock = uf.getWithdrawLocked();
+
             // 总额
             BigDecimal usdtAmount = perPrice.multiply(ufAmount);
-            amount.add(usdtAmount);
+            amount = amount.add(usdtAmount);
+
             // 冻结
             BigDecimal orderLock = perPrice.multiply(ufOrderLock);
+            lock = lock.add(orderLock);
             BigDecimal withdrawLock = perPrice.multiply(ufWithdrawLock);
-            lock.add(orderLock).add(withdrawLock);
+            lock = lock.add(withdrawLock);
+
             // 构建响应dto
             ForeUserFundDto fuf = new ForeUserFundDto();
             fuf.setCoin(uf.getCoin());
             fuf.setAvailable(ufAmount.subtract(ufOrderLock.add(ufWithdrawLock)));
             fuf.setLock(ufOrderLock.add(ufWithdrawLock));
+            fuf.setAmount(usdtAmount);
             foreUserFundDtos.add(fuf);
+            // 基本数据类型，通过方法的时候，不是引用传递，而是值传递，所以需要返回值
+            // 如果是引用数据类型，则通过方法的时候，是引用传递，这个时候在同一个作用域依然有效（更改后）。
+            map.put("amount", amount);
+            map.put("lock", lock);
         }
+
+        return map;
     }
 
 

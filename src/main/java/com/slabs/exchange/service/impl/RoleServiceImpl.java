@@ -112,7 +112,7 @@ public class RoleServiceImpl extends BaseService implements IRoleService {
 
 
     @Override
-    public List<String> queryNamesByRoleId(Long userId) {
+    public List<String> queryNamesByRoleId(Integer userId) {
         return permissionExtMapper.queryNamesByRoleId(userId);
     }
 

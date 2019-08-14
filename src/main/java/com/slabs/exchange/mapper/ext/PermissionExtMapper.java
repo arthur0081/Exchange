@@ -8,6 +8,6 @@ import java.util.List;
 @Mapper
 public interface PermissionExtMapper {
     @Select("SELECT DISTINCT p.name FROM permission p INNER JOIN role_permission rp ON rp.role_id = #{roleId} AND rp.permission_id = p.id")
-    List<String> queryNamesByRoleId(Long roleId);
+    List<String> queryNamesByRoleId(Integer roleId);
 
 }
