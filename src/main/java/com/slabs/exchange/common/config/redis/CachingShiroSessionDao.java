@@ -90,8 +90,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
     @Override
     protected Serializable doCreate(Session session) {
         // 创建一个Id并设置给Session
-       //Serializable sessionId = this.generateSessionId(session);
-        String sessionId = JWTUtil.encode(ShiroUtils.getUserId().toString());
+        Serializable sessionId = this.generateSessionId(session);
         //绑定sessionId和session关系
         assignSessionId(session, sessionId);
         try {
@@ -119,7 +118,7 @@ public class CachingShiroSessionDao extends CachingSessionDAO {
         }
         try {
             try {
-                redisUtil.setObject(prefix+session.getId(),session,seconds);
+                redisUtil.setObject(prefix + session.getId(), session, seconds);
             } catch (Exception e) {
                 throw e;
             }

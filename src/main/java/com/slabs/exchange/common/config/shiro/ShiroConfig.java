@@ -1,6 +1,7 @@
 package com.slabs.exchange.common.config.shiro;
 
 
+import com.oracle.xmlns.internal.webservices.jaxws_databinding.JavaWsdlMappingType;
 import com.slabs.exchange.common.ExchangeConsts;
 import com.slabs.exchange.common.config.redis.CachingShiroSessionDao;
 import com.slabs.exchange.common.exception.ExchangeException;
@@ -23,6 +24,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import scala.reflect.internal.Trees;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletRequest;
@@ -114,7 +116,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sql/druid/**", "anon");
 
         //公开接口
-        filterChainDefinitionMap.put("/login/**", "anon");
+        filterChainDefinitionMap.put("/login", "anon");
 
         //拦截其他所有接口
         filterChainDefinitionMap.put("/**", "authc");
@@ -133,34 +135,34 @@ public class ShiroConfig {
      * 配置以下两个bean(DefaultAdvisorAutoProxyCreator(可选)和AuthorizationAttributeSourceAdvisor)即可实现此功能
      * @return
      */
-    @Bean
-    @DependsOn({"lifecycleBeanPostProcessor"})
-    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator(){
-        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-        advisorAutoProxyCreator.setProxyTargetClass(true);
-        return advisorAutoProxyCreator;
-    }
+//    @Bean
+//    @DependsOn({"lifecycleBeanPostProcessor"})
+//    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator(){
+//        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+//        advisorAutoProxyCreator.setProxyTargetClass(true);
+//        return advisorAutoProxyCreator;
+//    }
 
     /**
      * 保证实现了Shiro内部lifecycle函数的bean执行
      * @return
      */
-    @Bean("lifecycleBeanPostProcessor")
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
-    }
+//    @Bean("lifecycleBeanPostProcessor")
+//    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+//        return new LifecycleBeanPostProcessor();
+//    }
 
     /**
      * AOP式方法级权限检查
      * @return
      */
-    @Bean
-    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
-        proxyCreator.setProxyTargetClass(true);
-        return proxyCreator;
-    }
-
+//    @Bean
+//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+//        DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
+//        proxyCreator.setProxyTargetClass(true);
+//        return proxyCreator;
+//    }
+//
 //    @Bean
 //    public SessionManager sessionManager() {
 //        MySessionManager mySessionManager = new MySessionManager();
@@ -178,6 +180,15 @@ public class ShiroConfig {
         protected Serializable getSessionId(ServletRequest request, ServletResponse response) {
             HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
             String token = httpServletRequest.getParameter("token");
+            String jwt = httpServletRequest.getHeader("jwt");
+//            if (StringUtils.isEmpty(jwt)) {
+//                //判断为登陆,不作任何处理
+//            } else {
+//                if (JWTUtil.decode(jwt) == null) {
+//                    //JWT失效
+//                    throw  new ExchangeException("token失效!");
+//                }
+//            }
 
             if(!StringUtils.isEmpty(token)){
                 request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE, "token");

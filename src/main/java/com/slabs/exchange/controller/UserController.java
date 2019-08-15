@@ -1,14 +1,14 @@
 package com.slabs.exchange.controller;
 
 
+import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.UserDto;
 import com.slabs.exchange.service.IUserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.slabs.exchange.util.JWTUtil;
+import com.slabs.exchange.util.ShiroUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -77,6 +77,22 @@ public class UserController {
     @PostMapping("my-info")
     public ResponseBean getMyInfo() {
         return userService.getMyInfo();
+    }
+
+
+    /**
+     * 刷新用户jwt(jwt的有效时间和缓存的失效时间是一直的)
+     */
+    @GetMapping("get-jwt")
+    public ResponseBean getJwt() {
+        Integer userId = null;
+        try {
+            userId = ShiroUtils.getUserId();
+        } catch (Exception e) {
+            throw new ExchangeException("请重新登陆！");
+        }
+        String jwt = JWTUtil.encode(userId.toString());
+        return new ResponseBean(200, "jwt", jwt);
     }
 
 }

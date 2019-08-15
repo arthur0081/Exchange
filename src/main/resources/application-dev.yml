@@ -51,7 +51,7 @@ spring:
   ######################################################################################################################
 mybatis:
   type-aliases-package: com.slabs.mapper
-  mapper-locations: classpath:mapper/*.xml, mapper/ext/*.xml, mapper/back/*.xml
+  mapper-locations: classpath:mapper/*.xml, mapper/ext/*.xml, mapper/back/*.xml, mapper/fore/*.xml
 #  configuration:
 #    map-underscore-to-camel-case: true
 

@@ -1,15 +1,12 @@
 package com.slabs.exchange.common.config.shiro;
 
-import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.common.exception.RespCommMessageEnum;
 import com.slabs.exchange.model.dto.ResponseDto;
-import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.JsonUtil;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class ShiroLoginFilter extends FormAuthenticationFilter {

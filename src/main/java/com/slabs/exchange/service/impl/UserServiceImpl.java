@@ -258,6 +258,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
         subject.login(token);
         OauthInfoDto oauthInfoDto = ShiroUtils.getOauthInfoDto();
         oauthInfoDto.setToken(JWTUtil.encode(ShiroUtils.getUserId().toString()));
+        oauthInfoDto.setSessionId(ShiroUtils.getSession().getId().toString());
         return oauthInfoDto;
     }
 

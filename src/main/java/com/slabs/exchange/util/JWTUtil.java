@@ -22,6 +22,7 @@ public class JWTUtil {
         Map<String, Object> claims = new HashMap<>();
         long nowMillis = System.currentTimeMillis();
         long expirationMillis = nowMillis + exceptionTime * 60000L;
+
         claims.put("userId", userId);
         return Jwts.builder()
                 .setSubject("subValue")

@@ -14,6 +14,7 @@ import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.IProjectService;
 import com.slabs.exchange.util.ExchangePreconditions;
 import com.slabs.exchange.util.ShiroUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Slf4j
 @Service
 public class ProjectServiceImpl extends BaseService implements IProjectService {
     @Resource
@@ -174,7 +176,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         }
         // 得到保本区或者创意区
         Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
-        String coin = symbol.getName().split("/")[1];
+        String coin = symbol.getName().split("_")[1];
         if (CoinEnum.USDT.getKey().equals(coin)) {//保本区
             project.setAreaType(Integer.valueOf(AreaEnum.BREAK_EVEN.getKey()));
         }
@@ -257,7 +259,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
      */
     @Override
     public ResponseBean audit(AuditDto auditDto) {
-        // todo 参数非空判断
+        ExchangePreconditions.notNull(auditDto,"参数不能为空！");
         // 参数是Y 或者 N
         Project project = new Project();
         project.setId(auditDto.getProjectId());
@@ -302,11 +304,10 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
 
         // 构建返回信息
 
-        // 如果有些项目id没有的话，就用0补充。
         for (ForeProjectDto foreProjectDto : foreProjectList) {
             // 构建认购倒计时  认购周期减去当前时间 认购倒计时可以做成页面动态变化的时钟
 
-            //todo 差一个字段  首发价 （做成录入项目时的一个固定字段）
+            //todo 首发价(在币对表中) （项目表中冗余一个首发价字段）
 
             for (BoughtAmountDto boughtAmountDto: boughtAmountDtos) {
                 if (foreProjectDto.getId().intValue() == boughtAmountDto.getProjectId()) {
@@ -388,6 +389,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             // todo 调用第三方接口，撤回挂单
 
             // 如果调用第三方逻辑异常，则不更新当前挂单为撤回状态
+            //todo boughtAmount的withdraw字段为1（默认是0）
 
             throw new ExchangeException("项目已经失效了！");
         }
@@ -429,6 +431,10 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                 // 项目结束
                 project.setStatus(ProjectStatusEnum.PROJECT_END.getKey());
                 projectMapper.updateByPrimaryKey(project);
+
+                //todo 更新币对状态为2（设计：0是无效的，1是可以进行币币交易的，2是项目方回购的状态？）
+
+                // todo 项目方，以初始价格进行回购  （做法：用户主动挂卖单，项目方挂买单吃了就行了）
 
                 throw new ExchangeException("项目结束！");
             }

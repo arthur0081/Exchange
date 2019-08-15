@@ -83,7 +83,7 @@ public class MyRealm extends AuthorizingRealm {
         List<String> permissions = this.roleService.queryNamesByRoleId(roleId);
         //加入权限
         oauthInfoDto.setPermissions(permissions);
-        SimpleAuthenticationInfo sainfo=new SimpleAuthenticationInfo(
+        SimpleAuthenticationInfo sainfo = new SimpleAuthenticationInfo(
                 oauthInfoDto,
                 userTemp.getPassword(),
                 ByteSource.Util.bytes(userTemp.getSalt()),

@@ -23,6 +23,8 @@ public class OauthInfoDto implements IBaseDto {
     private String account;
     @ApiModelProperty(notes = "用户token")
     private String token;
+    @ApiModelProperty(notes = "用户sessionId")
+    private String sessionId;
     @ApiModelProperty(notes = "权限")
     private List<String> permissions;
 
