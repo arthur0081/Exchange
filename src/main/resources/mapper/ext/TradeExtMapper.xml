@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.back.TradeExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.TradeDto">
+    <result column="side" jdbcType="VARCHAR" property="side" />
+    <result column="price" jdbcType="NUMERIC" property="price" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="fee" jdbcType="NUMERIC" property="fee" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+  </resultMap>
+
+  <select id="count" parameterType="com.slabs.exchange.model.dto.TradeDto" resultType="int">
+
+    select
+           count(1)
+    from t_trade t
+                    left join sysuser u on u.id = t.user_id
+                    left join t_symbol s on s.id = t.symbol_id
+    where 1 = 1
+        <if test="account != null">
+          and u.account = #{account,jdbcType=VARCHAR}
+        </if>
+        <if test="side != null">
+          and t.side = = #{side,jdbcType=VARCHAR}
+        </if>
+        <if test="symbol != null">
+          and t.symbol_id = #{side,jdbcType=INTEGER}
+        </if>
+  </select>
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.TradeDto" resultMap="BaseResultMap">
+
+    select
+            t.side, t.price, t.amount, t.fee, t.time, s.name, u.acount
+    from
+         t_trade t
+                left join sysuser u on u.id = t.user_id
+                left join t_symbol s on s.id = t.symbol_id
+    where 1 = 1
+              <if test="account != null">
+                and u.account = #{account,jdbcType=VARCHAR}
+              </if>
+              <if test="side != null">
+                and t.side = = #{side,jdbcType=VARCHAR}
+              </if>
+              <if test="symbol != null">
+                and t.symbol_id = #{side,jdbcType=INTEGER}
+              </if>
+    limit #{pageSize, jdbcType=INTEGER} offset #{start,jdbcType=INTEGER}
+  </select>
+
+</mapper>

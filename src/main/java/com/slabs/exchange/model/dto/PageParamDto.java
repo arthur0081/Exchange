@@ -46,5 +46,21 @@ public class PageParamDto implements Serializable {
      */
     private Integer debitor;
 
+
+    /**
+     * 用户账户
+     */
+    private String account;
+
+    /**
+     * 币对Id
+     */
+    private Integer symbol;
+
+    /**
+     * 买或者卖
+     */
+    private String side;
+
     private static final long serialVersionUID = 1L;
 }
