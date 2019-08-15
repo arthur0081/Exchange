@@ -1,6 +1,7 @@
 package com.slabs.exchange.service.fore.impl;
 
 import com.slabs.exchange.common.enums.CoinEnum;
+import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.mapper.back.TradeMapper;
 import com.slabs.exchange.mapper.fore.UserFundMapper;
@@ -8,6 +9,7 @@ import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.ForeUserFundDto;
 import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.model.entity.Trade;
+import com.slabs.exchange.model.entity.User;
 import com.slabs.exchange.model.entity.UserFund;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.fore.IUserFundService;
@@ -30,6 +32,8 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
     private SymbolMapper symbolMapper;
     @Resource
     private TradeMapper tradeMapper;
+    @Resource
+    private UserMapper userMapper;
 
     /**
      *  各种币跟USDT的换算方式最新交易。求和。
@@ -104,8 +108,8 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("amount", amount);
-        data.put("lock", lock);
+        data.put("amount", amount.setScale(6, BigDecimal.ROUND_HALF_DOWN));
+        data.put("lock", lock.setScale(6, BigDecimal.ROUND_HALF_DOWN));
         data.put("list", foreUserFundDtos);
 
         return new ResponseBean(200, "", data);
@@ -140,9 +144,11 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
             // 构建响应dto
             ForeUserFundDto fuf = new ForeUserFundDto();
             fuf.setCoin(uf.getCoin());
-            fuf.setAvailable(ufAmount.subtract(ufOrderLock.add(ufWithdrawLock)));
-            fuf.setLock(ufOrderLock.add(ufWithdrawLock));
-            fuf.setAmount(usdtAmount);
+            BigDecimal avai = ufAmount.subtract(ufOrderLock.add(ufWithdrawLock));
+            fuf.setAvailable(avai.setScale(6, BigDecimal.ROUND_HALF_DOWN));
+            fuf.setLock(ufOrderLock.add(ufWithdrawLock).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+            // USDT估值是对可用余额的估值
+            fuf.setAmount(perPrice.multiply(avai).setScale(6, BigDecimal.ROUND_HALF_DOWN));
             foreUserFundDtos.add(fuf);
             // 基本数据类型，通过方法的时候，不是引用传递，而是值传递，所以需要返回值
             // 如果是引用数据类型，则通过方法的时候，是引用传递，这个时候在同一个作用域依然有效（更改后）。
@@ -153,5 +159,14 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         return map;
     }
 
+
+    /**
+     *  充值和提现 都是通过 钱包(服务) 调用 黄奕提供的接口，而黄毅的接口都是直接修改数据库表的。
+     */
+    @Override
+    public ResponseBean getWalletAddr() {
+        User user = userMapper.selectByPrimaryKey(ShiroUtils.getUserId());
+        return new ResponseBean(200, "", user.getWalletAddr());
+    }
 
 }

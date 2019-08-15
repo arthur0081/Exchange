@@ -27,5 +27,8 @@ public class BoughtAmount implements Serializable {
 
     private String orderId;
 
+    private Integer withdraw;
+
     private static final long serialVersionUID = 1L;
+
 }

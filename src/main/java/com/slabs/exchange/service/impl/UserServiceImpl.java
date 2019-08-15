@@ -224,7 +224,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
      */
     @Override
     public ResponseBean resetFundPassword() {
-        Integer userId = ShiroUtils.getUserId().intValue();
+        Integer userId = ShiroUtils.getUserId();
         User user = new User();
         user.setId(userId);
         String salt = RandomStringUtils.randomAlphanumeric(20);
@@ -239,7 +239,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
      */
     @Override
     public ResponseBean getMyInfo() {
-        Integer userId = ShiroUtils.getUserId().intValue();
+        Integer userId = ShiroUtils.getUserId();
         User user = userMapper.selectByPrimaryKey(userId);
         UserDto userDto = new UserDto();
         userDto.setUsername(user.getUsername());

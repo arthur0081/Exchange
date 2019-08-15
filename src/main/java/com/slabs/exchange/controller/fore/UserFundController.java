@@ -25,4 +25,15 @@ public class UserFundController {
         return userFundService.list();
     }
 
+    /**
+     * 充值（给当前登陆者返回用户的钱包地址）
+     */
+    @PostMapping("get-wallet-addr")
+    public ResponseBean getWalletAddr() {
+        return userFundService.getWalletAddr();
+    }
+
+    /**
+     * 充值和提现 都是通过 钱包 调用 黄奕提供的接口，而黄毅的接口都是直接修改数据库表的。
+     */
 }

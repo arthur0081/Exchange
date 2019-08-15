@@ -4,4 +4,6 @@ import com.slabs.exchange.model.common.ResponseBean;
 
 public interface IUserFundService {
     ResponseBean list();
+
+    ResponseBean getWalletAddr();
 }
