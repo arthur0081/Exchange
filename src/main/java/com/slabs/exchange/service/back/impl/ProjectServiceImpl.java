@@ -2,6 +2,7 @@ package com.slabs.exchange.service.back.impl;
 
 import com.slabs.exchange.common.enums.*;
 import com.slabs.exchange.common.exception.ExchangeException;
+import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.back.*;
 import com.slabs.exchange.mapper.ext.back.BoughtAmountExtMapper;
 import com.slabs.exchange.mapper.ext.back.ProjectExtMapper;
@@ -40,7 +41,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
     @Resource
     private BoughtAmountExtMapper boughtAmountExtMapper;
     @Resource
-    private WalletMapper walletMapper;
+    private UserMapper userMapper;
     @Resource
     private UserFundMapper userFundMapper;
     @Resource
@@ -347,13 +348,12 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         UserFund userFund = userFundMapper.selectByUserIdAndUsdt(userId);
 
         // 得到当前登陆用户的钱包地址(wallet表)
-        Wallet wallet = walletMapper.selectByUserId(userId);
-
+        User user = userMapper.selectByPrimaryKey(userId);
 
         Map<String, Object> data = new HashMap<>();
         data.put("projectDto", projectDto);
         data.put("userFund", userFund);
-        data.put("wallet", wallet);
+        data.put("walletAddr", user.getWalletAddr());
 
         return new ResponseBean(200, "", data);
     }
