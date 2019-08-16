@@ -11,6 +11,7 @@ import java.util.Date;
  */
 @Data
 public class User implements Serializable {
+
     private Integer id;
 
     private String account;
@@ -36,6 +37,12 @@ public class User implements Serializable {
     private String walletAddr;
 
     private String invitationCode;
+
+    private Integer certificateType;
+
+    private String certificateNum;
+
+    private String nationality;
 
     private static final long serialVersionUID = 1L;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
-@Api(value = "登录操作", description = "登录模块：用户注册登录操作相关接口")
+@Api(value = "登录操作", description = "登录模块：登录操作相关接口")
 public class LoginController {
 
     @Autowired

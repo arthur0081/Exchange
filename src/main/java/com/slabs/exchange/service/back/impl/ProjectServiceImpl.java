@@ -58,13 +58,13 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             // 待审核状态
             project.setStatus(ProjectStatusEnum.SUBMIT.getKey());
         }
-        // 根据币对得到项目是 保本区  或者  创新区
+        // 根据币对得到项目是 稳定区  或者  创新区
         Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
         String coin = symbol.getName().split("/")[1];
-        if (CoinEnum.USDT.getKey().equals(coin)) {//保本区
+        if (CoinEnum.USDT.getKey().equals(coin)) {//稳定区
             project.setAreaType(Integer.valueOf(AreaEnum.BREAK_EVEN.getKey()));
         }
-        if (CoinEnum.HOS.getKey().equals(coin)) {//创意区
+        if (CoinEnum.HOS.getKey().equals(coin)) {//创新区
             project.setAreaType(Integer.valueOf(AreaEnum.CREATION.getKey()));
         }
         projectMapper.insert(project);
@@ -175,13 +175,13 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             // 待审核状态
             project.setStatus(ProjectStatusEnum.SUBMIT.getKey());
         }
-        // 得到保本区或者创意区
+        // 得到稳定区或者创新区
         Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
         String coin = symbol.getName().split("_")[1];
-        if (CoinEnum.USDT.getKey().equals(coin)) {//保本区
+        if (CoinEnum.USDT.getKey().equals(coin)) {//稳定区
             project.setAreaType(Integer.valueOf(AreaEnum.BREAK_EVEN.getKey()));
         }
-        if (CoinEnum.HOS.getKey().equals(coin)) {//创意区
+        if (CoinEnum.HOS.getKey().equals(coin)) {//创新区
             project.setAreaType(Integer.valueOf(AreaEnum.CREATION.getKey()));
         }
 
@@ -290,7 +290,6 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
      */
     @Override
     public ResponseBean getForeProjectList(PageParamDto pageParamDto) {
-        // 如果这个项目在 预售中，应该什么时候，修改状态呢？(挂单的时候)
         // 凡是在 预售中 的状态都需要多写一个时间的判断
 
         int total = foreProjectExtMapper.count(pageParamDto);
@@ -379,7 +378,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         // 判断项目是否已经失败
 
         // 认购额度不满而且认购时间没有了
-        if (boughtAmountDto.getAmount().compareTo(project.getCollectAmount()) == -1 &&
+        if (boughtAmountDto.getAmount().compareTo(project.getCollectAmount()) < 0 &&
                 project.getStartTime().before(nowDate) ) {
             // 更新状态(项目失败)
             project.setStatus(ProjectStatusEnum.INVALID.getKey());
@@ -387,6 +386,8 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
 
             // 一旦失效，将要撤回这个项目的所有挂单
             // todo 调用第三方接口，撤回挂单
+            //  （/cancel/bvp_usdt） post {"order_id":"string"}
+            // 响应 ： {"id":"string"}
 
             // 如果调用第三方逻辑异常，则不更新当前挂单为撤回状态
             //todo boughtAmount的withdraw字段为1（默认是0）
@@ -406,6 +407,8 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                 && project.getStartTime().after(nowDate)) {
                 //在预售中，但是项目开始时间大于当前时间 且 项目开始时间  >  当前时间 - 认购天数
                 // todo 满足认购条件后去调用第三方挂单逻辑接口
+                //  /limit/bvp_usdt post {"side":"buy","price":初始价,"amount":12}
+                //  响应：{"id":"string"}
 
                 // todo 捕获到异常就不添加认购记录
             }

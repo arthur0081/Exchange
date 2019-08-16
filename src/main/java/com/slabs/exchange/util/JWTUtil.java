@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class JWTUtil {
 
-    private static final String SECRET_KEY = "FNLmzRlGBtPCivnzogYJtYG070HR890";
+    private static final String SECRET_KEY = "jFNLmzRlGBtPCivnzogYJtYG070HR890";
 
     public static String encode(String userId) {
         Integer ept = 10080;  // 一周
@@ -23,7 +23,7 @@ public class JWTUtil {
         long nowMillis = System.currentTimeMillis();
         long expirationMillis = nowMillis + exceptionTime * 60000L;
 
-        claims.put("userId", userId);
+        claims.put("sub", userId);
         return Jwts.builder()
                 .setSubject("subValue")
                 .setClaims(claims)
@@ -38,9 +38,14 @@ public class JWTUtil {
             Claims claims = Jwts.parser()
                     .setSigningKey(SECRET_KEY)
                     .parseClaimsJws(accessToken).getBody();
-            return (String) claims.get("userId");
+            return (String) claims.get("sub");
         } catch (Exception e) {  // 解密失败，返回null
+            System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(JWTUtil.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.rBafMLdUVCYE7MLz90oFyAhWGRCmKVJBJmqdcgSmRYs"));
     }
 }

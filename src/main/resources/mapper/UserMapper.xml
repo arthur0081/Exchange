@@ -15,10 +15,14 @@
     <result column="salt" jdbcType="VARCHAR" property="salt" />
     <result column="wallet_addr" jdbcType="VARCHAR" property="walletAddr" />
     <result column="invitation_code" jdbcType="VARCHAR" property="invitationCode" />
+    <result column="certificate_type" jdbcType="INTEGER" property="certificateType" />
+    <result column="certificate_num" jdbcType="VARCHAR" property="certificateNum" />
+    <result column="nationality" jdbcType="VARCHAR" property="nationality" />
   </resultMap>
   <sql id="Base_Column_List">
     id, account, password, username, reg_time, email, fund_password, create_user, modify_user, 
-    modify_time, salt, wallet_addr, invitation_code
+    modify_time, salt, wallet_addr, invitation_code, certificate_type, certificate_num, 
+    nationality
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -35,12 +39,14 @@
       username, reg_time, email, 
       fund_password, create_user, modify_user, 
       modify_time, salt, wallet_addr, 
-      invitation_code)
+      invitation_code, certificate_type, certificate_num, 
+      nationality)
     values (#{id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{username,jdbcType=VARCHAR}, #{regTime,jdbcType=TIMESTAMP}, #{email,jdbcType=VARCHAR}, 
       #{fundPassword,jdbcType=VARCHAR}, #{createUser,jdbcType=INTEGER}, #{modifyUser,jdbcType=INTEGER}, 
       #{modifyTime,jdbcType=TIMESTAMP}, #{salt,jdbcType=VARCHAR}, #{walletAddr,jdbcType=VARCHAR}, 
-      #{invitationCode,jdbcType=VARCHAR})
+      #{invitationCode,jdbcType=VARCHAR}, #{certificateType,jdbcType=INTEGER}, #{certificateNum,jdbcType=VARCHAR}, 
+      #{nationality,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.User">
     insert into sysuser
@@ -84,6 +90,15 @@
       <if test="invitationCode != null">
         invitation_code,
       </if>
+      <if test="certificateType != null">
+        certificate_type,
+      </if>
+      <if test="certificateNum != null">
+        certificate_num,
+      </if>
+      <if test="nationality != null">
+        nationality,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -124,6 +139,15 @@
       </if>
       <if test="invitationCode != null">
         #{invitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateType != null">
+        #{certificateType,jdbcType=INTEGER},
+      </if>
+      <if test="certificateNum != null">
+        #{certificateNum,jdbcType=VARCHAR},
+      </if>
+      <if test="nationality != null">
+        #{nationality,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -166,6 +190,15 @@
       <if test="invitationCode != null">
         invitation_code = #{invitationCode,jdbcType=VARCHAR},
       </if>
+      <if test="certificateType != null">
+        certificate_type = #{certificateType,jdbcType=INTEGER},
+      </if>
+      <if test="certificateNum != null">
+        certificate_num = #{certificateNum,jdbcType=VARCHAR},
+      </if>
+      <if test="nationality != null">
+        nationality = #{nationality,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -182,7 +215,10 @@
       modify_time = #{modifyTime,jdbcType=TIMESTAMP},
       salt = #{salt,jdbcType=VARCHAR},
       wallet_addr = #{walletAddr,jdbcType=VARCHAR},
-      invitation_code = #{invitationCode,jdbcType=VARCHAR}
+      invitation_code = #{invitationCode,jdbcType=VARCHAR},
+      certificate_type = #{certificateType,jdbcType=INTEGER},
+      certificate_num = #{certificateNum,jdbcType=VARCHAR},
+      nationality = #{nationality,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -193,4 +229,5 @@
   <select id="selectByInvitationCode" parameterType="java.lang.String" resultMap="BaseResultMap">
     select * from sysuser where invitation_code =  #{invitationCode,jdbcType=VARCHAR}
   </select>
+
 </mapper>

@@ -39,7 +39,7 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
 
     /**
-     * LbqException异常统一处理
+     * ExchangeException异常统一处理
      *
      * @param request
      * @param ex

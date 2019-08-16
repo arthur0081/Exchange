@@ -1,5 +1,6 @@
 package com.slabs.exchange.model.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,6 +32,19 @@ public class UserDto {
     private List<Integer> roleList;
 
     private String invitationCode;
+
+    private Integer certificateType;
+
+    private String certificateNum;
+
+    private String nationality;
+
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty(notes = "附件")
+    private List<AttachFileDto> attachFileList;
 
     private static final long serialVersionUID = 1L;
 }

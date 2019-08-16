@@ -71,6 +71,7 @@ public class UserController {
         return userService.resetFundPassword();
     }
 
+
     /**
      * 我的信息
      */
@@ -94,5 +95,6 @@ public class UserController {
         String jwt = JWTUtil.encode(userId.toString());
         return new ResponseBean(200, "jwt", jwt);
     }
+
 
 }
