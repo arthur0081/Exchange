@@ -25,10 +25,9 @@ public class IdentityController {
     /**
      * 身份认证
      */
-    @PostMapping("insert")
-    public ResponseBean insert(UserDto userDto) {
-        //return userService.insert(userDto);
-        return null;
+    @PostMapping("update")
+    public ResponseBean identityUpdate(UserDto userDto) {
+        return userService.identityUpdate(userDto);
     }
 
     /**

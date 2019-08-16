@@ -1,5 +1,6 @@
 package com.slabs.exchange.model.entity;
 
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class AttachFile implements Serializable {
 
     private String filePath;
 
-    private Long refId;
+    private Integer refId;
 
     private String isDel;
 
@@ -27,7 +28,7 @@ public class AttachFile implements Serializable {
 
     private Date createTime;
 
-    private Long modifyUser;
+    private Integer modifyUser;
 
     private Date modifyTime;
 

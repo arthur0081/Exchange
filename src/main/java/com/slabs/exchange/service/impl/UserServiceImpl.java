@@ -1,17 +1,15 @@
 package com.slabs.exchange.service.impl;
 
+import com.slabs.exchange.common.enums.AttachEnum;
+import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.mapper.RoleMapper;
 import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.UserRoleMapper;
+import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.ext.UserExtMapper;
 import com.slabs.exchange.model.common.ResponseBean;
-import com.slabs.exchange.model.dto.OauthInfoDto;
-import com.slabs.exchange.model.dto.PageParamDto;
-import com.slabs.exchange.model.dto.UserDto;
-import com.slabs.exchange.model.dto.UserListDto;
-import com.slabs.exchange.model.entity.Role;
-import com.slabs.exchange.model.entity.User;
-import com.slabs.exchange.model.entity.UserRole;
+import com.slabs.exchange.model.dto.*;
+import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.JWTUtil;
@@ -38,7 +36,8 @@ public class UserServiceImpl extends BaseService implements IUserService {
     private RoleMapper roleMapper;
     @Resource
     private UserExtMapper userExtMapper;
-
+    @Resource
+    private AttachFileMapper attachFileMapper;
 
     /**
      * 新增用户
@@ -260,6 +259,44 @@ public class UserServiceImpl extends BaseService implements IUserService {
         oauthInfoDto.setToken(JWTUtil.encode(ShiroUtils.getUserId().toString()));
         oauthInfoDto.setSessionId(ShiroUtils.getSession().getId().toString());
         return oauthInfoDto;
+    }
+
+    /**
+     * 只添加身份认证信息
+     */
+    @Override
+    public ResponseBean identityUpdate(UserDto userDto) {
+        // 获取到用户的id
+        Integer userId = ShiroUtils.getUserId();
+        User user = map(userDto, User.class);
+        user.setId(userId);
+        userMapper.updateByPrimaryKeySelective(user);
+
+        // 构建附件信息
+        List<AttachFile> list = buildAttachFile(userId, userDto);
+
+        // 批量插入附件信息
+        attachFileMapper.batchInsert(list);
+
+        return new ResponseBean(200, "添加认证信息成功",null);
+    }
+
+    /**
+     *  构建用户附件信息（身份证或者护照）
+     */
+    private List<AttachFile> buildAttachFile(Integer userId, UserDto userDto) {
+        List<AttachFileDto> list = userDto.getAttachFileList();
+        List<AttachFile> attachFiles = new ArrayList<>();
+        for (AttachFileDto afd: list) {
+            AttachFile af = map(afd, AttachFile.class);
+            af.setIsDel(YNEnum.N.getKey());
+            af.setRefId(userId);
+            af.setType(AttachEnum.PRO_COIN.getKey());
+            af.setModifyUser(userId);
+            af.setModifyTime(new Date());
+            attachFiles.add(af);
+        }
+        return attachFiles;
     }
 
 }

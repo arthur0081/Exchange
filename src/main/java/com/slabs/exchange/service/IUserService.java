@@ -24,4 +24,6 @@ public interface IUserService {
     ResponseBean getMyInfo();
 
     OauthInfoDto login(UserDto userDto);
+
+    ResponseBean identityUpdate(UserDto userDto);
 }
