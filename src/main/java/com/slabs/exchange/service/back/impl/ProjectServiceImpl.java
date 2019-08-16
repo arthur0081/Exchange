@@ -88,7 +88,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             List<AttachFileDto> mapValue = entry.getValue();
             for (AttachFileDto afd: mapValue) {
                 AttachFile af = new AttachFile();
-                af.setRefId(id);
+                af.setRefId(id.intValue());
                 af.setType(mapKey);
                 af.setFilePath(afd.getFilePath());
                 af.setFileName(afd.getFileName());

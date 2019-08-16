@@ -13,13 +13,11 @@ import com.slabs.exchange.model.entity.AttachFile;
 import com.slabs.exchange.model.entity.ProjectCoin;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.IProjectCoinService;
+import com.slabs.exchange.util.ShiroUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinService {
@@ -53,10 +51,10 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
         for (AttachFileDto afd: list) {
             AttachFile af = (AttachFile) map(afd, AttachFile.class);
             af.setIsDel(YNEnum.N.getKey());
-            af.setRefId(coinId);
+            af.setRefId(coinId.intValue());
             af.setType(AttachEnum.PRO_COIN.getKey());
-            // TODO 当前创建者id和当前时间
-
+            af.setCreateUser(ShiroUtils.getUserId().longValue());
+            af.setCreateTime(new Date());
             attachFiles.add(af);
         }
         return attachFiles;

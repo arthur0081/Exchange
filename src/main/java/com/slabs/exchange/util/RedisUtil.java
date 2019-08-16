@@ -1,17 +1,21 @@
 package com.slabs.exchange.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.BitSet;
+import java.util.Date;
 
 @Component
 @Slf4j
 public class RedisUtil {
-
+    private static final String activeName = "activeUser:";
 
     @Resource
     private JedisPool jedisPool;
@@ -187,20 +191,75 @@ public class RedisUtil {
      * @param timeout 超时时间
      * @return
      */
-        public Long setIncr(String key,int timeout) throws Exception {
-            Long num;
-            Jedis jedis = null;
-            try {
-                jedis = getJedis();
-                num = jedis.incr(key);
-                if (timeout != -1) {
-                    jedis.expire(key, timeout);
-                }
-            } catch (Exception e){
-                throw  e;
-            } finally {
-                releaseRedis(jedis);
+    public Long setIncr(String key,int timeout) throws Exception {
+        Long num;
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            num = jedis.incr(key);
+            if (timeout != -1) {
+                jedis.expire(key, timeout);
             }
-            return num;
+        } catch (Exception e){
+            throw  e;
+        } finally {
+            releaseRedis(jedis);
         }
+        return num;
+    }
+
+
+    /**
+     * 当用户登陆的时候，传入id的值是 1 （成为当天的活跃用户）
+     *
+     * @param id 传入1代表登陆
+     * @param timeout 超时时间
+     */
+    public void setActiveUserCount(Integer userId, int timeout) throws Exception {
+        Jedis jedis = null;
+        try {
+            String currentStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String key = activeName + currentStr;
+            jedis = getJedis();
+            jedis.setbit(key, userId, true);
+            if (timeout != -1) {
+                jedis.expire(key, timeout);
+            }
+        } catch (Exception e){
+            throw  e;
+        } finally {
+            releaseRedis(jedis);
+        }
+    }
+
+    /**
+     *  统计当天的活跃的用户
+     */
+    public int getActiveUserCount() throws Exception {
+        int count;
+        Jedis jedis = null;
+        BitSet all = new BitSet();
+        try {
+            String currentStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String key = activeName + currentStr;
+            // 获取这一天日期的活跃用户字节数组
+            jedis = getJedis();
+            byte[] loginByte = jedis.get(key.getBytes());
+            //有可能当天没有一个用户登陆
+            if (loginByte != null) {
+                BitSet user = BitSet.valueOf(loginByte);
+                // 一天内只有有一次登陆即可  （如果是几天内同时在线的时候，需要使用 循环取交集）
+                all.or(user);
+                count = all.cardinality();
+                return count;
+            }
+        } catch (Exception e){
+            throw  e;
+        } finally {
+            releaseRedis(jedis);
+        }
+        // 如果当天没有用户登陆，则返回 0
+        return 0;
+    }
+
 }

@@ -13,6 +13,7 @@ import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.JWTUtil;
+import com.slabs.exchange.util.RedisUtil;
 import com.slabs.exchange.util.Sha256;
 import com.slabs.exchange.util.ShiroUtils;
 import okhttp3.*;
@@ -38,6 +39,9 @@ public class UserServiceImpl extends BaseService implements IUserService {
     private UserExtMapper userExtMapper;
     @Resource
     private AttachFileMapper attachFileMapper;
+    @Resource
+    private RedisUtil redisUtil;
+
 
     /**
      * 新增用户
@@ -258,6 +262,13 @@ public class UserServiceImpl extends BaseService implements IUserService {
         OauthInfoDto oauthInfoDto = ShiroUtils.getOauthInfoDto();
         oauthInfoDto.setToken(JWTUtil.encode(ShiroUtils.getUserId().toString()));
         oauthInfoDto.setSessionId(ShiroUtils.getSession().getId().toString());
+
+        //当用户登陆后，设置为当天的活跃用户
+        try {
+            redisUtil.setActiveUserCount(ShiroUtils.getUserId(), -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return oauthInfoDto;
     }
 
