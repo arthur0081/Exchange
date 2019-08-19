@@ -194,4 +194,9 @@
         </foreach>
 
   </select>
+
+  <select id="selectByCommodity" parameterType="int" resultMap="BaseResultMap">
+    select  * from t_symbol where commodity = #{coinId,jdbcType=INTEGER}
+  </select>
+
 </mapper>

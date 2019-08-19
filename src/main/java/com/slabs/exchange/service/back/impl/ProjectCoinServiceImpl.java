@@ -5,12 +5,14 @@ import com.slabs.exchange.common.enums.CodeEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.back.ProjectCoinMapper;
+import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.AttachFileDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.ProjectCoinDto;
 import com.slabs.exchange.model.entity.AttachFile;
 import com.slabs.exchange.model.entity.ProjectCoin;
+import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.IProjectCoinService;
 import com.slabs.exchange.util.ShiroUtils;
@@ -23,9 +25,11 @@ import java.util.*;
 public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinService {
     @Resource
     private ProjectCoinMapper projectCoinMapper;
-
     @Resource
     private AttachFileMapper attachFileMapper;
+    @Resource
+    private SymbolMapper symbolMapper;
+
 
     @Override
     public ResponseBean insert(ProjectCoinDto projectCoinDto) {
@@ -65,13 +69,12 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
      */
     @Override
     public ResponseBean preUpdate(Integer coinId) {
-        // 判断是否能被修改（只要项目引用了币对即不可修改）
-        // 只要这个id在project_symbol中存在即返回
-        /*if (true) {
-            ResponseBussinessDto res = new ResponseBussinessDto();
-            res.getData().put("error", "该币已经被项目使用！");
-            return  res;
-        }*/
+        // 判断项目币是否被构建成币对
+        Symbol symbol = symbolMapper.selectByCommodity(coinId);
+        if (symbol != null) {
+            return new ResponseBean(200, "该币已成币对，不能修改！", null);
+        }
+
         // 根据coinId去project_coin中查询基础信息。
         ProjectCoin pc = projectCoinMapper.selectByPrimaryKey(coinId.longValue());
         ProjectCoinDto pcd = map(pc, ProjectCoinDto.class);
@@ -94,7 +97,7 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
     public ResponseBean update(ProjectCoinDto projectCoinDto) {
         // 修改ProjectCoin表
         ProjectCoin pc = map(projectCoinDto, ProjectCoin.class);
-        projectCoinMapper.updateByPrimaryKey(pc);
+        projectCoinMapper.updateByPrimaryKeySelective(pc);
         // 附件表处理
         // 给 type ref_id的数据进行逻辑删除
         attachFileMapper.deleteByTypeAndRefId(AttachEnum.PRO_COIN.getKey(), projectCoinDto.getId());

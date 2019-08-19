@@ -26,4 +26,6 @@ public interface SymbolMapper {
     Symbol getHosByName(String symbolName);
 
     List<Symbol> getSymbolIdByCoin(List<CoinSumDto> coinSumDtos);
+
+    Symbol selectByCommodity(Integer coinId);
 }
