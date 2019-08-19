@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.UserFundExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.HoldCoinUserExtDto">
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="wallet_addr" jdbcType="VARCHAR" property="walletAddr" />
+  </resultMap>
+
+  <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
+    select count(1) from t_user_fund uf, sysuser  u
+    where u.id = uf.user_id and uf.coin = #{coin, jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByCoin" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    select
+           uf.coin, uf.amount, u.account, u.wallet_addr from t_user_fund uf, sysuser  u
+    where
+          u.id = uf.user_id and uf.coin = #{coin, jdbcType=VARCHAR}
+    order by
+             uf.amount
+    limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
+  </select>
+
+</mapper>

@@ -21,4 +21,6 @@ public interface TradeMapper {
     int updateByPrimaryKey(Trade record);
 
     List<Trade> getLatestTrade(List<Integer> symbolIds);
+
+    Trade getLatestHosTrade(Integer id);
 }

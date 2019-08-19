@@ -156,4 +156,17 @@
         ) t
     where row = 1;
   </select>
+
+  <select id="getLatestHosTrade" parameterType="int" resultMap="BaseResultMap">
+    select
+        *
+    from
+        (select
+            price, amount, symbol_id, row_number() over(partition by symbol_id order by time desc) as row
+        from
+            t_trade
+        where
+            symbol_id = #{id, jdbcType=INTEGER}) t
+    where row = 1;
+  </select>
 </mapper>

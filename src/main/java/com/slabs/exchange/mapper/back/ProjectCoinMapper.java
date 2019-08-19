@@ -26,4 +26,6 @@ public interface ProjectCoinMapper {
     List<ProjectCoin> list(PageParamDto pageParamDto);
 
     List<ProjectCoin> getProjectCoins();
+
+    ProjectCoin selectByCoin(String coin);
 }

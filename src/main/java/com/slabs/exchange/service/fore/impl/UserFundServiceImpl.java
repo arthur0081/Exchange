@@ -46,7 +46,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         Integer userId = ShiroUtils.getUserId();
         List<UserFund> userFunds = userFundMapper.selectByUserId(userId);
 
-        // 只有有效的币对，对比换算才有意义。
+        // 只有有效的币对，对币换算才有意义。
         List<Symbol> symbols = symbolMapper.getAllValid();
 
         // 用户所持有的币种关联币对，根据币对找到最新交易，通过交易计算单价，

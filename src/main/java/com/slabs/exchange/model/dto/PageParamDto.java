@@ -62,5 +62,16 @@ public class PageParamDto implements Serializable {
      */
     private String side;
 
+    /**
+     * 币种
+     */
+    private String coin;
+
+    /**
+     * 24小时换手率
+     */
+    private Integer hourChange;
+
+
     private static final long serialVersionUID = 1L;
 }

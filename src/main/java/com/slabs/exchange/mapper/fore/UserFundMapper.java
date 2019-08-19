@@ -1,5 +1,6 @@
 package com.slabs.exchange.mapper.fore;
 
+import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.entity.UserFund;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -23,4 +24,8 @@ public interface UserFundMapper {
     List<UserFund> selectByUserId(Integer userId);
 
     UserFund selectByUserIdAndUsdt(Integer userId);
+
+    int selectHosAmount();
+
+    int selectSumByCoin(String coin);
 }

@@ -29,23 +29,19 @@ public class JWTUtil {
                 .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(expirationMillis))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes()).compact();
     }
 
     // 解密Token
     public static String decode(String accessToken) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(SECRET_KEY.getBytes())
                     .parseClaimsJws(accessToken).getBody();
             return (String) claims.get("sub");
         } catch (Exception e) {  // 解密失败，返回null
             System.out.println(e.getMessage());
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(JWTUtil.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.rBafMLdUVCYE7MLz90oFyAhWGRCmKVJBJmqdcgSmRYs"));
     }
 }

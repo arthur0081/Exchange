@@ -102,4 +102,8 @@
   <select id="getProjectCoins" resultMap="BaseResultMap">
     select * from project_coin
   </select>
+
+  <select id="selectByCoin" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from project_coin where name = #{coin, jdbcType=VARCHAR}
+  </select>
 </mapper>

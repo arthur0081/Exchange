@@ -21,4 +21,6 @@ public interface SymbolMapper {
     int updateByPrimaryKey(Symbol record);
 
     List<Symbol> getAllValid();
+
+    Symbol getHosByName(String symbolName);
 }
