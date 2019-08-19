@@ -3,6 +3,8 @@ package com.slabs.exchange.model.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 持币用户换手率
  */
@@ -20,5 +22,5 @@ public class HoldCoinUserExchangeDto {
     /**
      * 24H换手率
      */
-    private String hourExchangeRate;
+    private BigDecimal hourExchangeRate;
 }

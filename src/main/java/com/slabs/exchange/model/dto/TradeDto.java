@@ -29,4 +29,15 @@ public class TradeDto {
 
     private Date time;
 
+
+    /**
+     * 币对id
+     */
+    private Integer symbolId;
+
+    /**
+     * 24小时的交易总数
+     */
+    private BigDecimal sums;
+
 }

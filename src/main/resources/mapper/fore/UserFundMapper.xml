@@ -119,4 +119,8 @@
   <select id="selectSumByCoin" resultType="decimal">
     select sum(amount) from t_user_fund where coin = #{coin, jdbcType=INTEGER}
   </select>
+
+  <select id="count" resultType="int">
+    select count(distinct coin) from t_user_fund
+  </select>
 </mapper>

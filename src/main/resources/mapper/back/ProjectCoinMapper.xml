@@ -21,10 +21,10 @@
     delete from project_coin
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
-    insert into project_coin (id, name, verbose_name,
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.ProjectCoin" useGeneratedKeys="true" keyProperty="id">
+    insert into project_coin (name, verbose_name,
       precision, amount)
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{verboseName,jdbcType=VARCHAR}, 
+    values (#{name,jdbcType=VARCHAR}, #{verboseName,jdbcType=VARCHAR},
       #{precision,jdbcType=BIGINT}, #{amount,jdbcType=NUMERIC})
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.ProjectCoin">

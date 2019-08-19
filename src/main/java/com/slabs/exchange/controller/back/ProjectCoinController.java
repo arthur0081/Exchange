@@ -30,7 +30,7 @@ public class ProjectCoinController {
 
     @PostMapping("pre-update")
     @ApiOperation(value = "预修改")
-    public ResponseBean preUpdate(@RequestBody Long coinId) {
+    public ResponseBean preUpdate(@RequestBody Integer coinId) {
         return projectCoinService.preUpdate(coinId);
     }
 

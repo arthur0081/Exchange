@@ -6,11 +6,10 @@ import com.slabs.exchange.mapper.back.ProjectCoinMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.mapper.back.TradeMapper;
 import com.slabs.exchange.mapper.ext.UserFundExtMapper;
+import com.slabs.exchange.mapper.ext.back.TradeExtMapper;
 import com.slabs.exchange.mapper.fore.UserFundMapper;
 import com.slabs.exchange.model.common.ResponseBean;
-import com.slabs.exchange.model.dto.HoldCoinUserDto;
-import com.slabs.exchange.model.dto.HoldCoinUserExtDto;
-import com.slabs.exchange.model.dto.PageParamDto;
+import com.slabs.exchange.model.dto.*;
 import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.IBackIndexService;
@@ -40,6 +39,8 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
     private ProjectCoinMapper projectCoinMapper;
     @Resource
     private UserFundExtMapper userFundExtMapper;
+    @Resource
+    private TradeExtMapper tradeExtMapper;
 
 
     /**
@@ -114,13 +115,13 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
         //持币
         data.put("holdTotal", holdTotal);
         data.put("holdDtos", holdDtos);
-
-        // 24小时换手率
-
-
-        //页面
         data.put("currentPage", pageParamDto.getCurrentPage());
         data.put("pageSize", pageParamDto.getPageSize());
+
+
+        // 24小时换手率
+        Map<String,Object> exchangeRateMap = getExchangeRateList(pageParamDto);
+        data.put("exchangeRateList", exchangeRateMap);
 
         return new ResponseBean(200, "", data);
     }
@@ -192,24 +193,80 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
      */
     @Override
     public ResponseBean getCoinConditionList(PageParamDto pageParamDto) {
+        Map<String, Object> data = getExchangeRateList(pageParamDto);
+        return new ResponseBean(200, "", data);
+    }
 
+    /**
+     *  得到24交换率列表（默认是持币用户数）
+     */
+    private Map<String, Object> getExchangeRateList(PageParamDto pageParamDto) {
+        Map<String, Object> data = new HashMap<>();
+        //a. 用户资金表 以币种去重 求得记录数即可
+        int total = userFundMapper.count();
         if (pageParamDto.getHourChange().equals(1)) {//1. 24H换手率  降序排序
-            //a. 交易表查询24内交易的总数
+            //a. 用户资金表 查询币的总数并分页
+            int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
+            pageParamDto.setStart(start);
+            List<CoinSumDto> coinSumDtos = userFundMapper.selectCoinSum(pageParamDto);
 
-            //b. 去用户资金表查询币的总数
+            List<Symbol> symbolIds = symbolMapper.getSymbolIdByCoin(coinSumDtos);
+            //c. 交易表查询24内交易的总数
+            List<TradeDto> sumDtos = tradeExtMapper.getHourExchangeAmount(symbolIds);
+
+            //d.计算换手率
+            List<HoldCoinUserExchangeDto> exchangeRateList = new ArrayList<>();
+            for (CoinSumDto coinSumDto: coinSumDtos) {
+                String coin = coinSumDto.getCoin();
+                BigDecimal allAmount = coinSumDto.getSums();
+                for (Symbol symbol: symbolIds) {
+                    if (coin.equals(symbol.getName())) {
+                        for (TradeDto tradeDto: sumDtos) {
+                            if (symbol.getId().equals(tradeDto.getSymbolId())) {
+                                BigDecimal exchangeRate = tradeDto.getSums().divide(allAmount).setScale(6, BigDecimal.ROUND_HALF_DOWN);
+                                HoldCoinUserExchangeDto dto = new HoldCoinUserExchangeDto();
+                                dto.setCoin(coin);
+                                dto.setHourExchangeRate(exchangeRate);
+                                exchangeRateList.add(dto);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //e. 排序换手率  (降序排列)
+            if (exchangeRateList.size() > 1) {
+                Collections.sort(exchangeRateList, new Comparator<HoldCoinUserExchangeDto>() {
+                    /**
+                     * 按照降序排列
+                     */
+                    @Override
+                    public int compare(HoldCoinUserExchangeDto o1, HoldCoinUserExchangeDto o2) {
+                        if (o1.getHourExchangeRate().compareTo(o2.getHourExchangeRate()) > 0 ) {
+                            return -1;
+                        }
+                        if (o1.getHourExchangeRate().compareTo(o2.getHourExchangeRate()) == 0 ) {
+                            return 0;
+                        }
+                        return 1;
+                    }
+                });
+            }
+            // 交换率列表
+            data.put("exchangeRateList", exchangeRateList);
 
         } else {//2. 持币用户数  降序排列
-            //a. 用户资金表对用户去重，然后求和
-
-            //b. 求得总数
+            //a. 币种 和 总数， 币种分组求得记录数，每一类只取一条，并分页
+            int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
+            pageParamDto.setStart(start);
+            List<CoinUserDto> coinUserDtos = userFundMapper.selectCoinUserList(pageParamDto);
+            data.put("coinUserDtos", coinUserDtos);
         }
 
-        Map<String, Object> data = new HashMap<>();
-       // data.put("total", total);
+        data.put("total", total);
         data.put("pageSize", pageParamDto.getPageSize());
         data.put("currentPage", pageParamDto.getCurrentPage());
-
-        return null;
+        return data;
     }
 
 }

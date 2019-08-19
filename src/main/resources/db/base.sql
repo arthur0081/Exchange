@@ -54,3 +54,13 @@ INSERT INTO public."user"(id, account, password, username, reg_time, email, fund
              VALUES (3, '13035667829', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是项目方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
 INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
             VALUES (4, '13035667839', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通用户', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
+
+
+CREATE SEQUENCE project_coin_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+alter table project_coin alter column id set default nextval('project_coin_id_seq');

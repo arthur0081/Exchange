@@ -7,7 +7,7 @@ import com.slabs.exchange.model.dto.ProjectCoinDto;
 public interface IProjectCoinService {
     ResponseBean insert(ProjectCoinDto projectCoinDto);
 
-    ResponseBean preUpdate(Long coinId);
+    ResponseBean preUpdate(Integer coinId);
 
     ResponseBean update(ProjectCoinDto projectCoinDto);
 

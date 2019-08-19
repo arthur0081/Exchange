@@ -167,10 +167,10 @@
     select
     <include refid="Base_Column_List" />
     from attach_file
-        where ref_id = #{refId,jdbcType=BIGINT} and #{type,jdbcType=VARCHAR} and is_deal = 'N'
+        where ref_id = #{refId,jdbcType=BIGINT} and type = #{type,jdbcType=VARCHAR} and is_del = 'N'
   </select>
 
   <update id="deleteByTypeAndRefId" >
-    update attach_file set is_del = 'Y' where ref_id = #{refId,jdbcType=BIGINT} and #{type,jdbcType=VARCHAR}
+    update attach_file set is_del = 'Y' where ref_id = #{refId,jdbcType=BIGINT} and type = #{type,jdbcType=VARCHAR}
   </update>
 </mapper>

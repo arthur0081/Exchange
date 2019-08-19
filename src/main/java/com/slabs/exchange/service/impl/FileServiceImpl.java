@@ -26,7 +26,7 @@ public class FileServiceImpl implements IFileService {
         //上传文件
         try {
             // 构建唯一url  这里模拟就随机生成一个即可
-            String filePath = "f://exchange/pictures/" + System.currentTimeMillis() + "_" + fileName + ext;
+            String filePath = "f://exchange/pictures/" + System.currentTimeMillis() + "_" + fileName;
             // 存储到本地
             FileUtil.writeFile(multipartFile.getInputStream(), filePath);
             multipartFile.getInputStream().close();

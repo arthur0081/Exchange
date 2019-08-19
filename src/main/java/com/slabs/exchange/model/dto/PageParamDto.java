@@ -70,7 +70,7 @@ public class PageParamDto implements Serializable {
     /**
      * 24小时换手率
      */
-    private Integer hourChange;
+    private Integer hourChange = 1;
 
 
     private static final long serialVersionUID = 1L;

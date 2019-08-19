@@ -151,7 +151,7 @@
                symbol_id
         in
             <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-                #{item, jdbcType=INTEGER},
+                #{item, jdbcType=INTEGER}
             </foreach>
         ) t
     where row = 1;

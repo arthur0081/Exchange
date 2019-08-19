@@ -49,7 +49,7 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
         List<AttachFileDto> list = projectCoinDto.getAttachFileList();
         List<AttachFile> attachFiles = new ArrayList<>();
         for (AttachFileDto afd: list) {
-            AttachFile af = (AttachFile) map(afd, AttachFile.class);
+            AttachFile af = map(afd, AttachFile.class);
             af.setIsDel(YNEnum.N.getKey());
             af.setRefId(coinId.intValue());
             af.setType(AttachEnum.PRO_COIN.getKey());
@@ -64,7 +64,7 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
      * 预修改
      */
     @Override
-    public ResponseBean preUpdate(Long coinId) {
+    public ResponseBean preUpdate(Integer coinId) {
         // 判断是否能被修改（只要项目引用了币对即不可修改）
         // 只要这个id在project_symbol中存在即返回
         /*if (true) {
@@ -73,13 +73,13 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
             return  res;
         }*/
         // 根据coinId去project_coin中查询基础信息。
-        ProjectCoin pc = projectCoinMapper.selectByPrimaryKey(coinId);
+        ProjectCoin pc = projectCoinMapper.selectByPrimaryKey(coinId.longValue());
         ProjectCoinDto pcd = map(pc, ProjectCoinDto.class);
         // 根据coinId和type去附件表得到相关联的附件
-        List<AttachFile> list = attachFileMapper.selectByTypeAndRefId(AttachEnum.PRO_COIN.getKey(), coinId);
+        List<AttachFile> list = attachFileMapper.selectByTypeAndRefId(AttachEnum.PRO_COIN.getKey(), coinId.longValue());
         List<AttachFileDto> attachFileDtos = new ArrayList<>();
         for (AttachFile af: list) {
-            AttachFileDto afd = (AttachFileDto) map(af, AttachFileDto.class);
+            AttachFileDto afd = map(af, AttachFileDto.class);
             attachFileDtos.add(afd);
         }
         pcd.setAttachFileList(attachFileDtos);

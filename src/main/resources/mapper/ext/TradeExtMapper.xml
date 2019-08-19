@@ -9,6 +9,9 @@
     <result column="time" jdbcType="TIMESTAMP" property="time" />
     <result column="symbol" jdbcType="VARCHAR" property="symbol" />
     <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="symbol_id" jdbcType="INTEGER" property="symbolId" />
+    <result column="sums" jdbcType="NUMERIC" property="sums" />
+
   </resultMap>
 
   <select id="count" parameterType="com.slabs.exchange.model.dto.TradeDto" resultType="int">
@@ -51,4 +54,16 @@
     limit #{pageSize, jdbcType=INTEGER} offset #{start,jdbcType=INTEGER}
   </select>
 
+    <select id="getHourExchangeAmount" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+               symbol_id, sum(amount)sums
+        from
+             t_trade where time > (current_timestamp - interval '1 day')
+             and symbol_id
+        in
+            <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+                #{item.id, jdbcType=INTEGER}
+            </foreach>
+        group by symbol_id
+    </select>
 </mapper>

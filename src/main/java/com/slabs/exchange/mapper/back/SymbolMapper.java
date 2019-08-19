@@ -1,5 +1,6 @@
 package com.slabs.exchange.mapper.back;
 
+import com.slabs.exchange.model.dto.CoinSumDto;
 import com.slabs.exchange.model.entity.Symbol;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -23,4 +24,6 @@ public interface SymbolMapper {
     List<Symbol> getAllValid();
 
     Symbol getHosByName(String symbolName);
+
+    List<Symbol> getSymbolIdByCoin(List<CoinSumDto> coinSumDtos);
 }

@@ -17,15 +17,15 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from `bought_amount`
+    from bought_amount
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from `bought_amount`
+    delete from bought_amount
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
-    insert into `bought_amount` (id, user_id, project_id, 
+    insert into bought_amount (id, user_id, project_id, 
       usdt, project_coin, create_time, 
       order_id, withdraw)
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, 
@@ -33,7 +33,7 @@
       #{orderId,jdbcType=VARCHAR}, #{withdraw,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
-    insert into `bought_amount`
+    insert into bought_amount
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -88,7 +88,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
-    update `bought_amount`
+    update bought_amount
     <set>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
@@ -115,7 +115,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
-    update `bought_amount`
+    update bought_amount
     set user_id = #{userId,jdbcType=INTEGER},
       project_id = #{projectId,jdbcType=INTEGER},
       usdt = #{usdt,jdbcType=NUMERIC},
