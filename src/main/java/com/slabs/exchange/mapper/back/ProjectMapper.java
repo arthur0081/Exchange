@@ -1,5 +1,6 @@
 package com.slabs.exchange.mapper.back;
 
+import com.slabs.exchange.model.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

@@ -13,7 +13,7 @@
     <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
     <result column="taker_fee" jdbcType="NUMERIC" property="takerFee" />
     <result column="maker_fee" jdbcType="NUMERIC" property="makerFee" />
-    <result column="valid" jdbcType="INTEGER" property="valid" />
+    <result column="valid" jdbcType="BOOLEAN" property="valid" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, currency, commodity, price_unit, amount_unit, min_amount, min_value, 
@@ -30,15 +30,15 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.slabs.exchange.model.entity.Symbol">
-    insert into t_symbol (id, name, currency, 
+    insert into t_symbol (name, currency,
       commodity, price_unit, amount_unit, 
       min_amount, min_value, init_price, 
       taker_fee, maker_fee, valid
       )
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{currency,jdbcType=INTEGER}, 
+    values (#{name,jdbcType=VARCHAR}, #{currency,jdbcType=INTEGER},
       #{commodity,jdbcType=INTEGER}, #{priceUnit,jdbcType=NUMERIC}, #{amountUnit,jdbcType=NUMERIC}, 
       #{minAmount,jdbcType=NUMERIC}, #{minValue,jdbcType=NUMERIC}, #{initPrice,jdbcType=NUMERIC}, 
-      #{takerFee,jdbcType=NUMERIC}, #{makerFee,jdbcType=NUMERIC}, #{valid,jdbcType=INTEGER}
+      #{takerFee,jdbcType=NUMERIC}, #{makerFee,jdbcType=NUMERIC}, #{valid,jdbcType=BOOLEAN}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Symbol">
@@ -116,7 +116,7 @@
         #{makerFee,jdbcType=NUMERIC},
       </if>
       <if test="valid != null">
-        #{valid,jdbcType=INTEGER},
+        #{valid,jdbcType=BOOLEAN},
       </if>
     </trim>
   </insert>
@@ -154,7 +154,7 @@
         maker_fee = #{makerFee,jdbcType=NUMERIC},
       </if>
       <if test="valid != null">
-        valid = #{valid,jdbcType=INTEGER},
+        valid = #{valid,jdbcType=BOOLEAN},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -171,12 +171,12 @@
       init_price = #{initPrice,jdbcType=NUMERIC},
       taker_fee = #{takerFee,jdbcType=NUMERIC},
       maker_fee = #{makerFee,jdbcType=NUMERIC},
-      valid = #{valid,jdbcType=INTEGER}
+      valid = #{valid,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
   <select id="getAllValid" resultMap="BaseResultMap">
-    select * from t_symbol where valid = 1
+    select * from t_symbol where valid = true
   </select>
 
   <select id="getHosByName" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -204,6 +204,10 @@
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
-    select * from t_symbol limit #{pageSize, jdbcType=INTEGER} offset #{currentPage, jdbcType=INTEGER}
+    select * from t_symbol limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
+  </select>
+
+  <select id="getValidSymbol" resultMap="BaseResultMap">
+    select * from t_symbol where valid = true
   </select>
 </mapper>

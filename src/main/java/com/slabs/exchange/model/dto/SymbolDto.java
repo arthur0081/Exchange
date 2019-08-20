@@ -28,5 +28,9 @@ public class SymbolDto {
 
     private BigDecimal makerFee;
 
+    private String currencyName;
+
+    private String commodityName;
+
     private static final long serialVersionUID = 1L;
 }

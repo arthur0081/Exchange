@@ -151,4 +151,14 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
     }
 
 
+    /**
+     * 获取没有关联币对的项目币
+     */
+    @Override
+    public ResponseBean getNonsymbolCoin() {
+        List<ProjectCoin> projectCoins = projectCoinMapper.getNonsymbolCoin();
+        return new ResponseBean(200, "", projectCoins);
+    }
+
+
 }

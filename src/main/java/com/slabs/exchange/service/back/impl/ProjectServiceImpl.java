@@ -60,13 +60,15 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         }
         // 根据币对得到项目是 稳定区  或者  创新区
         Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
-        String coin = symbol.getName().split("/")[1];
+        String coin = symbol.getName().split("_")[1];
         if (CoinEnum.USDT.getKey().equals(coin)) {//稳定区
             project.setAreaType(Integer.valueOf(AreaEnum.BREAK_EVEN.getKey()));
         }
         if (CoinEnum.HOS.getKey().equals(coin)) {//创新区
             project.setAreaType(Integer.valueOf(AreaEnum.CREATION.getKey()));
         }
+        // todo ShiroUtil.getUserId();
+        project.setCreateTime(new Date());
         projectMapper.insert(project);
 
         // 构建附件信息
@@ -384,13 +386,8 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             project.setStatus(ProjectStatusEnum.INVALID.getKey());
             projectMapper.updateByPrimaryKeySelective(project);
 
-            // 一旦失效，将要撤回这个项目的所有挂单
-            // todo 调用第三方接口，撤回挂单
-            //  （/cancel/bvp_usdt） post {"order_id":"string"}
-            // 响应 ： {"id":"string"}
-
-            // 如果调用第三方逻辑异常，则不更新当前挂单为撤回状态
-            //todo boughtAmount的withdraw字段为1（默认是0）
+            // 把此项目的认购记录更新为撤回状态(withdraw = 1)
+            boughtAmountMapper.updateWithdrawByProjectId(buyDto.getProjectId());
 
             throw new ExchangeException("项目已经失效了！");
         }

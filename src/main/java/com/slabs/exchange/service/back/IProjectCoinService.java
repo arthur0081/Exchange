@@ -14,4 +14,6 @@ public interface IProjectCoinService {
     ResponseBean list(PageParamDto pageParamDto);
 
     ResponseBean getProjectCoins();
+
+    ResponseBean getNonsymbolCoin();
 }

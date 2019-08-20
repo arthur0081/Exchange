@@ -9,6 +9,7 @@ import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.SymbolDto;
 import com.slabs.exchange.model.entity.Coin;
+import com.slabs.exchange.model.entity.Project;
 import com.slabs.exchange.model.entity.ProjectCoin;
 import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.service.BaseService;
@@ -16,6 +17,7 @@ import com.slabs.exchange.service.back.ISymbolService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +37,10 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
     public ResponseBean insert(SymbolDto symbolDto) {
         Symbol symbol = map(symbolDto, Symbol.class);
         // 构建币对名称
-        String name = symbol.getCommodity() + "/" + symbol.getCurrency();
+        String name = symbolDto.getCommodityName().toLowerCase() + "_" + symbolDto.getCurrencyName();
         symbol.setName(name);
+        symbol.setValid(false);
+        symbol.setInitPrice(new BigDecimal(0));
         // 插入
         symbolMapper.insert(symbol);
 
@@ -56,10 +60,10 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
 
         // 得到symbol
        Symbol symbol =  symbolMapper.selectByPrimaryKey(symbolId);
-        // 得到USDT和HOS
+        // 得到usdt和hos
         List<Coin> coins = coinMapper.getCoins();
         // 得到项目币
-        List<ProjectCoin> projectCoins = projectCoinMapper.getProjectCoins();
+        List<ProjectCoin> projectCoins = projectCoinMapper.getNonsymbolCoin();
 
         Map<String, Object> res = new HashMap<>();
         res.put("symbol", symbol);
@@ -75,10 +79,10 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
     public ResponseBean update(SymbolDto symbolDto) {
         Symbol symbol =  map(symbolDto, Symbol.class);
         // 构建币对名称
-        String name = symbol.getCommodity() + "_" + symbol.getCurrency();
+        String name = symbolDto.getCommodityName().toLowerCase() + "_" + symbolDto.getCurrencyName();
         symbol.setName(name);
         // 更新
-        symbolMapper.updateByPrimaryKey(symbol);
+        symbolMapper.updateByPrimaryKeySelective(symbol);
 
         return new ResponseBean(200, "", null);
     }
@@ -101,6 +105,16 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
         data.put("pageSize", pageParamDto.getPageSize());
         data.put("list", symbols);
         return new ResponseBean(200, "", data);
+    }
+
+    /**
+     * 得到所有有效的币对
+     */
+    @Override
+    public ResponseBean getValidSymbol() {
+        List<Symbol> symbols = symbolMapper.getValidSymbol();
+
+        return new ResponseBean(200, "", symbols);
     }
 
 }

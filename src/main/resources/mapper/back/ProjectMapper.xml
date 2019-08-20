@@ -46,26 +46,26 @@
     <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, `name`, addr, invest_amount, collect_amount, invest_tender, project_type, fund_use, 
+    id, name, addr, invest_amount, collect_amount, invest_tender, project_type, fund_use, 
     invest_period, start_time, expect_year_bonus, bonus_share_period, bonus_compute_time, 
     receipt_way, end_time, payback_way, payback_time, payback_time_period, tender_admin, 
     admin_fee, hold_cost, bonus_fee, bonus_resource, guarantee, brief_introduction, perimeter_match, 
     market_analysis, city_condition, cost_analysis, bonus_analysis, risk_analysis, admin_introduction, 
-    project_platform_account, symbol, `status`, create_user, create_time, modify_user, 
+    project_platform_account, symbol, status, create_user, create_time, modify_user, 
     modify_time, other, area_type, init_price
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from `project`
+    from project
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from `project`
+    delete from project
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.slabs.exchange.model.entity.Project">
-    insert into `project` (id, `name`, addr, 
+    insert into project (name, addr,
       invest_amount, collect_amount, invest_tender, 
       project_type, fund_use, invest_period, 
       start_time, expect_year_bonus, bonus_share_period, 
@@ -76,11 +76,11 @@
       brief_introduction, perimeter_match, market_analysis, 
       city_condition, cost_analysis, bonus_analysis, 
       risk_analysis, admin_introduction, project_platform_account, 
-      symbol, `status`, create_user, 
+      symbol, status, create_user, 
       create_time, modify_user, modify_time, 
       other, area_type, init_price
       )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR}, 
+    values (#{name,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR},
       #{investAmount,jdbcType=NUMERIC}, #{collectAmount,jdbcType=NUMERIC}, #{investTender,jdbcType=VARCHAR}, 
       #{projectType,jdbcType=VARCHAR}, #{fundUse,jdbcType=VARCHAR}, #{investPeriod,jdbcType=INTEGER}, 
       #{startTime,jdbcType=TIMESTAMP}, #{expectYearBonus,jdbcType=NUMERIC}, #{bonusSharePeriod,jdbcType=VARCHAR}, 
@@ -97,13 +97,13 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Project">
-    insert into `project`
+    insert into project
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
       <if test="name != null">
-        `name`,
+        name,
       </if>
       <if test="addr != null">
         addr,
@@ -202,7 +202,7 @@
         symbol,
       </if>
       <if test="status != null">
-        `status`,
+        status,
       </if>
       <if test="createUser != null">
         create_user,
@@ -356,10 +356,10 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.Project">
-    update `project`
+    update project
     <set>
       <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="addr != null">
         addr = #{addr,jdbcType=VARCHAR},
@@ -458,7 +458,7 @@
         symbol = #{symbol,jdbcType=BIGINT},
       </if>
       <if test="status != null">
-        `status` = #{status,jdbcType=VARCHAR},
+        status = #{status,jdbcType=VARCHAR},
       </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
@@ -485,8 +485,8 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.Project">
-    update `project`
-    set `name` = #{name,jdbcType=VARCHAR},
+    update project
+    set name = #{name,jdbcType=VARCHAR},
       addr = #{addr,jdbcType=VARCHAR},
       invest_amount = #{investAmount,jdbcType=NUMERIC},
       collect_amount = #{collectAmount,jdbcType=NUMERIC},
@@ -519,7 +519,7 @@
       admin_introduction = #{adminIntroduction,jdbcType=VARCHAR},
       project_platform_account = #{projectPlatformAccount,jdbcType=VARCHAR},
       symbol = #{symbol,jdbcType=BIGINT},
-      `status` = #{status,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       modify_user = #{modifyUser,jdbcType=ARRAY},

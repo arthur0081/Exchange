@@ -37,7 +37,7 @@ public class PageParamDto implements Serializable {
     private String projectStatus;
 
     /**
-     * 保本区 1（默认），创意区 2
+     * 稳定区 1（默认），创意区 2
      */
     private Integer areaType = 1;
 

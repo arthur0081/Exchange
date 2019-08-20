@@ -14,5 +14,6 @@ public class RoleDto implements Serializable {
     private String remark;
 
     private List<Integer> permissionList;
+
     private static final long serialVersionUID = 1L;
 }

@@ -33,4 +33,6 @@ public interface SymbolMapper {
     int count();
 
     List<Symbol> list(PageParamDto pageParamDto);
+
+    List<Symbol> getValidSymbol();
 }

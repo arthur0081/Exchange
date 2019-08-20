@@ -1,5 +1,6 @@
 package com.slabs.exchange.model.entity;
 
+import lombok.Data;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.io.Serializable;
  * role
  * @author 
  */
-@Mapper
+@Data
 public class Role implements Serializable {
     private Integer id;
 

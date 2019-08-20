@@ -17,4 +17,6 @@ public interface BoughtAmountMapper {
     int updateByPrimaryKeySelective(BoughtAmount record);
 
     int updateByPrimaryKey(BoughtAmount record);
+
+    void updateWithdrawByProjectId(Long projectId);
 }

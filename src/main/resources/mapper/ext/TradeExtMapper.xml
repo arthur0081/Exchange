@@ -11,6 +11,7 @@
     <result column="account" jdbcType="VARCHAR" property="account" />
     <result column="symbol_id" jdbcType="INTEGER" property="symbolId" />
     <result column="sums" jdbcType="NUMERIC" property="sums" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
 
   </resultMap>
 
@@ -22,34 +23,34 @@
                     left join sysuser u on u.id = t.user_id
                     left join t_symbol s on s.id = t.symbol_id
     where 1 = 1
-        <if test="account != null">
+        <if test="account != null and account != ''">
           and u.account = #{account,jdbcType=VARCHAR}
         </if>
         <if test="side != null">
-          and t.side = = #{side,jdbcType=VARCHAR}
+          and t.side = #{side,jdbcType=VARCHAR}
         </if>
         <if test="symbol != null">
-          and t.symbol_id = #{side,jdbcType=INTEGER}
+          and t.symbol_id = #{symbol,jdbcType=INTEGER}
         </if>
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.TradeDto" resultMap="BaseResultMap">
 
     select
-            t.side, t.price, t.amount, t.fee, t.time, s.name, u.acount
+            t.side, t.price, t.amount, t.fee, t.time, s.name, u.account
     from
          t_trade t
                 left join sysuser u on u.id = t.user_id
                 left join t_symbol s on s.id = t.symbol_id
     where 1 = 1
-              <if test="account != null">
+              <if test="account != null and account != ''">
                 and u.account = #{account,jdbcType=VARCHAR}
               </if>
               <if test="side != null">
-                and t.side = = #{side,jdbcType=VARCHAR}
+                and t.side = #{side,jdbcType=VARCHAR}
               </if>
               <if test="symbol != null">
-                and t.symbol_id = #{side,jdbcType=INTEGER}
+                and t.symbol_id = #{symbol,jdbcType=INTEGER}
               </if>
     limit #{pageSize, jdbcType=INTEGER} offset #{start,jdbcType=INTEGER}
   </select>

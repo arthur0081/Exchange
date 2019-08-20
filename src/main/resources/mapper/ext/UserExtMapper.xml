@@ -5,6 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="account" jdbcType="VARCHAR" property="account" />
     <result column="name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
   </resultMap>
 
   <select id="count" resultType="int">
@@ -14,16 +15,16 @@
          sysuser u, user_role ur, role r
     where
           r.id = ur.role_id and u.id = ur.user_id
-    and r.id &lt;&gt; 1 and r.id &lt;&gt; 2
+    and r.type = 'fore'
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
     select
-        u.id, u.account, r.name
+        u.id, u.account, r.name, r.id role_id
     from
          sysuser u, user_role ur, role r
     where r.id = ur.role_id and u.id = ur.user_id
-    and r.id &lt;&gt; 1 and r.id &lt;&gt; 2
+    and r.type = 'fore'
     limit #{pageSize} offset #{start}
   </select>
 

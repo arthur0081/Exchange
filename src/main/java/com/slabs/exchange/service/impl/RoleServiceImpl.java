@@ -110,7 +110,6 @@ public class RoleServiceImpl extends BaseService implements IRoleService {
         return new ResponseBean(200, "", roleList);
     }
 
-
     @Override
     public List<String> queryNamesByRoleId(Integer userId) {
         return permissionExtMapper.queryNamesByRoleId(userId);

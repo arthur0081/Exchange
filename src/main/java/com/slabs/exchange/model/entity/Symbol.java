@@ -34,9 +34,9 @@ public class Symbol implements Serializable {
     private BigDecimal makerFee;
 
     /**
-     * 币对是否有效（1有效，0无效）
+     * 币对是否有效（）
      */
-    private Integer valid;
+    private boolean valid;
 
     private static final long serialVersionUID = 1L;
 }

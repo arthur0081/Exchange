@@ -70,16 +70,14 @@ public class ProjectCoinController {
         return projectCoinService.getProjectCoins();
     }
 
-    /**
-     * 币的简称不能重复
-     * TODO 创建的时候直接查询库(这个时候只有name字段)
-     * TODO 修改的时候要排除自己(id和name字段)
-     */
-    @PostMapping("check")
-    public ResponseBean checkName(@RequestBody ProjectCoinDto projectCoinDto) {
-       // return projectCoinService.checkName(projectCoinDto);
-        return null;
-    }
 
+    /**
+     *  获取没有关联币对的项目币
+     */
+    @PostMapping("get-nonsymbol-coin")
+    @ApiOperation(value = "获取没有关联币对的项目币")
+    public ResponseBean getNonsymbolCoin() {
+        return projectCoinService.getNonsymbolCoin();
+    }
 
 }

@@ -4,6 +4,8 @@ import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.BuyDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.service.back.IProjectService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,15 +18,17 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("fore-project")
+@Api(value = "前台项目列表", description = "前台项目列表模块：前台项目相关接口")
 public class ForeProjectController {
 
     @Resource
     private IProjectService projectService;
 
     /**
-     * 前台列表查询（保本区和创新区）默认保本区
+     * 前台列表查询（稳定区和创新区）
      */
     @PostMapping("fore-list")
+    @ApiOperation(value = "前台列表查询（稳定区和创新区）")
     public ResponseBean getForeProjectList(@RequestBody PageParamDto pageParamDto) {
         return projectService.getForeProjectList(pageParamDto);
     }
@@ -33,6 +37,7 @@ public class ForeProjectController {
      * 前台： 详情
      */
     @PostMapping("detail")
+    @ApiOperation(value = "前台： 项目详情")
     public ResponseBean getForeProjectDetail(@RequestBody Long projectId) {
         return projectService.getForeProjectDetail(projectId);
     }
@@ -41,6 +46,7 @@ public class ForeProjectController {
      * 前台： 买入
      */
     @PostMapping("buy")
+    @ApiOperation(value = "前台： 买入")
     public ResponseBean buy(@RequestBody BuyDto buyDto) {
         return projectService.buy(buyDto);
     }

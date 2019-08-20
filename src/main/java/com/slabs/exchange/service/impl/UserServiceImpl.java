@@ -2,6 +2,7 @@ package com.slabs.exchange.service.impl;
 
 import com.slabs.exchange.common.enums.AttachEnum;
 import com.slabs.exchange.common.enums.YNEnum;
+import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.RoleMapper;
 import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.UserRoleMapper;
@@ -56,21 +57,21 @@ public class UserServiceImpl extends BaseService implements IUserService {
         // 新增用户时间
         user.setRegTime(new Date());
         user.setSalt(salt);
-        // 钱包地址
         //TODO 调用钱包api
 
         user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
-        // 当前登陆用户
+        // todo 当前登陆用户
+
         userMapper.insert(user);
 
-        // 系统给定默认角色为普通用户（4）
         List<UserRole> userRoleList = new ArrayList<>();
         UserRole ur = new UserRole();
         ur.setUserId(user.getId());
-        ur.setRoleId(4);
+        ur.setRoleId(userDto.getRoleList().get(0));//目前用户角色只做一个
         userRoleList.add(ur);
         // 批量插入用户角色对应关系信息
         userRoleMapper.batchInsert(userRoleList);
+
         return new ResponseBean(200, "", null);
     }
 
@@ -310,4 +311,16 @@ public class UserServiceImpl extends BaseService implements IUserService {
         return attachFiles;
     }
 
+
+    /**
+     * 用户账户不能重复
+     */
+    @Override
+    public ResponseBean checkAccount(AccountCheckDto accountCheckDto) {
+        User user = userMapper.checkAccount(accountCheckDto);
+        if (user != null) {
+            throw new ExchangeException("当前账户已被使用！");
+        }
+        return new ResponseBean(200,"", null);
+    }
 }

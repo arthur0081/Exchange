@@ -38,7 +38,7 @@ public class SymbolController {
      */
     @ApiOperation(value = "预修改")
     @PostMapping("pre-update")
-    public ResponseBean preUpdate(@RequestBody Integer symbolId) {
+    public ResponseBean preUpdate(@RequestBody int symbolId) {
         return symbolService.preUpdate(symbolId);
     }
 
@@ -60,4 +60,12 @@ public class SymbolController {
         return symbolService.list(pageParamDto);
     }
 
+    /**
+     * 所有有效的币对
+     */
+    @ApiOperation(value = "所有有效的币对")
+    @PostMapping("valid-symbol")
+    public ResponseBean getValidSymbol() {
+        return symbolService.getValidSymbol();
+    }
 }

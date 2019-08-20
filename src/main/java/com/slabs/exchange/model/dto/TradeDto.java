@@ -29,6 +29,11 @@ public class TradeDto {
 
     private Date time;
 
+    /**
+     * 币对名称
+     */
+    private String name;
+
 
     /**
      * 币对id

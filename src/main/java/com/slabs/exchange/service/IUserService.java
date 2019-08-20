@@ -1,6 +1,7 @@
 package com.slabs.exchange.service;
 
 import com.slabs.exchange.model.common.ResponseBean;
+import com.slabs.exchange.model.dto.AccountCheckDto;
 import com.slabs.exchange.model.dto.OauthInfoDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.UserDto;
@@ -26,4 +27,6 @@ public interface IUserService {
     OauthInfoDto login(UserDto userDto);
 
     ResponseBean identityUpdate(UserDto userDto);
+
+    ResponseBean checkAccount(AccountCheckDto accountCheckDto);
 }

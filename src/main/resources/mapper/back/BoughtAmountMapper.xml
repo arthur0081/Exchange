@@ -125,4 +125,9 @@
       withdraw = #{withdraw,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="updateWithdrawByProjectId" parameterType="int">
+    update bought_amount set withdraw = 1 where project_id = #{projectId,jdbcType=INTEGER}
+  </update>
+
 </mapper>

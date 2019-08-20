@@ -106,4 +106,8 @@
   <select id="selectByCoin" parameterType="java.lang.String" resultMap="BaseResultMap">
     select * from project_coin where name = #{coin, jdbcType=VARCHAR}
   </select>
+
+  <select id="getNonsymbolCoin" resultMap="BaseResultMap">
+    select * from project_coin where id not in (select commodity from t_symbol)
+  </select>
 </mapper>

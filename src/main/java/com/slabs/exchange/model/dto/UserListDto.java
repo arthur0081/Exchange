@@ -10,4 +10,6 @@ public class UserListDto {
     private String account;
 
     private String roleName;
+
+    private Integer roleId;
 }

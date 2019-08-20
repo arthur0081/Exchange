@@ -48,7 +48,8 @@ public class RoleController {
      */
     @PostMapping("list")
     public ResponseBean getRoles() {
-        return roleService.getRoles();
+        ResponseBean rb = roleService.getRoles();
+        return rb;
     }
 
 }

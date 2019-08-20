@@ -3,6 +3,7 @@ package com.slabs.exchange.controller;
 
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.model.common.ResponseBean;
+import com.slabs.exchange.model.dto.AccountCheckDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.UserDto;
 import com.slabs.exchange.service.IUserService;
@@ -43,8 +44,8 @@ public class UserController {
      * 更新用户
      */
     @PostMapping("update")
-    public ResponseBean update(@RequestBody UserDto sysuserDto) {
-        return userService.update(sysuserDto);
+    public ResponseBean update(@RequestBody UserDto userDto) {
+        return userService.update(userDto);
     }
 
     /**
@@ -96,5 +97,13 @@ public class UserController {
         return new ResponseBean(200, "jwt", jwt);
     }
 
+
+    /**
+     * check account  不能重复
+     */
+    @PostMapping("check-account")
+    public ResponseBean checkAccount(@RequestBody AccountCheckDto accountCheckDto) {
+        return userService.checkAccount(accountCheckDto);
+    }
 
 }

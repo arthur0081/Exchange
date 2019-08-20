@@ -34,14 +34,14 @@
     delete from sysuser
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.slabs.exchange.model.entity.User">
-    insert into sysuser (id, account, password, 
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.User" useGeneratedKeys="true" keyProperty="id">
+    insert into sysuser (account, password,
       username, reg_time, email, 
       fund_password, create_user, modify_user, 
       modify_time, salt, wallet_addr, 
       invitation_code, certificate_type, certificate_num, 
       nationality)
-    values (#{id,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+    values (#{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
       #{username,jdbcType=VARCHAR}, #{regTime,jdbcType=TIMESTAMP}, #{email,jdbcType=VARCHAR}, 
       #{fundPassword,jdbcType=VARCHAR}, #{createUser,jdbcType=INTEGER}, #{modifyUser,jdbcType=INTEGER}, 
       #{modifyTime,jdbcType=TIMESTAMP}, #{salt,jdbcType=VARCHAR}, #{walletAddr,jdbcType=VARCHAR}, 
@@ -243,4 +243,8 @@
           reg_time::timestamp::date = #{lastDay,jdbcType=VARCHAR}
   </select>
 
+
+  <select id="checkAccount" parameterType="com.slabs.exchange.model.dto.AccountCheckDto" resultMap="BaseResultMap">
+    select * from sysuer where account = #{account, jdbcType=VARCHAR}
+  </select>
 </mapper>
