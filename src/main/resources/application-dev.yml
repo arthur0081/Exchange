@@ -22,8 +22,8 @@ spring:
     #主数据源
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/exchange
-    username: postgres
+    url: jdbc:postgresql://39.104.136.10:5432/exchange
+    username: exchange
     password: 123456
     druid:
       max-active: 200

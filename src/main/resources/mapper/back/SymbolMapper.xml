@@ -199,4 +199,11 @@
     select  * from t_symbol where commodity = #{coinId,jdbcType=INTEGER}
   </select>
 
+  <select id="count" resultType="int">
+    select  count(1) from t_symbol
+  </select>
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    select * from t_symbol limit #{pageSize, jdbcType=INTEGER} offset #{currentPage, jdbcType=INTEGER}
+  </select>
 </mapper>

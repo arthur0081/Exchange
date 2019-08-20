@@ -1,6 +1,7 @@
 package com.slabs.exchange.mapper.back;
 
 import com.slabs.exchange.model.dto.CoinSumDto;
+import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.entity.Symbol;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -28,4 +29,8 @@ public interface SymbolMapper {
     List<Symbol> getSymbolIdByCoin(List<CoinSumDto> coinSumDtos);
 
     Symbol selectByCommodity(Integer coinId);
+
+    int count();
+
+    List<Symbol> list(PageParamDto pageParamDto);
 }

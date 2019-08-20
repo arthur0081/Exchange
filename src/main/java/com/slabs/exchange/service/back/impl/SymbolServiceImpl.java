@@ -6,6 +6,7 @@ import com.slabs.exchange.mapper.back.ProjectCoinMapper;
 import com.slabs.exchange.mapper.back.ProjectMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.model.common.ResponseBean;
+import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.SymbolDto;
 import com.slabs.exchange.model.entity.Coin;
 import com.slabs.exchange.model.entity.Project;
@@ -53,6 +54,7 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
         if (project != null) {
             throw new ExchangeException("不能修改，币对已经被项目使用！");
         }
+
         // 得到symbol
        Symbol symbol =  symbolMapper.selectByPrimaryKey(symbolId);
         // 得到USDT和HOS
@@ -74,12 +76,32 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
     public ResponseBean update(SymbolDto symbolDto) {
         Symbol symbol =  map(symbolDto, Symbol.class);
         // 构建币对名称
-        String name = symbol.getCommodity() + "/" + symbol.getCurrency();
+        String name = symbol.getCommodity() + "_" + symbol.getCurrency();
         symbol.setName(name);
         // 更新
         symbolMapper.updateByPrimaryKey(symbol);
 
         return new ResponseBean(200, "", null);
+    }
+
+    /**
+     * 币对列表
+     */
+    @Override
+    public ResponseBean list(PageParamDto pageParamDto) {
+        int total = symbolMapper.count();
+
+        // 根据页面传递参数获取projectCoins
+        int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
+        pageParamDto.setStart(start);
+        List<Symbol> symbols = symbolMapper.list(pageParamDto);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("total", total);
+        data.put("currentPage", pageParamDto.getCurrentPage());
+        data.put("pageSize", pageParamDto.getPageSize());
+        data.put("list", symbols);
+        return new ResponseBean(200, "", data);
     }
 
 }
