@@ -14,14 +14,8 @@ import java.util.Date;
 public class Project implements Serializable {
     private Long id;
 
-    /**
-     * 项目名称
-     */
     private String name;
 
-    /**
-     * 项目地址
-     */
     private String addr;
 
     private BigDecimal investAmount;
@@ -92,13 +86,15 @@ public class Project implements Serializable {
 
     private Date createTime;
 
-    private Long modifyUser;
+    private Object modifyUser;
 
     private Date modifyTime;
 
     private String other;
 
     private Integer areaType;
+
+    private BigDecimal initPrice;
 
     private static final long serialVersionUID = 1L;
 }

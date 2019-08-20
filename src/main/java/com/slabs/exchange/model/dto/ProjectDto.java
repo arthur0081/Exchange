@@ -85,13 +85,15 @@ public class ProjectDto implements Serializable {
 
     private Date createTime;
 
-    private Long modifyUser;
+    private Object modifyUser;
 
     private Date modifyTime;
 
     private String other;
 
     private Integer areaType;
+
+    private BigDecimal initPrice;
 
     /**
      * 附件
