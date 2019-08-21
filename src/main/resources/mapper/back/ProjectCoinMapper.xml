@@ -3,13 +3,14 @@
 <mapper namespace="com.slabs.exchange.mapper.back.ProjectCoinMapper">
   <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.ProjectCoin">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="verbose_name" jdbcType="VARCHAR" property="verboseName" />
-    <result column="precision" jdbcType="BIGINT" property="precision" />
     <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="contract_addr" jdbcType="VARCHAR" property="contractAddr" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="coin_id" jdbcType="INTEGER" property="coinId" />
+    <result column="coin_type" jdbcType="VARCHAR" property="coinType" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, name, verbose_name, precision, amount
+    id, amount, contract_addr, user_id, coin_id, coin_type
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -21,11 +22,13 @@
     delete from project_coin
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.slabs.exchange.model.entity.ProjectCoin" useGeneratedKeys="true" keyProperty="id">
-    insert into project_coin (name, verbose_name,
-      precision, amount)
-    values (#{name,jdbcType=VARCHAR}, #{verboseName,jdbcType=VARCHAR},
-      #{precision,jdbcType=BIGINT}, #{amount,jdbcType=NUMERIC})
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
+    insert into project_coin (amount, contract_addr,
+      user_id, coin_id, coin_type
+      )
+    values (#{amount,jdbcType=NUMERIC}, #{contractAddr,jdbcType=VARCHAR},
+      #{userId,jdbcType=INTEGER}, #{coinId,jdbcType=INTEGER}, #{coinType,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
     insert into project_coin
@@ -33,81 +36,71 @@
       <if test="id != null">
         id,
       </if>
-      <if test="name != null">
-        name,
-      </if>
-      <if test="verboseName != null">
-        verbose_name,
-      </if>
-      <if test="precision != null">
-        precision,
-      </if>
       <if test="amount != null">
         amount,
+      </if>
+      <if test="contractAddr != null">
+        contract_addr,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="coinId != null">
+        coin_id,
+      </if>
+      <if test="coinType != null">
+        coin_type,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="verboseName != null">
-        #{verboseName,jdbcType=VARCHAR},
-      </if>
-      <if test="precision != null">
-        #{precision,jdbcType=BIGINT},
-      </if>
       <if test="amount != null">
         #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="contractAddr != null">
+        #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coinId != null">
+        #{coinId,jdbcType=INTEGER},
+      </if>
+      <if test="coinType != null">
+        #{coinType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
     update project_coin
     <set>
-      <if test="name != null">
-        name = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="verboseName != null">
-        verbose_name = #{verboseName,jdbcType=VARCHAR},
-      </if>
-      <if test="precision != null">
-        precision = #{precision,jdbcType=BIGINT},
-      </if>
       <if test="amount != null">
         amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="contractAddr != null">
+        contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coinId != null">
+        coin_id = #{coinId,jdbcType=INTEGER},
+      </if>
+      <if test="coinType != null">
+        coin_type = #{coinType,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.ProjectCoin">
     update project_coin
-    set name = #{name,jdbcType=VARCHAR},
-      verbose_name = #{verboseName,jdbcType=VARCHAR},
-      precision = #{precision,jdbcType=BIGINT},
-      amount = #{amount,jdbcType=NUMERIC}
+    set amount = #{amount,jdbcType=NUMERIC},
+      contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      coin_id = #{coinId,jdbcType=INTEGER},
+      coin_type = #{coinType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
-  <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
-    select count(1) from project_coin
-  </select>
-
-  <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
-    select * from project_coin limit #{pageSize} offset #{start}
-  </select>
-
-  <select id="getProjectCoins" resultMap="BaseResultMap">
-    select * from project_coin
-  </select>
-
-  <select id="selectByCoin" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select * from project_coin where name = #{coin, jdbcType=VARCHAR}
-  </select>
-
-  <select id="getNonsymbolCoin" resultMap="BaseResultMap">
-    select * from project_coin where id not in (select commodity from t_symbol)
-  </select>
 </mapper>

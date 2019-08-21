@@ -29,4 +29,6 @@ public interface IUserService {
     ResponseBean identityUpdate(UserDto userDto);
 
     ResponseBean checkAccount(AccountCheckDto accountCheckDto);
+
+    ResponseBean getProjectUsers();
 }

@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("project-coin")
-@Api(value = "项目币", description = "项目币模块：项目币相关接口")
+@Api(value = "项目币", description = "项目币：项目币列表查询功能")
 public class ProjectCoinController {
 
     @Resource
@@ -69,15 +69,4 @@ public class ProjectCoinController {
     public ResponseBean getProjectCoins() {
         return projectCoinService.getProjectCoins();
     }
-
-
-    /**
-     *  获取没有关联币对的项目币
-     */
-    @PostMapping("get-nonsymbol-coin")
-    @ApiOperation(value = "获取没有关联币对的项目币")
-    public ResponseBean getNonsymbolCoin() {
-        return projectCoinService.getNonsymbolCoin();
-    }
-
 }

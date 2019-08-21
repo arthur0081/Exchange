@@ -245,6 +245,12 @@
 
 
   <select id="checkAccount" parameterType="com.slabs.exchange.model.dto.AccountCheckDto" resultMap="BaseResultMap">
-    select * from sysuer where account = #{account, jdbcType=VARCHAR}
+    select * from sysuser where account = #{account, jdbcType=VARCHAR}
+  </select>
+
+  <select id="getProjectUsers" resultMap="BaseResultMap">
+    select s.id, s.account from sysuser s, user_role ur
+    where s.id = ur.user_id
+    and ur.role_id = 3
   </select>
 </mapper>

@@ -28,6 +28,4 @@ public interface ProjectCoinMapper {
     List<ProjectCoin> getProjectCoins();
 
     ProjectCoin selectByCoin(String coin);
-
-    List<ProjectCoin> getNonsymbolCoin();
 }

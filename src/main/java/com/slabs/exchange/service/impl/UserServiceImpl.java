@@ -13,10 +13,7 @@ import com.slabs.exchange.model.dto.*;
 import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
-import com.slabs.exchange.util.JWTUtil;
-import com.slabs.exchange.util.RedisUtil;
-import com.slabs.exchange.util.Sha256;
-import com.slabs.exchange.util.ShiroUtils;
+import com.slabs.exchange.util.*;
 import okhttp3.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -258,7 +255,8 @@ public class UserServiceImpl extends BaseService implements IUserService {
     @Override
     public OauthInfoDto login(UserDto userDto) {
         Subject subject = ShiroUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(userDto.getAccount(), userDto.getPassword());
+        String plain = AESUtil.desEncrypt(userDto.getPassword());
+        UsernamePasswordToken token = new UsernamePasswordToken(userDto.getAccount(), plain);
         subject.login(token);
         OauthInfoDto oauthInfoDto = ShiroUtils.getOauthInfoDto();
         oauthInfoDto.setToken(JWTUtil.encode(ShiroUtils.getUserId().toString()));
@@ -323,4 +321,14 @@ public class UserServiceImpl extends BaseService implements IUserService {
         }
         return new ResponseBean(200,"", null);
     }
+
+    /**
+     * 得到所有的项目方用户
+     */
+    @Override
+    public ResponseBean getProjectUsers() {
+        List<User> list = userMapper.getProjectUsers();
+        return new ResponseBean(200, "", list);
+    }
+
 }

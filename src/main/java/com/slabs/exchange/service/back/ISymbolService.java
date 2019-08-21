@@ -13,5 +13,5 @@ public interface ISymbolService {
 
     ResponseBean list(PageParamDto pageParamDto);
 
-    ResponseBean getValidSymbol();
+    ResponseBean getAllSymbols();
 }

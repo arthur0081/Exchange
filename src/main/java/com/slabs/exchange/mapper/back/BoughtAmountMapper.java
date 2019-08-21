@@ -3,6 +3,8 @@ package com.slabs.exchange.mapper.back;
 import com.slabs.exchange.model.entity.BoughtAmount;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface BoughtAmountMapper {
 
@@ -18,5 +20,9 @@ public interface BoughtAmountMapper {
 
     int updateByPrimaryKey(BoughtAmount record);
 
-    void updateWithdrawByProjectId(Long projectId);
+    void updateWithdrawByProjectId(Integer projectId);
+
+    List<BoughtAmount> getWithdrawsByNum(String num, Integer status);
+
+    void updateWithdrawStatusByOrderId(List<String> succeedList);
 }

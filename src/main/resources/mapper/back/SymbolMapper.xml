@@ -207,7 +207,7 @@
     select * from t_symbol limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
   </select>
 
-  <select id="getValidSymbol" resultMap="BaseResultMap">
-    select * from t_symbol where valid = true
+  <select id="getAllSymbols" resultMap="BaseResultMap">
+    select * from t_symbol
   </select>
 </mapper>

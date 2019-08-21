@@ -26,7 +26,17 @@ spring:
     username: postgres
     password: 123456
     druid:
-      max-active: 200
+      #连接池的配置
+      initialSize: 5
+      minIdle: 5
+      maxActive: 100
+      #连接等待超时时间
+      maxWait: 60000
+      #配置隔多久进行一次监测(监测可以关闭的空闲连接)
+      timeBetweenEvictionRunsMillis: 60000
+      #配置连接池中最小的生存空间
+      minEvictableIdleTimeMillis: 300000
+
   jackson:
     date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
   redis:
@@ -64,4 +74,53 @@ mybatis:
 logging:
   path: logs
   level.com.slabs.mapper: debug
+
+
+  ######################################################################################################################
+  #
+  #       sms config
+  #
+  ######################################################################################################################
+sms:
+  domain: dysmsapi.aliyuncs.com
+  version: 2017-05-25
+  action: SendSms
+  signName: 上海艾方科技有限公司
+  regionId: cn-hangzhou
+  templatecode:
+    signup: SMS_157210465
+    passwordReset: SMS_157210464
+    login: SMS_157210467
+    payment: SMS_157210468
+
+  ######################################################################################################################
+  #
+  #       oss config
+  #
+  ######################################################################################################################
+oss:
+  bucket.name: supplychainfile-test
+  domain: https://supplychainfile-test.oss-cn-beijing.aliyuncs.com/
+
+
+  ######################################################################################################################
+  #
+  #       exchange api config
+  #
+  ######################################################################################################################
+exchange-api:
+  host: 39.104.136.10:8000
+  withdraw: /cancel/bvp_usdt
+  order: /limit/bvp_usdt
+  charge: /charge
+  wallet-addr: 39.104.136.10:8000/wallet-addr/get
+
+
+  ######################################################################################################################
+  #
+  #       schedule config
+  #
+  ######################################################################################################################
+schedule:
+  num: 20
 

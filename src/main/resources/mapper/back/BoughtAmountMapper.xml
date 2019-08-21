@@ -127,7 +127,20 @@
   </update>
 
   <update id="updateWithdrawByProjectId" parameterType="int">
-    update bought_amount set withdraw = 1 where project_id = #{projectId,jdbcType=INTEGER}
+    update bought_amount set withdraw = 2 where project_id = #{projectId,jdbcType=INTEGER}
+  </update>
+
+  <select id="getWithdrawsByNum" resultMap="BaseResultMap">
+    select * from bought_amount where withdraw = #{status,jdbcType=INTEGER}
+    limit #{num,jdbcType=INTEGER}
+  </select>
+
+  <update id="updateWithdrawStatusByOrderId" parameterType="java.util.List">
+      <foreach collection="list" item="orderId" index="index" open="" close=";" separator=";">
+        update bought_amount set
+        withdraw = 3
+        where order_id = #{orderId,jdbcType=VARCHAR},
+      </foreach>
   </update>
 
 </mapper>

@@ -9,11 +9,16 @@ public class BuyDto {
     /**
      * 项目id
      */
-    private Long projectId;
+    private Integer projectId;
 
     /**
      * 认购份额
      */
     private BigDecimal boughtAmount;
+
+    /**
+     * 首发价格
+     */
+    private BigDecimal initPrice;
 
 }

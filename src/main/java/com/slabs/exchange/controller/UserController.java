@@ -106,4 +106,13 @@ public class UserController {
         return userService.checkAccount(accountCheckDto);
     }
 
+    /**
+     * 得到所有项目方用户
+     */
+    @PostMapping("get-project-users")
+    public ResponseBean getProjectUsers() {
+        return userService.getProjectUsers();
+    }
+
+
 }

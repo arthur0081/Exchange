@@ -34,5 +34,6 @@ public interface SymbolMapper {
 
     List<Symbol> list(PageParamDto pageParamDto);
 
-    List<Symbol> getValidSymbol();
+
+    List<Symbol> getAllSymbols();
 }

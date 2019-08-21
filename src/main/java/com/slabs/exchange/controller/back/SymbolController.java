@@ -65,7 +65,7 @@ public class SymbolController {
      */
     @ApiOperation(value = "所有有效的币对")
     @PostMapping("valid-symbol")
-    public ResponseBean getValidSymbol() {
-        return symbolService.getValidSymbol();
+    public ResponseBean getAllSymbols() {
+        return symbolService.getAllSymbols();
     }
 }

@@ -63,7 +63,7 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
         // 得到usdt和hos
         List<Coin> coins = coinMapper.getCoins();
         // 得到项目币
-        List<ProjectCoin> projectCoins = projectCoinMapper.getNonsymbolCoin();
+        List<Coin> projectCoins = coinMapper.getNonsymbolCoin();
 
         Map<String, Object> res = new HashMap<>();
         res.put("symbol", symbol);
@@ -111,8 +111,8 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
      * 得到所有有效的币对
      */
     @Override
-    public ResponseBean getValidSymbol() {
-        List<Symbol> symbols = symbolMapper.getValidSymbol();
+    public ResponseBean getAllSymbols() {
+        List<Symbol> symbols = symbolMapper.getAllSymbols();
 
         return new ResponseBean(200, "", symbols);
     }

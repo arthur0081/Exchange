@@ -21,4 +21,6 @@ public interface CoinMapper {
     int updateByPrimaryKey(Coin record);
 
     List<Coin> getCoins();
+
+    List<Coin> getNonsymbolCoin();
 }

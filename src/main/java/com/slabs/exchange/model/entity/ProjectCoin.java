@@ -13,13 +13,15 @@ import java.math.BigDecimal;
 public class ProjectCoin implements Serializable {
     private Long id;
 
-    private String name;
-
-    private String verboseName;
-
-    private Long precision;
-
     private BigDecimal amount;
+
+    private String contractAddr;
+
+    private Integer userId;
+
+    private Integer coinId;
+
+    private String coinType;
 
     private static final long serialVersionUID = 1L;
 }

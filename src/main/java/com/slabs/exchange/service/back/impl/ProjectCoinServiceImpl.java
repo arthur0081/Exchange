@@ -4,10 +4,12 @@ import com.slabs.exchange.common.enums.AttachEnum;
 import com.slabs.exchange.common.enums.CodeEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
+import com.slabs.exchange.mapper.ext.back.ProjectCoinExtMapper;
 import com.slabs.exchange.mapper.back.ProjectCoinMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.AttachFileDto;
+import com.slabs.exchange.model.dto.CoinDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.ProjectCoinDto;
 import com.slabs.exchange.model.entity.AttachFile;
@@ -29,13 +31,15 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
     private AttachFileMapper attachFileMapper;
     @Resource
     private SymbolMapper symbolMapper;
+    @Resource
+    private ProjectCoinExtMapper projectCoinExtMapper;
 
 
     @Override
     public ResponseBean insert(ProjectCoinDto projectCoinDto) {
         // 给项目币表存入基础信息
         ProjectCoin coin =  map(projectCoinDto, ProjectCoin.class);
-        coin.setPrecision(6L);
+       // coin.setPrecision(6L);
         // 关键点需要项目币表返回一个id
         projectCoinMapper.insert(coin);
         // 构建附件信息
@@ -112,14 +116,13 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
      */
     @Override
     public ResponseBean list(PageParamDto pageParamDto) {
-
         // 根据页面传递参数获取总数
-        int total = projectCoinMapper.count(pageParamDto);
+        int total = projectCoinExtMapper.count();
 
         // 根据页面传递参数获取projectCoins
         int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
         pageParamDto.setStart(start);
-        List<ProjectCoin> projectCoins = projectCoinMapper.list(pageParamDto);
+        List<CoinDto> projectCoins = projectCoinExtMapper.list(pageParamDto);
 
         // 构建返回信息
         ResponseBean res = BuildResponseBusinessDto(pageParamDto, total, projectCoins);
@@ -130,7 +133,7 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
     /**
      * 构建返回信息
      */
-    private ResponseBean BuildResponseBusinessDto(PageParamDto pageParamDto, int total, List<ProjectCoin> projectCoins) {
+    private ResponseBean BuildResponseBusinessDto(PageParamDto pageParamDto, int total, List<CoinDto> projectCoins) {
         Map<String, Object> data = new HashMap<>();
         data.put("list", projectCoins);
         data.put("total", total);
@@ -149,16 +152,5 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
         List<ProjectCoin> list = projectCoinMapper.getProjectCoins();
         return new ResponseBean(200, "", list);
     }
-
-
-    /**
-     * 获取没有关联币对的项目币
-     */
-    @Override
-    public ResponseBean getNonsymbolCoin() {
-        List<ProjectCoin> projectCoins = projectCoinMapper.getNonsymbolCoin();
-        return new ResponseBean(200, "", projectCoins);
-    }
-
 
 }
