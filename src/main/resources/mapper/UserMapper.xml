@@ -234,13 +234,13 @@
     select count(1) from sysuser
   </select>
 
-  <select id="selectLastDayRegistry" parameterType="java.lang.String" resultType="int">
+  <select id="selectLastDayRegistry" parameterType="java.util.Date" resultType="int">
     select
            count(1)
     from
          sysuser
     where
-          reg_time::timestamp::date = #{lastDay,jdbcType=VARCHAR}
+          reg_time::timestamp::date = #{lastDay,jdbcType=TIMESTAMP}
   </select>
 
 

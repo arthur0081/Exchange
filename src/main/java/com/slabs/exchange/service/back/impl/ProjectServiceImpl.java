@@ -37,6 +37,7 @@ import java.util.*;
 public class ProjectServiceImpl extends BaseService implements IProjectService {
     private static final Gson gson = new GsonBuilder().create();
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
     @Resource
     private ProjectMapper projectMapper;
     @Resource
@@ -80,6 +81,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         }
         // todo ShiroUtil.getUserId();
         project.setCreateTime(new Date());
+        project.setCoin(symbol.getCommodity());
         projectMapper.insert(project);
 
         // 构建附件信息
@@ -249,7 +251,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         pageParamDto.setStart(start);
         List<ProjectListDto> projectListDtos = projectExtMapper.list(pageParamDto);
         // 构建返回信息
-        ResponseBean res = BuildResponseBusinessDto(pageParamDto, total, projectListDtos);
+        ResponseBean res = buildResponseBusinessDto(pageParamDto, total, projectListDtos);
 
         return res;
     }
@@ -257,7 +259,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
     /**
      * 构建返回信息
      */
-    private ResponseBean BuildResponseBusinessDto(PageParamDto pageParamDto, int total, List<ProjectListDto> projectList) {
+    private ResponseBean buildResponseBusinessDto(PageParamDto pageParamDto, int total, List<ProjectListDto> projectList) {
         Map<String, Object> data = new HashMap<>();
         data.put("list", projectList);
         data.put("total", total);
@@ -319,9 +321,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
 
         for (ForeProjectDto foreProjectDto : foreProjectList) {
             // 构建认购倒计时  认购周期减去当前时间 认购倒计时可以做成页面动态变化的时钟
-
             //todo 首发价(在币对表中) （项目表中冗余一个首发价字段）
-
             for (BoughtAmountDto boughtAmountDto: boughtAmountDtos) {
                 if (foreProjectDto.getId().intValue() == boughtAmountDto.getProjectId()) {
                     foreProjectDto.setBoughtAmount(boughtAmountDto.getAmount());

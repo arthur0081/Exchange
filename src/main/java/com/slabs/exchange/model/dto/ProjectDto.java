@@ -95,6 +95,10 @@ public class ProjectDto implements Serializable {
 
     private BigDecimal initPrice;
 
+    private Integer coin;
+
+    private Integer userId;
+
     /**
      * 附件
      */

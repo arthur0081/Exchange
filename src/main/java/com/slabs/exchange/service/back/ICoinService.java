@@ -9,4 +9,6 @@ public interface ICoinService {
     ResponseBean insert(CoinDto coinDto);
 
     ResponseBean getNonsymbolCoin();
+
+    ResponseBean getAllCoins();
 }

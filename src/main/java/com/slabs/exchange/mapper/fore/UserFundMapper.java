@@ -7,6 +7,7 @@ import com.slabs.exchange.model.entity.UserFund;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -28,15 +29,15 @@ public interface UserFundMapper {
 
     UserFund selectByUserIdAndUsdt(Integer userId);
 
-    int selectHosAmount();
+    BigDecimal selectHosAmount();
 
-    int selectSumByCoin(String coin);
+    BigDecimal selectSumByCoin(String coin);
 
     int count();
 
-    @Select("select coin, count(coin) number from t_user_fund group by coin order by number limit #{pageParamDto.pageSize} offset #{pageParamDto.start}")
+    @Select("select coin, count(coin) number from t_user_fund group by coin order by number limit #{pageSize} offset #{start}")
     List<CoinUserDto> selectCoinUserList(PageParamDto pageParamDto);
 
-    @Select("select coin, sum(amount) sums from t_user_fund group by coin order by sums limit #{pageParamDto.pageSize} offset #{pageParamDto.start}")
+    @Select("select coin, sum(amount) sums from t_user_fund group by coin order by sums limit #{pageSize} offset #{start}")
     List<CoinSumDto> selectCoinSum(PageParamDto pageParamDto);
 }

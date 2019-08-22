@@ -10,7 +10,6 @@ import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.SymbolDto;
 import com.slabs.exchange.model.entity.Coin;
 import com.slabs.exchange.model.entity.Project;
-import com.slabs.exchange.model.entity.ProjectCoin;
 import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.ISymbolService;

@@ -99,4 +99,13 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
         List<Coin> list = coinMapper.getNonsymbolCoin();
         return new ResponseBean(200, "", list);
     }
+
+    /**
+     * 获取所有币种
+     */
+    @Override
+    public ResponseBean getAllCoins() {
+       List<Coin> list =  coinMapper.getAllCoins();
+       return  new ResponseBean(200, "", list);
+    }
 }

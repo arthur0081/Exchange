@@ -5,6 +5,7 @@ import com.slabs.exchange.model.dto.UserDto;
 import com.slabs.exchange.model.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface UserMapper {
 
     int selectCount();
 
-    int selectLastDayRegistry(String lastDay);
+    int selectLastDayRegistry(Date lastDay);
 
     User checkAccount(AccountCheckDto accountCheckDto);
 

@@ -15,11 +15,13 @@
 
   <select id="selectByCoin" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
     select
-           uf.coin, uf.amount, u.account, u.wallet_addr from t_user_fund uf, sysuser  u
+          uf.coin, uf.amount, u.account, u.wallet_addr
+    from
+         t_user_fund uf, sysuser  u
     where
           u.id = uf.user_id and uf.coin = #{coin, jdbcType=VARCHAR}
     order by
-             uf.amount
+             uf.amount DESC
     limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
   </select>
 

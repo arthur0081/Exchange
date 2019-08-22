@@ -91,4 +91,9 @@
     and pc.coin_type = 'other' and c.id not in (select commodity from t_symbol)
   </select>
 
+  <select id="getAllCoins" resultMap="BaseResultMap">
+    select * from t_coin
+  </select>
+
+
 </mapper>

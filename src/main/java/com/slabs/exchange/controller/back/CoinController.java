@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-
-/**
- * USDT 和 HOS
- */
 @RestController
 @RequestMapping("coin")
 @Api(value = "项目币", description = "项目币：项目币新增功能")
@@ -47,5 +43,14 @@ public class CoinController {
     @ApiOperation(value = "获取没有关联币对的项目币")
     public ResponseBean getNonsymbolCoin() {
         return coinService.getNonsymbolCoin();
+    }
+
+    /**
+     *  获取没有关联币对的项目币
+     */
+    @PostMapping("get-all-coins")
+    @ApiOperation(value = "获取所有币种")
+    public ResponseBean getAllCoins() {
+        return coinService.getAllCoins();
     }
 }

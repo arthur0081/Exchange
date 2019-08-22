@@ -26,4 +26,15 @@
            and pc.coin_type = 'other'
     limit #{pageSize} offset #{start}
   </select>
+
+  <select id="selectByCoin" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      c.id, c.name, c.verbose_name, pc.amount, c.precision
+    from
+      t_coin c, project_coin pc
+    where
+      c.id = pc.coin_id
+      and pc.coin_type = #{coin, jdbcType=VARCHAR}
+  </select>
+
 </mapper>

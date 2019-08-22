@@ -112,7 +112,7 @@
     select * from t_user_fund where user_id = #{userId,jdbcType=INTEGER} and coin = 'usdt'
   </select>
 
-  <select id="selectHosAmount" resultType="int">
+  <select id="selectHosAmount" resultType="decimal">
     select sum(amount) from t_user_fund where coin = 'hos'
   </select>
 

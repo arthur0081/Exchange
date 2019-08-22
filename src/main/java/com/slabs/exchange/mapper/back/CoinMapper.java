@@ -23,4 +23,6 @@ public interface CoinMapper {
     List<Coin> getCoins();
 
     List<Coin> getNonsymbolCoin();
+
+    List<Coin> getAllCoins();
 }
