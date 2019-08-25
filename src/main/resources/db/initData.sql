@@ -1,9 +1,9 @@
 
-INSERT INTO public.role(id, name, remark) VALUES (1, 'superAdmin', '超级管理员');
-INSERT INTO public.role(id, name, remark) VALUES (2, 'normalAdmin', '普通管理员');
-INSERT INTO public.role(id, name, remark) VALUES (3, 'platformUser', '平台用户');
-INSERT INTO public.role(id, name, remark) VALUES (4, 'projectThird', '项目方');
-INSERT INTO public.role(id, name, remark) VALUES (5, 'normalUser', '普通用户');
+INSERT INTO public.role(id, name, remark, type) VALUES (1, 'superAdmin', '超级管理员', 'back');
+INSERT INTO public.role(id, name, remark, type) VALUES (2, 'normalAdmin', '普通管理员', 'back');
+INSERT INTO public.role(id, name, remark, type) VALUES (3, 'platformUser', '平台用户', 'fore');
+INSERT INTO public.role(id, name, remark, type) VALUES (4, 'projectThird', '项目方','fore');
+INSERT INTO public.role(id, name, remark, type) VALUES (5, 'normalUser', '普通用户', 'fore');
 
 INSERT INTO public.permission(id, name, per_code)VALUES (1,'首页' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (2,'币种' , 'user:edit');
@@ -51,29 +51,10 @@ INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (21, 5, 11)
 INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (1, 1, 1, 'back');
 INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (2, 2, 2, 'back');
 INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (3, 3, 3, 'fore');
-INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (4, 4, 4, 'fore');
-INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (5, 5, 5, 'fore');
-
-
 
 INSERT INTO public."user"(id, account, password, username, reg_time, fund_password)
             VALUES(1, 'superAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是超级管理员', '2019-08-10 10:18:19','');
 INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
              VALUES (2, 'normalAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通管理员', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
 INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-             VALUES (3, '13035667829', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是平台方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
-
-
-INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-            VALUES (4, '13035667839', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是项目方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
-INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-VALUES (5, '13035667849', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通用户', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
-
-CREATE SEQUENCE project_coin_id_seq
-START WITH 1
-INCREMENT BY 1
-NO MINVALUE
-NO MAXVALUE
-CACHE 1;
-
-alter table project_coin alter column id set default nextval('project_coin_id_seq');
+             VALUES (3, 'platformUser', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是平台用户，系统收钱地址钱包', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
