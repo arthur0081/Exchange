@@ -19,9 +19,7 @@ public class BoughtAmount implements Serializable {
 
     private Integer projectId;
 
-    private BigDecimal usdt;
-
-    private BigDecimal projectCoin;
+    private Integer coinId;
 
     private Date createTime;
 
@@ -29,6 +27,11 @@ public class BoughtAmount implements Serializable {
 
     private Integer withdraw;
 
-    private static final long serialVersionUID = 1L;
+    private BigDecimal coinAmount;
 
+    private BigDecimal hosAmount;
+
+    private Integer symbolId;
+
+    private static final long serialVersionUID = 1L;
 }

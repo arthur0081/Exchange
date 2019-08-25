@@ -20,7 +20,7 @@ public interface IProjectService {
 
     ResponseBean getForeProjectList(PageParamDto pageParamDto);
 
-    ResponseBean getForeProjectDetail(Long projectId);
+    ResponseBean getForeProjectDetail(Integer projectId);
 
     ResponseBean buy(BuyDto buyDto);
 }

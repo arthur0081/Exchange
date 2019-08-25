@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * 定时扫描表中的txid字段，看txid是否有效的
+ * 提现定时任务
  */
 @Component
 @Slf4j

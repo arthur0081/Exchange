@@ -408,7 +408,7 @@ public class CreationProjectServiceImpl extends BaseService implements ICreation
             project.setStatus(ProjectStatusEnum.INVALID.getKey());
             projectMapper.updateByPrimaryKeySelective(project);
             // 把此项目的认购记录更新为撤回状态(withdraw = 2)
-            boughtAmountMapper.updateWithdrawByProjectId(buyDto.getProjectId());
+            boughtAmountMapper.updateWithdrawByProjectId(buyDto.getProjectId(), Integer.valueOf(WithdrawStatusEnum.WITHDRAW_NEED.getKey()));
 
             throw new ExchangeException("项目已经失效了！");
         }
@@ -516,9 +516,9 @@ public class CreationProjectServiceImpl extends BaseService implements ICreation
         ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
         boughtAmount.setOrderId(exchangeApiResDto.getId());
         BigDecimal projectCoinAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice());
-        boughtAmount.setProjectCoin(projectCoinAmount);
-        boughtAmount.setProjectId(buyDto.getProjectId());
-        boughtAmount.setUsdt(buyDto.getBoughtAmount());
+//        boughtAmount.setProjectCoin(projectCoinAmount);
+//        boughtAmount.setProjectId(buyDto.getProjectId());
+//        boughtAmount.setUsdt(buyDto.getBoughtAmount());
 
         boughtAmountMapper.insert(boughtAmount);
     }

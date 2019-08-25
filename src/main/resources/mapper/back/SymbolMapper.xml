@@ -198,4 +198,26 @@
   <select id="getAllSymbols" resultMap="BaseResultMap">
     select * from t_symbol
   </select>
+
+  <update id="updateValid2True" parameterType="int">
+    update t_symbol set valid = true where id = #{symbolId,jdbcType=INTEGER}
+  </update>
+
+  <select id="getAllStableSymbols" resultMap="BaseResultMap" parameterType="int">
+    select s.id, s.name from project p, t_symbol s
+    where p.symbol = s.id
+    and s.valid = true
+    <if test="symbolId != null">
+      and s.id = = #{symbolId,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <select id="getAllCreationSymbols" resultMap="BaseResultMap" parameterType="int">
+    select s.id, s.name from creation_project cp, t_symbol s
+    where cp.symbol = s.id
+    and s.valid = true
+    <if test="symbolId != null">
+      and s.id = = #{symbolId,jdbcType=INTEGER}
+    </if>
+  </select>
 </mapper>

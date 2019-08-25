@@ -110,7 +110,7 @@ oss:
   ######################################################################################################################
 exchange-api:
   host: 39.104.136.10:8000
-  withdraw: /cancel/bvp_usdt
+  withdraw: /cancel/
   order: /limit/bvp_usdt
   charge: /charge
   wallet-addr: 39.104.136.10:8000/wallet-addr/get

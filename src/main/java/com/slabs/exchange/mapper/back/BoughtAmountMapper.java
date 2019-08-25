@@ -20,7 +20,7 @@ public interface BoughtAmountMapper {
 
     int updateByPrimaryKey(BoughtAmount record);
 
-    void updateWithdrawByProjectId(Integer projectId);
+    void updateWithdrawByProjectId(Integer projectId, Integer status);
 
     List<BoughtAmount> getWithdrawsByNum(String num, Integer status);
 

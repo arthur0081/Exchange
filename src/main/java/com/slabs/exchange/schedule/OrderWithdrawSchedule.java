@@ -7,8 +7,12 @@ import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.config.ScheduleProperties;
 import com.slabs.exchange.common.enums.WithdrawStatusEnum;
 import com.slabs.exchange.mapper.back.BoughtAmountMapper;
+import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.model.dto.WithdrawRequestDto;
 import com.slabs.exchange.model.entity.BoughtAmount;
+import com.slabs.exchange.model.entity.Symbol;
+import com.slabs.exchange.util.JWTUtil;
+import com.slabs.exchange.util.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,9 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 撤回挂单逻辑
@@ -35,6 +37,8 @@ public class OrderWithdrawSchedule {
     private ExchangeApiProperties exchangeApiProperties;
     @Resource
     private ScheduleProperties scheduleProperties;
+    @Resource
+    private SymbolMapper symbolMapper;
     /**
      * 撤回挂单
      */
@@ -49,35 +53,56 @@ public class OrderWithdrawSchedule {
                return;
            }
 
-           List<String> orderIds = new ArrayList<>();
+           List<Map<String, String>> list = new ArrayList<>();
+           List<String> allOrderList = new ArrayList<>();
            for (BoughtAmount ba: boughtAmounts) {
+               Map<String, String> symbolNameAndOrderIdMap = new HashMap<>();
                WithdrawRequestDto wd = new WithdrawRequestDto();
                wd.setOrder_id(ba.getOrderId());
                String data = gson.toJson(wd);
-               orderIds.add(data);
+               symbolNameAndOrderIdMap.put("orderId", data);
+               Symbol symbol = symbolMapper.selectByPrimaryKey(ba.getSymbolId());
+               symbolNameAndOrderIdMap.put("symbolName", symbol.getName());
+               list.add(symbolNameAndOrderIdMap);
+               allOrderList.add(ba.getOrderId());
            }
 
-           List<String> succeedList = new ArrayList<>();
-           for(String orderId: orderIds) {
+           List<String> failedList = new ArrayList<>();
+           for (Map<String, String> map: list) {
+               String orderId = "";
+               String symbolName = "";
+               for(Map.Entry<String, String> entry : map.entrySet()){
+                   if ("orderId".equals(entry.getKey())) {
+                       orderId = entry.getValue();
+                   }
+                   if ("symbolName".equals(entry.getKey())) {
+                       symbolName = entry.getValue();
+                   }
+               }
                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
                Request request = new Request.Builder()
-                       .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw())
+                       .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw() + symbolName)
                        .post(RequestBody.create(mediaType, orderId))
+                       .header("Authorization", "Bearer" + " " + JWTUtil.encode("3"))//使用平台方用户的token进行撤单
                        .build();
                OkHttpClient okHttpClient = new OkHttpClient();
                try {
                    Response response = okHttpClient.newCall(request).execute();
                } catch (IOException e) {
                    e.printStackTrace();
-                   log.error("order id:" + orderId + "withdraw failed." + sdf.format(new Date()));
+                   log.error("order id:" + orderId + "withdraw failed." + "dateTime:" +  sdf.format(new Date()));
+                   WithdrawRequestDto wd = gson.fromJson(orderId, WithdrawRequestDto.class);
+                   failedList.add(wd.getOrder_id());
                }
-               succeedList.add(orderId);
            }
 
+           for (String orderId: failedList) {
+               allOrderList.remove(orderId);
+           }
            // 根据订单id更新撤销状态为3
-           boughtAmountMapper.updateWithdrawStatusByOrderId(succeedList);
+           if (allOrderList.size() > 0) {
+               boughtAmountMapper.updateWithdrawStatusByOrderId(allOrderList);
+           }
        }
-
     }
-
 }

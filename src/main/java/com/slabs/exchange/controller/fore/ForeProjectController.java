@@ -6,15 +6,12 @@ import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.service.back.IProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
 /**
- * 前台 项目列表
+ * 前台 项目列表(此controller只针对稳定区)
  */
 @RestController
 @RequestMapping("fore-project")
@@ -25,10 +22,10 @@ public class ForeProjectController {
     private IProjectService projectService;
 
     /**
-     * 前台列表查询（稳定区和创新区）
+     * 前台列表查询（稳定区）
      */
     @PostMapping("fore-list")
-    @ApiOperation(value = "前台列表查询（稳定区和创新区）")
+    @ApiOperation(value = "前台列表查询（稳定区）")
     public ResponseBean getForeProjectList(@RequestBody PageParamDto pageParamDto) {
         return projectService.getForeProjectList(pageParamDto);
     }
@@ -36,9 +33,9 @@ public class ForeProjectController {
     /**
      * 前台： 详情
      */
-    @PostMapping("detail")
+    @GetMapping("detail")
     @ApiOperation(value = "前台： 项目详情")
-    public ResponseBean getForeProjectDetail(@RequestBody Long projectId) {
+    public ResponseBean getForeProjectDetail(Integer projectId) {
         return projectService.getForeProjectDetail(projectId);
     }
 

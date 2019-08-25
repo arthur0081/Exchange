@@ -13,10 +13,12 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="symbol_name" jdbcType="VARCHAR" property="symbolName" />
     <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
+    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+    <result column="project_type" jdbcType="VARCHAR" property="projectType" />
   </resultMap>
 
     <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
-        select count(1) from project p, symbol s where s.id = p.symbol
+        select count(1) from project p, t_symbol s where s.id = p.symbol
         and p.status = 'on_sale'
         or p.status = 'end_sale'
         or p.status = 'pre_sale'
@@ -25,9 +27,10 @@
 
     <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
         select p.id, p.name, p.collect_amount, p.invest_period,p.start_time,
-               p.expect_year_bonus, p.end_time, p.symbol, p.status, s.name symbol_name, p.init_price
+               p.expect_year_bonus, p.end_time, p.symbol, p.status, s.name symbol_name, p.init_price,
+               p.brief_introduction, p.project_type
          from
-            project p, symbol s where s.id = p.symbol
+            project p, t_symbol s where s.id = p.symbol
         and p.status = 'on_sale'
         or p.status = 'end_sale'
         or p.status = 'pre_sale'

@@ -15,4 +15,5 @@
       #{item.coin, jdbcType=VARCHAR}
     </foreach>
   </select>
+
 </mapper>

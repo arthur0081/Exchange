@@ -8,7 +8,7 @@
 
   <select id="getBoughtAmount" parameterType="java.util.List" resultMap="BaseResultMap">
     select
-           project_id id, sum(usdt) amount
+           project_id id, sum(coin_amount) amount
     from
            bought_amount
     where
@@ -23,7 +23,7 @@
 
  <select id="getAmountByProjectId" parameterType="int" resultMap="BaseResultMap">
    select
-        project_id id, sum(usdt) amount
+        project_id id, sum(coin_amount) amount
    from
         bought_amount
    where

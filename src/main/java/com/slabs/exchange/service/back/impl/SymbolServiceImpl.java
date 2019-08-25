@@ -5,6 +5,7 @@ import com.slabs.exchange.mapper.back.CoinMapper;
 import com.slabs.exchange.mapper.back.ProjectCoinMapper;
 import com.slabs.exchange.mapper.back.ProjectMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
+import com.slabs.exchange.mapper.ext.back.SymbolExtMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.SymbolDto;
@@ -14,6 +15,7 @@ import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.ISymbolService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -31,6 +33,8 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
     private CoinMapper coinMapper;
     @Resource
     private ProjectCoinMapper projectCoinMapper;
+    @Resource
+    private SymbolExtMapper symbolExtMapper;
 
     @Override
     public ResponseBean insert(SymbolDto symbolDto) {
@@ -113,6 +117,25 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
     public ResponseBean getAllSymbols() {
         List<Symbol> symbols = symbolMapper.getAllSymbols();
 
+        return new ResponseBean(200, "", symbols);
+    }
+
+
+    /**
+     * 获取所有稳定区币对
+     */
+    @Override
+    public ResponseBean getAllStableSymbols(Integer symbolId) {
+        List<Symbol> symbols = symbolMapper.getAllStableSymbols(symbolId);
+        return new ResponseBean(200, "", symbols);
+    }
+
+    /**
+     * 获取所有创新区币对
+     */
+    @Override
+    public ResponseBean getAllCreationSymbols(int symbolId) {
+        List<Symbol> symbols = symbolMapper.getAllCreationSymbols(symbolId);
         return new ResponseBean(200, "", symbols);
     }
 }

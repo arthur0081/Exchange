@@ -6,10 +6,7 @@ import com.slabs.exchange.model.dto.SymbolDto;
 import com.slabs.exchange.service.back.ISymbolService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -67,6 +64,25 @@ public class SymbolController {
     @PostMapping("valid-symbol")
     public ResponseBean getAllSymbols() {
         return symbolService.getAllSymbols();
+    }
+
+
+    /**
+     * 获取所有有效的稳定区币对(如果有参数则获取一个)
+     */
+    @ApiOperation(value = "获取所有有效的稳定区币对(如果有参数则获取一个)")
+    @GetMapping("valid-stable-symbol")
+    public ResponseBean getAllStableSymbols(Integer symbolId) {
+        return symbolService.getAllStableSymbols(symbolId);
+    }
+
+    /**
+     * 获取所有有效的创新区币对（如果有参数则获取一个）
+     */
+    @ApiOperation(value = "获取所有有效的创新区币对（如果有参数则获取一个）")
+    @GetMapping("valid-creation-symbol")
+    public ResponseBean getAllCreationSymbols(Integer symbolId) {
+        return symbolService.getAllCreationSymbols(symbolId);
     }
 
 }
