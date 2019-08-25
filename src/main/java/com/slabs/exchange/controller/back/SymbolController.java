@@ -72,7 +72,7 @@ public class SymbolController {
      */
     @ApiOperation(value = "获取所有有效的稳定区币对(如果有参数则获取一个)")
     @GetMapping("valid-stable-symbol")
-    public ResponseBean getAllStableSymbols(Integer symbolId) {
+    public ResponseBean getAllStableSymbols(@RequestParam(value = "symbolId", required = false) Integer symbolId) {
         return symbolService.getAllStableSymbols(symbolId);
     }
 
@@ -81,7 +81,7 @@ public class SymbolController {
      */
     @ApiOperation(value = "获取所有有效的创新区币对（如果有参数则获取一个）")
     @GetMapping("valid-creation-symbol")
-    public ResponseBean getAllCreationSymbols(Integer symbolId) {
+    public ResponseBean getAllCreationSymbols(@RequestParam(value = "symbolId", required = false) Integer symbolId) {
         return symbolService.getAllCreationSymbols(symbolId);
     }
 

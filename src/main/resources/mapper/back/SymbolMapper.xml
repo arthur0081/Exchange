@@ -207,8 +207,8 @@
     select s.id, s.name from project p, t_symbol s
     where p.symbol = s.id
     and s.valid = true
-    <if test="symbolId != null">
-      and s.id = = #{symbolId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      and s.id = #{symbolId,jdbcType=INTEGER}
     </if>
   </select>
 
@@ -216,8 +216,8 @@
     select s.id, s.name from creation_project cp, t_symbol s
     where cp.symbol = s.id
     and s.valid = true
-    <if test="symbolId != null">
-      and s.id = = #{symbolId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      and s.id = #{symbolId,jdbcType=INTEGER}
     </if>
   </select>
 </mapper>

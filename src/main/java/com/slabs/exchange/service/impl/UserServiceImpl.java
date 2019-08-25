@@ -194,7 +194,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
             MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
             String requestBody = "{}";
             Request request = new Request.Builder()
-                    .url(exchangeApiProperties.getIssueToken())
+                    .url(exchangeApiProperties.getHost() + exchangeApiProperties.getCharge())
                     .post(RequestBody.create(mediaType, requestBody))
                     .build();
             OkHttpClient okHttpClient = new OkHttpClient();
@@ -203,12 +203,12 @@ public class UserServiceImpl extends BaseService implements IUserService {
                 resData = okHttpClient.newCall(request).execute().body().string();
             } catch (IOException e) {
                 e.printStackTrace();
-                log.error("user id is " + user1.getId() + " " + user1.getUsername() + " charging failed.");
+                log.error("Register giving hos: user id is " + user1.getId() + " " + user1.getUsername() + " charging failed.");
             }
         }
         // 给一个默认角色
         List<Integer> roleList = new ArrayList<>();
-        roleList.add(4);
+        roleList.add(5);
         userDto.setRoleList(roleList);
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);

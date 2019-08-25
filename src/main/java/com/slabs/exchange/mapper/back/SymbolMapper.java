@@ -41,5 +41,5 @@ public interface SymbolMapper {
 
     List<Symbol> getAllStableSymbols(Integer symbolId);
 
-    List<Symbol> getAllCreationSymbols(int symbolId);
+    List<Symbol> getAllCreationSymbols(Integer symbolId);
 }
