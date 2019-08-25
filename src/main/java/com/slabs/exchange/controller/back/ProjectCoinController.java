@@ -69,4 +69,14 @@ public class ProjectCoinController {
     public ResponseBean getProjectCoins() {
         return projectCoinService.getProjectCoins();
     }
+
+
+    /**
+     * 所有有效的币对
+     */
+    @ApiOperation(value = "获取稳定币对")
+    @PostMapping("stable-symbol")
+    public ResponseBean getStableSymbols() {
+        return projectCoinService.getStableSymbols();
+    }
 }

@@ -25,6 +25,8 @@ public class ForeProjectDto {
 
     private String status;
 
+    private BigDecimal initPrice;
+
     /**
      *币对名称
      */

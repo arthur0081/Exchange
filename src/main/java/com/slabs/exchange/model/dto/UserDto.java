@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class UserDto {
@@ -41,10 +42,16 @@ public class UserDto {
 
 
     /**
-     * 附件
+     * 护照
      */
-    @ApiModelProperty(notes = "附件")
+    @ApiModelProperty(notes = "护照")
     private List<AttachFileDto> attachFileList;
+
+    /**
+     * 身份证
+     */
+    @ApiModelProperty(notes = "身份证")
+    private Map<String, List<AttachFileDto>> attachFileDtoMap;
 
     private static final long serialVersionUID = 1L;
 }

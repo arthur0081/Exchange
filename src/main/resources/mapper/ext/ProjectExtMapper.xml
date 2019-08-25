@@ -10,10 +10,10 @@
   </resultMap>
 
   <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
-    select count(1) from project p, t_simbol t, project_coin pc
-        where p.symbol = t.id and t.commodity = pc.id
-    <if test="projectName != null">
-      and p.name = #{projectName,jdbcType=VARCHAR}
+    select count(1) from project p, t_symbol t, project_coin pc
+        where p.symbol = t.id and t.commodity = pc.coin_id
+    <if test="projectName != null || projectName != ''">
+      and p.name like concat('%', #{projectName,jdbcType=VARCHAR}, '%')
     </if>
     <if test=" projectStatus != null">
       and p.status = #{projectStatus,jdbcType=VARCHAR}
@@ -22,11 +22,11 @@
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
     select
-        p.id, t.name symbol_name, p.name pro_name, pc.amount, p.status from project p, t_simbol t, project_coin pc
+        p.id, t.name symbol_name, p.name pro_name, pc.amount, p.status from project p, t_symbol t, project_coin pc
     where
-        p.symbol = t.id and t.commodity = pc.id
+        p.symbol = t.id and t.commodity = pc.coin_id
     <if test="projectName != null">
-        and p.name = #{projectName,jdbcType=VARCHAR}
+        and p.name like concat('%', #{projectName,jdbcType=VARCHAR}, '%')
     </if>
     <if test=" projectStatus != null">
         and p.status = #{projectStatus,jdbcType=VARCHAR}

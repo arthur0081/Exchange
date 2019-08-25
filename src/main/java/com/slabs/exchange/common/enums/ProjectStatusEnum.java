@@ -3,7 +3,7 @@ package com.slabs.exchange.common.enums;
 public enum ProjectStatusEnum {
     SAVE("save", "可编辑"),//普通管理员在创建项目，点击保存
     SUBMIT("submit", "待审核"),//普通管理员在创建项目时，点击提交
-    REJECT("reject", "拒绝审核"),//超级管理员  审核不通过
+    REJECT("reject", "拒绝上线"),//超级管理员  审核不通过
     PASS("pass","审核通过"),//超级管理员 审核通过
     PRE_SALE("pre_sale", "预售中"),//超级管理员   审核通过  当前时间小于项目开始时间
     ON_SALE("on_sale", "认购中"),//超级管理员   审核通过  当前时间大于项目开始时间

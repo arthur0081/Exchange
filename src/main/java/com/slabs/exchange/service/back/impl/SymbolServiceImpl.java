@@ -115,5 +115,4 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
 
         return new ResponseBean(200, "", symbols);
     }
-
 }

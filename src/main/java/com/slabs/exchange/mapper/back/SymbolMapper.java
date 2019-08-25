@@ -36,4 +36,5 @@ public interface SymbolMapper {
 
 
     List<Symbol> getAllSymbols();
+
 }

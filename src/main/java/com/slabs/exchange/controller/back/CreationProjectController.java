@@ -1,26 +1,23 @@
 package com.slabs.exchange.controller.back;
 
+
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.AuditDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.ProjectDto;
-import com.slabs.exchange.service.back.IProjectService;
+import com.slabs.exchange.service.back.ICreationProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-/**
- * 发布项目
- */
 @RestController
-@RequestMapping("project")
-@Api(value = "项目", description = "项目模块：项目相关接口")
-public class ProjectController {
-
+@RequestMapping("creation-project")
+@Api(value = "创新项目", description = "创新项目：创新项目相关接口")
+public class CreationProjectController {
     @Resource
-    private IProjectService projectService;
+    private ICreationProjectService creationProjectService;
 
     /**
      * 新增项目
@@ -28,7 +25,7 @@ public class ProjectController {
     @PostMapping("insert")
     @ApiOperation(value = "插入")
     public ResponseBean insert(@RequestBody ProjectDto projectDto) {
-        return projectService.insert(projectDto);
+        return creationProjectService.insert(projectDto);
     }
 
     /**
@@ -37,7 +34,7 @@ public class ProjectController {
     @GetMapping("pre-update")
     @ApiOperation(value = "预修改")
     public ResponseBean preUpdate(@RequestParam Integer projectId) {
-        return projectService.preUpdate(projectId);
+        return creationProjectService.preUpdate(projectId);
     }
 
     /**
@@ -46,7 +43,7 @@ public class ProjectController {
     @PostMapping("update")
     @ApiOperation(value = "更新")
     public ResponseBean update(@RequestBody ProjectDto projectDto) {
-        return projectService.update(projectDto);
+        return creationProjectService.update(projectDto);
     }
 
     /**
@@ -55,7 +52,7 @@ public class ProjectController {
     @PostMapping("list")
     @ApiOperation(value = "列表")
     public ResponseBean list(@RequestBody PageParamDto pageParamDto) {
-        return projectService.list(pageParamDto);
+        return creationProjectService.list(pageParamDto);
     }
 
     /**
@@ -64,7 +61,7 @@ public class ProjectController {
     @PostMapping("audit")
     @ApiOperation(value = "超级管理员审核")
     public ResponseBean audit(@RequestBody AuditDto auditDto) {
-        return projectService.audit(auditDto);
+        return creationProjectService.audit(auditDto);
     }
 
 }

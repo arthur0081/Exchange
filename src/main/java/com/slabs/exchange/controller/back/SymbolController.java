@@ -68,4 +68,5 @@ public class SymbolController {
     public ResponseBean getAllSymbols() {
         return symbolService.getAllSymbols();
     }
+
 }

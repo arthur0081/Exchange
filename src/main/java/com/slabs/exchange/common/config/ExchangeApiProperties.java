@@ -23,4 +23,7 @@ public class ExchangeApiProperties {
     @Value("${exchange-api.wallet-addr}")
     private String walletAddr;
 
+    @Value("${exchange-api.issue.token}")
+    private String issueToken;
+
 }

@@ -1,12 +1,16 @@
 package com.slabs.exchange.service.back.impl;
 
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.enums.*;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.UserMapper;
-import com.slabs.exchange.mapper.back.*;
+import com.slabs.exchange.mapper.back.AttachFileMapper;
+import com.slabs.exchange.mapper.back.BoughtAmountMapper;
+import com.slabs.exchange.mapper.back.ProjectMapper;
+import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.mapper.ext.back.BoughtAmountExtMapper;
 import com.slabs.exchange.mapper.ext.back.ProjectExtMapper;
 import com.slabs.exchange.mapper.ext.fore.ForeProjectExtMapper;
@@ -15,12 +19,14 @@ import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
 import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
-import com.slabs.exchange.service.back.IProjectService;
+import com.slabs.exchange.service.back.ICreationProjectService;
 import com.slabs.exchange.util.ExchangePreconditions;
-import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,9 +39,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-@Slf4j
 @Service
-public class ProjectServiceImpl extends BaseService implements IProjectService {
+@Slf4j
+public class CreationProjectServiceImpl extends BaseService implements ICreationProjectService {
     private static final Gson gson = new GsonBuilder().create();
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -309,7 +315,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
      * 需求： 认购中  和  认购结束
      */
     @Override
-    public ResponseBean getForeProjectList(PageParamDto pageParamDto) {
+    public ResponseBean getForeCreationProjectList(PageParamDto pageParamDto) {
         // 凡是在 预售中 的状态都需要多写一个时间的判断
 
         int total = foreProjectExtMapper.count(pageParamDto);
@@ -319,10 +325,14 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
 
         // 计算出认购金额 (认购金额表中求和)
         // 对每个项目id都要 求和
+
         List<BoughtAmountDto> boughtAmountDtos = boughtAmountExtMapper.getBoughtAmount(foreProjectList);
 
         // 构建返回信息
+
         for (ForeProjectDto foreProjectDto : foreProjectList) {
+            // 构建认购倒计时  认购周期减去当前时间 认购倒计时可以做成页面动态变化的时钟
+            //todo 首发价(在币对表中) （项目表中冗余一个首发价字段）
             for (BoughtAmountDto boughtAmountDto: boughtAmountDtos) {
                 if (foreProjectDto.getId().intValue() == boughtAmountDto.getProjectId()) {
                     foreProjectDto.setBoughtAmount(boughtAmountDto.getAmount());
@@ -343,7 +353,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
      * 前台： 项目详情
      */
     @Override
-    public ResponseBean getForeProjectDetail(Long projectId) {
+    public ResponseBean getForeCreationProjectDetail(Long projectId) {
         // 根据主键查询项目基础信息。
         Project project = projectMapper.selectByPrimaryKey(projectId);
 
@@ -412,7 +422,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         // 预售中(虽然没有更新状态，但是依然可以购买)
         if (ProjectStatusEnum.PRE_SALE.getKey().equals(project.getStatus())) {
             if (project.getStartTime().after(new Date())
-                && project.getStartTime().after(nowDate)) {
+                    && project.getStartTime().after(nowDate)) {
                 // 在预售中，但是项目开始时间大于当前时间 且 项目开始时间  >  当前时间 - 认购天数
                 // 满足认购条件后去调用第三方挂单逻辑接口
                 //  /limit/bvp_usdt post {"side":"buy","price":初始价,"amount":12}
@@ -433,7 +443,26 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                     // 更新项目状态
                     project.setStatus(ProjectStatusEnum.END_SALE.getKey());
                     projectMapper.updateByPrimaryKey(project);
-
+                    // 认购结束 todo  挂一个此项目的全部卖单
+                    OrderDto orderDto = new OrderDto();
+                    orderDto.setSide("sale");
+                    //orderDto.setAmount(); 得到项目总额
+                    orderDto.setPrice(buyDto.getInitPrice());
+                    String requestData = gson.toJson(orderDto);
+                    MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+                    Request request = new Request.Builder()
+                            .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
+                            .post(RequestBody.create(mediaType, requestData))
+                            .build();
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    String resData = "";
+                    try {
+                        resData = okHttpClient.newCall(request).execute().body().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        // 挂该项目的所有卖单失败！
+                        log.error("side: sale projectId:"+ buyDto.getProjectId() +  "ordered failed." + sdf.format(new Date()));
+                    }
                     throw new ExchangeException("此项目认购结束，请认购其他项目！");
                 }
             } else {
@@ -441,34 +470,18 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                 project.setStatus(ProjectStatusEnum.PROJECT_END.getKey());
                 projectMapper.updateByPrimaryKey(project);
 
-                OrderDto orderDto = new OrderDto();
-                orderDto.setSide(BuyAndSaleEnum.SALE.getKey());
-                orderDto.setAmount(project.getCollectAmount());
-                orderDto.setPrice(buyDto.getInitPrice());
-                String requestData = gson.toJson(orderDto);
-                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-                Request request = new Request.Builder()
-                        .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
-                        .post(RequestBody.create(mediaType, requestData))
-                        .build();
-                OkHttpClient okHttpClient = new OkHttpClient();
-                String resData = "";
-                try {
-                    resData = okHttpClient.newCall(request).execute().body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    // 挂该项目的所有卖单失败！
-                    log.error("side: sale projectId:"+ buyDto.getProjectId() +  "ordered failed." + sdf.format(new Date()));
-                }
+                //todo 更新币对状态为2（设计：0是无效的，1是可以进行币币交易的，2是项目方回购的状态？）
+
+                // todo 项目方，以初始价格进行回购  （做法：用户主动挂卖单，项目方挂买单吃了就行了）
 
                 throw new ExchangeException("项目结束！");
             }
         }
 
         // 状态变更分析
-            //1，在认购期内，完成资金募集    ----  认购结束（此时是计息状态）
-            //2，在认购期内，未达到认购额度  ---- invalid
-            //3，认购期结束，项目结束。      ----  end
+        //1，在认购期内，完成资金募集    ----  认购结束（此时是计息状态）
+        //2，在认购期内，未达到认购额度  ---- invalid
+        //3，认购期结束，项目结束。      ----  end
         return new ResponseBean(200, "", "成功买入");
     }
 
@@ -478,7 +491,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
      */
     private void holdOrder(BuyDto buyDto) {
         OrderDto orderDto = new OrderDto();
-        orderDto.setSide(BuyAndSaleEnum.BUY.getKey());
+        orderDto.setSide("buy");
         orderDto.setAmount(buyDto.getBoughtAmount());
         orderDto.setPrice(buyDto.getInitPrice());
         String requestData = gson.toJson(orderDto);
@@ -486,7 +499,6 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         Request request = new Request.Builder()
                 .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
                 .post(RequestBody.create(mediaType, requestData))
-                .header("Authority", "Bearer" + " " + JWTUtil.encode(ShiroUtils.getUserId().toString()))
                 .build();
         OkHttpClient okHttpClient = new OkHttpClient();
         String resData = "";
@@ -500,16 +512,14 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         // 购买成功
         BoughtAmount boughtAmount = new BoughtAmount();
         boughtAmount.setCreateTime(new Date());
-        // 认购状态
-        boughtAmount.setWithdraw(Integer.valueOf(WithdrawStatusEnum.DEFAULT.getKey()));
+        boughtAmount.setWithdraw(0);
         ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
         boughtAmount.setOrderId(exchangeApiResDto.getId());
-        BigDecimal projectCoinAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice()).setScale(6, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal projectCoinAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice());
         boughtAmount.setProjectCoin(projectCoinAmount);
         boughtAmount.setProjectId(buyDto.getProjectId());
         boughtAmount.setUsdt(buyDto.getBoughtAmount());
 
         boughtAmountMapper.insert(boughtAmount);
     }
-
 }

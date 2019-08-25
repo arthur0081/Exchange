@@ -1,6 +1,7 @@
 package com.slabs.exchange.service.impl;
 
-import com.slabs.exchange.common.enums.AttachEnum;
+import com.slabs.exchange.common.config.ExchangeApiProperties;
+import com.slabs.exchange.common.enums.CertificateEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.RoleMapper;
@@ -10,11 +11,18 @@ import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.ext.UserExtMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
-import com.slabs.exchange.model.entity.*;
+import com.slabs.exchange.model.entity.AttachFile;
+import com.slabs.exchange.model.entity.Role;
+import com.slabs.exchange.model.entity.User;
+import com.slabs.exchange.model.entity.UserRole;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.*;
-import okhttp3.*;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -24,9 +32,9 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
+@Slf4j
 @Service
 public class UserServiceImpl extends BaseService implements IUserService {
-
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -39,7 +47,8 @@ public class UserServiceImpl extends BaseService implements IUserService {
     private AttachFileMapper attachFileMapper;
     @Resource
     private RedisUtil redisUtil;
-
+    @Resource
+    private ExchangeApiProperties exchangeApiProperties;
 
     /**
      * 新增用户
@@ -49,17 +58,21 @@ public class UserServiceImpl extends BaseService implements IUserService {
         // 插入用户基础信息
         User user = map(userDto, User.class);
         String salt = RandomStringUtils.randomAlphanumeric(20);
+        user.setSalt(salt);
         user.setPassword(ShiroUtils.encodeSalt("12345678", salt));
         user.setFundPassword(ShiroUtils.encodeSalt("12345678", salt));
         // 新增用户时间
         user.setRegTime(new Date());
-        user.setSalt(salt);
         //TODO 调用钱包api
 
         user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
         // todo 当前登陆用户
 
         userMapper.insert(user);
+        // 给用户生成一个邀请码
+        String invitationCode = Sha256.getSHA256(user.getId().toString() + System.currentTimeMillis()).substring(0, 8);
+        user.setInvitationCode(invitationCode);
+        userMapper.updateByPrimaryKeySelective(user);
 
         List<UserRole> userRoleList = new ArrayList<>();
         UserRole ur = new UserRole();
@@ -125,8 +138,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
         return new ResponseBean(200, "", null);
     }
 
-
-
     /**
      * 分页查询
      */
@@ -155,21 +166,20 @@ public class UserServiceImpl extends BaseService implements IUserService {
     public ResponseBean register(UserDto userDto) {
         // 插入用户基础信息
         User user = map(userDto, User.class);
-
-        user.setPassword(userDto.getPassword());
-        user.setFundPassword(userDto.getFundPassword());
-
-        // 注册时间
+        String plainPassword = AESUtil.desEncrypt(userDto.getPassword());
+        String plainFundPassword = AESUtil.desEncrypt(userDto.getFundPassword());
+        String salt = RandomStringUtils.randomAlphanumeric(20);
+        user.setSalt(salt);
+        user.setPassword(ShiroUtils.encodeSalt(plainPassword, salt));
+        user.setFundPassword(ShiroUtils.encodeSalt(plainFundPassword, salt));
         user.setRegTime(new Date());
         // 钱包地址
         //TODO 调用钱包api
 
         user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
-        user.setInvitationCode(null);
         userMapper.insert(user);
-
         // 给注册用户插入邀请码(唯一性)
-        String invitationCode = Sha256.getSHA256(user.getId().toString()).substring(0, 8);
+        String invitationCode = Sha256.getSHA256(user.getId().toString() + System.currentTimeMillis()).substring(0, 8);
         user.setInvitationCode(invitationCode);
         userMapper.updateByPrimaryKeySelective(user);
 
@@ -184,20 +194,24 @@ public class UserServiceImpl extends BaseService implements IUserService {
             MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
             String requestBody = "{}";
             Request request = new Request.Builder()
-                    .url("充值接口ip地址")
+                    .url(exchangeApiProperties.getIssueToken())
                     .post(RequestBody.create(mediaType, requestBody))
                     .build();
             OkHttpClient okHttpClient = new OkHttpClient();
+            String resData = "";
             try {
-                Response response = okHttpClient.newCall(request).execute();
+                resData = okHttpClient.newCall(request).execute().body().string();
             } catch (IOException e) {
                 e.printStackTrace();
+                log.error("user id is " + user1.getId() + " " + user1.getUsername() + " charging failed.");
             }
         }
-
+        // 给一个默认角色
+        List<Integer> roleList = new ArrayList<>();
+        roleList.add(4);
+        userDto.setRoleList(roleList);
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);
-
         // 批量插入用户角色对应关系信息
         userRoleMapper.batchInsert(userRoleList);
 
@@ -209,12 +223,11 @@ public class UserServiceImpl extends BaseService implements IUserService {
      */
     @Override
     public ResponseBean resetLoginPassword() {
-        Integer userId = ShiroUtils.getUserId().intValue();
+        Integer userId = ShiroUtils.getUserId();
         User user = new User();
         user.setId(userId);
-        String salt = RandomStringUtils.randomAlphanumeric(20);
-        user.setPassword(ShiroUtils.encodeSalt("12345678", salt));
-        user.setSalt(salt);
+        User user1 = userMapper.selectByPrimaryKey(userId);
+        user.setPassword(ShiroUtils.encodeSalt("12345678", user1.getSalt()));
         userMapper.updateByPrimaryKeySelective(user);
 
         return new ResponseBean(200, "", null);
@@ -228,10 +241,10 @@ public class UserServiceImpl extends BaseService implements IUserService {
         Integer userId = ShiroUtils.getUserId();
         User user = new User();
         user.setId(userId);
-        String salt = RandomStringUtils.randomAlphanumeric(20);
-        user.setFundPassword(ShiroUtils.encodeSalt("12345678", salt));
-        user.setSalt(salt);
+        User user1 = userMapper.selectByPrimaryKey(userId);
+        user.setFundPassword(ShiroUtils.encodeSalt("12345678", user1.getSalt()));
         userMapper.updateByPrimaryKeySelective(user);
+
         return new ResponseBean(200, "", null);
     }
 
@@ -246,6 +259,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
         userDto.setUsername(user.getUsername());
         userDto.setAccount(user.getAccount());
         userDto.setEmail(user.getEmail());
+        userDto.setInvitationCode(user.getInvitationCode());
         return new ResponseBean(200, "", userDto);
     }
 
@@ -281,10 +295,14 @@ public class UserServiceImpl extends BaseService implements IUserService {
         User user = map(userDto, User.class);
         user.setId(userId);
         userMapper.updateByPrimaryKeySelective(user);
-
-        // 构建附件信息
-        List<AttachFile> list = buildAttachFile(userId, userDto);
-
+        List<AttachFile> list = null;
+        if (userDto.getCertificateType() == 2) {
+            //构建护照信息
+            list = buildPassportAttachFile(userId, userDto);
+        } else {
+            //构建身份证信息
+            list = buildIdcardAttachFile(userId, userDto);
+        }
         // 批量插入附件信息
         attachFileMapper.batchInsert(list);
 
@@ -292,18 +310,43 @@ public class UserServiceImpl extends BaseService implements IUserService {
     }
 
     /**
-     *  构建用户附件信息（身份证或者护照）
+     * 因为身份证分为正面和反面
      */
-    private List<AttachFile> buildAttachFile(Integer userId, UserDto userDto) {
+    private List<AttachFile> buildIdcardAttachFile(Integer userId, UserDto userDto) {
+        List<AttachFile> attachFiles = new ArrayList<>();
+        Map<String, List<AttachFileDto>> map = userDto.getAttachFileDtoMap();
+        for(Map.Entry<String, List<AttachFileDto>> entry : map.entrySet()){
+            String mapKey = entry.getKey();
+            List<AttachFileDto> mapValue = entry.getValue();
+            for (AttachFileDto afd: mapValue) {
+                AttachFile af = new AttachFile();
+                af.setRefId(userId);
+                af.setType(mapKey);
+                af.setFilePath(afd.getFilePath());
+                af.setFileName(afd.getFileName());
+                af.setIsDel(YNEnum.N.getKey());
+                af.setCreateUser(userId.longValue());
+                af.setCreateTime(new Date());
+                attachFiles.add(af);
+            }
+        }
+
+        return attachFiles;
+    }
+
+    /**
+     *  构建用户护照证件
+     */
+    private List<AttachFile> buildPassportAttachFile(Integer userId, UserDto userDto) {
         List<AttachFileDto> list = userDto.getAttachFileList();
         List<AttachFile> attachFiles = new ArrayList<>();
         for (AttachFileDto afd: list) {
             AttachFile af = map(afd, AttachFile.class);
             af.setIsDel(YNEnum.N.getKey());
             af.setRefId(userId);
-            af.setType(AttachEnum.PRO_COIN.getKey());
-            af.setModifyUser(userId);
-            af.setModifyTime(new Date());
+            af.setType(CertificateEnum.PASSPORT.getKey());
+            af.setCreateUser(userId.longValue());
+            af.setCreateTime(new Date());
             attachFiles.add(af);
         }
         return attachFiles;
@@ -329,6 +372,72 @@ public class UserServiceImpl extends BaseService implements IUserService {
     public ResponseBean getProjectUsers() {
         List<User> list = userMapper.getProjectUsers();
         return new ResponseBean(200, "", list);
+    }
+
+    /**
+     * 前台：身份认证的预修改（回显）
+     */
+    @Override
+    public ResponseBean preUpdate() {
+        Integer userId = ShiroUtils.getUserId();
+        User user = userMapper.selectByPrimaryKey(userId);
+        UserDto userDto = map(user, UserDto.class);
+        Map<String, List<AttachFileDto>> idcardMap = new HashMap<>();
+        if (user.getCertificateType() == 1) {//idcard
+            List<AttachFile>  idcardFront = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_FRONT.getKey(), userId.longValue());
+            List<AttachFileDto> idcardFrontDtos = map(idcardFront, AttachFileDto.class);
+            idcardMap.put(CertificateEnum.IDCARD_FRONT.getKey(), idcardFrontDtos);
+
+            List<AttachFile>  idcardBack = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_BACK.getKey(), userId.longValue());
+            List<AttachFileDto> idcardBackDtos = map(idcardBack, AttachFileDto.class);
+            idcardMap.put(CertificateEnum.IDCARD_BACK.getKey(), idcardBackDtos);
+            userDto.setAttachFileDtoMap(idcardMap);
+
+        } else if(user.getCertificateType() == 2) {//passport
+            List<AttachFile> attachFiles = attachFileMapper.selectByTypeAndRefId(CertificateEnum.PASSPORT.getKey(), userId.longValue());
+            List<AttachFileDto> attachFileDtos = map(attachFiles, AttachFileDto.class);
+            userDto.setAttachFileList(attachFileDtos);
+        } else {
+            //do nothing
+        }
+
+        return new ResponseBean(200, "", userDto);
+    }
+
+    /**
+     * 修改用户登陆密码
+     */
+    @Override
+    public ResponseBean updateLoginPassword(UpdatePasswordDto updatePasswordDto) {
+        String plainPassword = AESUtil.desEncrypt(updatePasswordDto.getLoginPassword());
+        Integer userId = ShiroUtils.getUserId();
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (!user.getPassword().equals(ShiroUtils.encodeSalt(plainPassword, user.getSalt()))) {
+            throw new ExchangeException("原始登陆密码错误！");
+        }
+        String newPlainPassword = AESUtil.desEncrypt(updatePasswordDto.getNewLoginPassword());
+        String newPassword = ShiroUtils.encodeSalt(newPlainPassword, user.getSalt());
+        user.setPassword(newPassword);
+        userMapper.updateByPrimaryKeySelective(user);
+        return new ResponseBean(200, "修改登陆密码成功", null);
+    }
+
+    /**
+     * 修改用户资金密码
+     */
+    @Override
+    public ResponseBean updateFundPassword(UpdatePasswordDto updatePasswordDto) {
+        String plainPassword = AESUtil.desEncrypt(updatePasswordDto.getFundPassword());
+        Integer userId = ShiroUtils.getUserId();
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (!user.getFundPassword().equals(ShiroUtils.encodeSalt(plainPassword, user.getSalt()))) {
+            throw new ExchangeException("原始资金密码错误！");
+        }
+        String newPlainPassword = AESUtil.desEncrypt(updatePasswordDto.getNewFundPassword());
+        String newPassword = ShiroUtils.encodeSalt(newPlainPassword, user.getSalt());
+        user.setFundPassword(newPassword);
+        userMapper.updateByPrimaryKeySelective(user);
+        return new ResponseBean(200, "修改资金密码成功", null);
     }
 
 }

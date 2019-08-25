@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -20,9 +21,9 @@ public class FileController {
     private IFileService fileService;
 
     @PostMapping(value = "/upload",produces="text/html;charset=utf-8")
-    public String upload(@RequestParam(value = "file") MultipartFile file) {
+    public String upload(@RequestParam(value = "file") MultipartFile file, HttpServletRequest request) {
         System.out.println(file.getSize());
-        String url = fileService.saveFile(file);
+        String url = fileService.saveFile(file, request);
         return url;
     }
 

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
@@ -19,7 +20,7 @@ public class FileServiceImpl implements IFileService {
      * 把上传的文件保存在本地磁盘上
      */
     @Override
-    public String saveFile(MultipartFile multipartFile) {
+    public String saveFile(MultipartFile multipartFile, HttpServletRequest request) {
         String fileName = multipartFile.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
 

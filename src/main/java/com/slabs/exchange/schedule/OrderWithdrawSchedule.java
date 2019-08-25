@@ -7,7 +7,7 @@ import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.config.ScheduleProperties;
 import com.slabs.exchange.common.enums.WithdrawStatusEnum;
 import com.slabs.exchange.mapper.back.BoughtAmountMapper;
-import com.slabs.exchange.model.dto.WithdrawDto;
+import com.slabs.exchange.model.dto.WithdrawRequestDto;
 import com.slabs.exchange.model.entity.BoughtAmount;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -51,7 +51,7 @@ public class OrderWithdrawSchedule {
 
            List<String> orderIds = new ArrayList<>();
            for (BoughtAmount ba: boughtAmounts) {
-               WithdrawDto wd = new WithdrawDto();
+               WithdrawRequestDto wd = new WithdrawRequestDto();
                wd.setOrder_id(ba.getOrderId());
                String data = gson.toJson(wd);
                orderIds.add(data);

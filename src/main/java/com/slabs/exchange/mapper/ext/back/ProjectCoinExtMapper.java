@@ -16,4 +16,6 @@ public interface ProjectCoinExtMapper {
     List<CoinDto> list(PageParamDto pageParamDto);
 
     CoinDto selectByCoin(String coin);
+
+    List<CoinDto> getSymbols(String coinType);
 }

@@ -30,4 +30,5 @@ public class RegisterController {
     public ResponseBean register(@RequestBody UserDto userDto) {
         return userService.register(userDto);
     }
+
 }

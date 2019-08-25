@@ -6,8 +6,7 @@ import com.slabs.exchange.model.dto.BuyDto;
 import com.slabs.exchange.model.dto.PageParamDto;
 import com.slabs.exchange.model.dto.ProjectDto;
 
-public interface IProjectService {
-
+public interface ICreationProjectService {
     ResponseBean insert(ProjectDto projectDto);
 
     ResponseBean preUpdate(Integer projectId);
@@ -18,9 +17,9 @@ public interface IProjectService {
 
     ResponseBean audit(AuditDto auditDto);
 
-    ResponseBean getForeProjectList(PageParamDto pageParamDto);
+    ResponseBean getForeCreationProjectList(PageParamDto pageParamDto);
 
-    ResponseBean getForeProjectDetail(Long projectId);
+    ResponseBean getForeCreationProjectDetail(Long projectId);
 
     ResponseBean buy(BuyDto buyDto);
 }

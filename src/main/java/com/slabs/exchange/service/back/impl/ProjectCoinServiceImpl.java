@@ -2,6 +2,7 @@ package com.slabs.exchange.service.back.impl;
 
 import com.slabs.exchange.common.enums.AttachEnum;
 import com.slabs.exchange.common.enums.CodeEnum;
+import com.slabs.exchange.common.enums.CoinEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.ext.back.ProjectCoinExtMapper;
@@ -150,6 +151,16 @@ public class ProjectCoinServiceImpl extends BaseService implements IProjectCoinS
     @Override
     public ResponseBean getProjectCoins() {
         List<ProjectCoin> list = projectCoinMapper.getProjectCoins();
+        return new ResponseBean(200, "", list);
+    }
+
+
+    /**
+     * 得到所有稳定币对
+     */
+    @Override
+    public ResponseBean getStableSymbols() {
+        List<CoinDto> list = projectCoinExtMapper.getSymbols(CoinEnum.USDT.getKey());
         return new ResponseBean(200, "", list);
     }
 

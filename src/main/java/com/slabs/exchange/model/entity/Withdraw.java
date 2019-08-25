@@ -1,4 +1,4 @@
-package com.slabs.exchange.model.dto;
+package com.slabs.exchange.model.entity;
 
 import lombok.Data;
 
@@ -11,21 +11,21 @@ import java.util.Date;
  * @author 
  */
 @Data
-public class WithdrawDto implements Serializable {
-    /**
-     * 币种
-     */
+public class Withdraw implements Serializable {
+
+    private Integer id;
+
+    private Integer userId;
+
     private String coin;
 
-    /**
-     * 提币数量
-     */
     private BigDecimal amount;
 
-    /**
-     * 用户提现的资金密码
-     */
-    private String fundPassword;
+    private String txid;
+
+    private Date time;
+
+    private Boolean status;
 
     private static final long serialVersionUID = 1L;
 }

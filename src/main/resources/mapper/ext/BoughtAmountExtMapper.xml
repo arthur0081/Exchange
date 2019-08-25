@@ -15,7 +15,7 @@
            project_id
     in
     <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-      #{item.id,jdbcType=INTEGER},
+      #{item.id,jdbcType=INTEGER}
     </foreach>
     group by
             project_id

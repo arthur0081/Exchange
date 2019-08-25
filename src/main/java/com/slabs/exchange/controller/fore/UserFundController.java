@@ -2,6 +2,7 @@ package com.slabs.exchange.controller.fore;
 
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.service.fore.IUserFundService;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("user-fund")
+@Api(value = "用户资金管理", description = "用户资金管理：用户资金管理相关接口")
 public class UserFundController {
     @Resource
     private IUserFundService userFundService;

@@ -34,7 +34,17 @@
       t_coin c, project_coin pc
     where
       c.id = pc.coin_id
-      and pc.coin_type = #{coin, jdbcType=VARCHAR}
+      and c.name = #{coin, jdbcType=VARCHAR}
   </select>
 
+  <select id="getSymbols" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      s.id, c.name, pc.amount
+    from
+      t_coin c, project_coin pc, t_symbol s
+    where
+      c.id = pc.coin_id
+      and pc.coin_id = s.commodity
+      and split_part(s.name,'_', 2) = #{key, jdbcType=VARCHAR}
+  </select>
 </mapper>

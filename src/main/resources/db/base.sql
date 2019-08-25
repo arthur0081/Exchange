@@ -1,8 +1,9 @@
 
 INSERT INTO public.role(id, name, remark) VALUES (1, 'superAdmin', '超级管理员');
-INSERT INTO public.role(id, name, remark) VALUES (1, 'normalAdmin', '普通管理员');
-INSERT INTO public.role(id, name, remark) VALUES (1, 'projectThird', '项目方');
-INSERT INTO public.role(id, name, remark) VALUES (1, 'normalUser', '普通用户');
+INSERT INTO public.role(id, name, remark) VALUES (2, 'normalAdmin', '普通管理员');
+INSERT INTO public.role(id, name, remark) VALUES (3, 'platformUser', '平台用户');
+INSERT INTO public.role(id, name, remark) VALUES (4, 'projectThird', '项目方');
+INSERT INTO public.role(id, name, remark) VALUES (5, 'normalUser', '普通用户');
 
 INSERT INTO public.permission(id, name, per_code)VALUES (1,'首页' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (2,'币种' , 'user:edit');
@@ -11,6 +12,7 @@ INSERT INTO public.permission(id, name, per_code)VALUES (4,'挂单' , 'user:edit
 INSERT INTO public.permission(id, name, per_code)VALUES (5,'成交记录' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (6,'项目发布' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (7,'权限管理' , 'user:edit');
+
 INSERT INTO public.permission(id, name, per_code)VALUES (8,'认购房产列表' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (9,'币币交易' , 'user:edit');
 INSERT INTO public.permission(id, name, per_code)VALUES (10,'资金管理' , 'user:edit');
@@ -41,20 +43,31 @@ INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (19, 4, 9);
 INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (20, 4, 10);
 INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (21, 4, 11);
 
-INSERT INTO public.user_role(id, user_id, role_id)VALUES (1, 1, 1);
-INSERT INTO public.user_role(id, user_id, role_id)VALUES (2, 2, 2);
-INSERT INTO public.user_role(id, user_id, role_id)VALUES (3, 3, 3);
-INSERT INTO public.user_role(id, user_id, role_id)VALUES (4, 4, 4);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (18, 5, 8);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (19, 5, 9);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (20, 5, 10);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (21, 5, 11);
+
+INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (1, 1, 1, 'back');
+INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (2, 2, 2, 'back');
+INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (3, 3, 3, 'fore');
+INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (4, 4, 4, 'fore');
+INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (5, 5, 5, 'fore');
+
+
 
 INSERT INTO public."user"(id, account, password, username, reg_time, fund_password)
             VALUES(1, 'superAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是超级管理员', '2019-08-10 10:18:19','');
 INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
              VALUES (2, 'normalAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通管理员', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
 INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-             VALUES (3, '13035667829', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是项目方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
-INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-            VALUES (4, '13035667839', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通用户', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
+             VALUES (3, '13035667829', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是平台方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
 
+
+INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
+            VALUES (4, '13035667839', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是项目方', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
+INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
+VALUES (5, '13035667849', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通用户', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
 
 CREATE SEQUENCE project_coin_id_seq
 START WITH 1

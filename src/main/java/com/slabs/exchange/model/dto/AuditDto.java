@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AuditDto {
     /**
-     * 超级管理员点击拒绝按钮
+     * 超级管理员点击拒绝按钮(Y/N)
      */
     private String reject;
 

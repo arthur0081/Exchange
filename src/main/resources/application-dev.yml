@@ -114,6 +114,8 @@ exchange-api:
   order: /limit/bvp_usdt
   charge: /charge
   wallet-addr: 39.104.136.10:8000/wallet-addr/get
+  issue:
+    token: 39.104.136.10:8000/issue/token
 
 
   ######################################################################################################################

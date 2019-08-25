@@ -38,7 +38,7 @@ public class JWTUtil {
             Claims claims = Jwts.parser()
                     .setSigningKey(SECRET_KEY.getBytes())
                     .parseClaimsJws(accessToken).getBody();
-            return (String) claims.get("sub");
+            return claims.get("sub").toString();
         } catch (Exception e) {  // 解密失败，返回null
             System.out.println(e.getMessage());
             return null;

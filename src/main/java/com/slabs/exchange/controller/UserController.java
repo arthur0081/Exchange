@@ -5,6 +5,7 @@ import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.AccountCheckDto;
 import com.slabs.exchange.model.dto.PageParamDto;
+import com.slabs.exchange.model.dto.UpdatePasswordDto;
 import com.slabs.exchange.model.dto.UserDto;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.JWTUtil;
@@ -72,7 +73,6 @@ public class UserController {
         return userService.resetFundPassword();
     }
 
-
     /**
      * 我的信息
      */
@@ -81,11 +81,10 @@ public class UserController {
         return userService.getMyInfo();
     }
 
-
     /**
-     * 刷新用户jwt(jwt的有效时间和缓存的失效时间是一直的)
+     * 刷新用户jwt(jwt的有效时间和缓存的失效时间是一致的)
      */
-    @GetMapping("get-jwt")
+    @PostMapping("get-jwt")
     public ResponseBean getJwt() {
         Integer userId = null;
         try {
@@ -96,7 +95,6 @@ public class UserController {
         String jwt = JWTUtil.encode(userId.toString());
         return new ResponseBean(200, "jwt", jwt);
     }
-
 
     /**
      * check account  不能重复
@@ -114,5 +112,20 @@ public class UserController {
         return userService.getProjectUsers();
     }
 
+    /**
+     * 修改用户登陆密码
+     */
+    @PostMapping("update-login-password")
+    public ResponseBean updateLoginPassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
+        return userService.updateLoginPassword(updatePasswordDto);
+    }
+
+    /**
+     * 修改用户资金密码
+     */
+    @PostMapping("update-fund-password")
+    public ResponseBean updateFundPassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
+        return userService.updateFundPassword(updatePasswordDto);
+    }
 
 }

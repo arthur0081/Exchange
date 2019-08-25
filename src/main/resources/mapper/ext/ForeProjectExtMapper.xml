@@ -12,13 +12,11 @@
     <result column="symbol" jdbcType="BIGINT" property="symbol" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="symbol_name" jdbcType="VARCHAR" property="symbolName" />
+    <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
   </resultMap>
 
     <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
         select count(1) from project p, symbol s where s.id = p.symbol
-        <if test="areaType != null">
-            and p.area_type = #{areaType,jdbcType=INTEGER}
-        </if>
         and p.status = 'on_sale'
         or p.status = 'end_sale'
         or p.status = 'pre_sale'
@@ -27,12 +25,9 @@
 
     <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
         select p.id, p.name, p.collect_amount, p.invest_period,p.start_time,
-               p.expect_year_bonus, p.end_time, p.symbol, p.status, s.name symbol_name
+               p.expect_year_bonus, p.end_time, p.symbol, p.status, s.name symbol_name, p.init_price
          from
             project p, symbol s where s.id = p.symbol
-        <if test="areaType != null">
-            and p.area_type = #{areaType,jdbcType=INTEGER}
-        </if>
         and p.status = 'on_sale'
         or p.status = 'end_sale'
         or p.status = 'pre_sale'
