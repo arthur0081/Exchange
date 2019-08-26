@@ -1,4 +1,3 @@
-
 INSERT INTO public.role(id, name, remark, type) VALUES (1, 'superAdmin', '超级管理员', 'back');
 INSERT INTO public.role(id, name, remark, type) VALUES (2, 'normalAdmin', '普通管理员', 'back');
 INSERT INTO public.role(id, name, remark, type) VALUES (3, 'platformUser', '平台用户', 'fore');
@@ -43,18 +42,18 @@ INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (19, 4, 9);
 INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (20, 4, 10);
 INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (21, 4, 11);
 
-INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (18, 5, 8);
-INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (19, 5, 9);
-INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (20, 5, 10);
-INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (21, 5, 11);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (22, 5, 8);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (23, 5, 9);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (24, 5, 10);
+INSERT INTO public.role_permission(id, role_id, permission_id)VALUES (25, 5, 11);
 
-INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (1, 1, 1, 'back');
-INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (2, 2, 2, 'back');
-INSERT INTO public.user_role(id, user_id, role_id, type)VALUES (3, 3, 3, 'fore');
+INSERT INTO public.user_role(id, user_id, role_id)VALUES (1, 1, 1);
+INSERT INTO public.user_role(id, user_id, role_id)VALUES (2, 2, 2);
+INSERT INTO public.user_role(id, user_id, role_id)VALUES (3, 3, 3);
 
-INSERT INTO public."user"(id, account, password, username, reg_time, fund_password)
-            VALUES(1, 'superAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是超级管理员', '2019-08-10 10:18:19','');
-INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-             VALUES (2, 'normalAdmin', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是普通管理员', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
-INSERT INTO public."user"(id, account, password, username, reg_time, email, fund_password)
-             VALUES (3, 'platformUser', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=', '我是平台用户，系统收钱地址钱包', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
+INSERT INTO public."sysuser"(id, account, password, username, reg_time, fund_password)
+VALUES(1, 'superAdmin', 'd11396ac6bcf65fddbf83854149a85c295d52f7fdcd538f538884a6c954808b2', '我是超级管理员', '2019-08-10 10:18:19','');
+INSERT INTO public."sysuser"(id, account, password, username, reg_time, email, fund_password)
+VALUES (2, 'normalAdmin', 'd11396ac6bcf65fddbf83854149a85c295d52f7fdcd538f538884a6c954808b2', '我是普通管理员', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');
+INSERT INTO public."sysuser"(id, account, password, username, reg_time, email, fund_password)
+VALUES (3, 'platformUser', 'd11396ac6bcf65fddbf83854149a85c295d52f7fdcd538f538884a6c954808b2', '我是平台用户，系统收钱地址钱包', '2019-08-10 10:18:19', '3542312@qq.com', 'QUJBNUYyM0M3OTNEN0I4MUFBOTZBOTkwOEI1NDI0MUE=');

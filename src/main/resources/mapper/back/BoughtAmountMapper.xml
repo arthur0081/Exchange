@@ -28,11 +28,11 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
-    insert into bought_amount (id, user_id, project_id, 
+    insert into bought_amount (user_id, project_id,
       coin_id, create_time, order_id, 
       withdraw, coin_amount, hos_amount, 
       symbol_id)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, 
+    values (#{userId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
       #{coinId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{orderId,jdbcType=VARCHAR}, 
       #{withdraw,jdbcType=INTEGER}, #{coinAmount,jdbcType=NUMERIC}, #{hosAmount,jdbcType=NUMERIC}, 
       #{symbolId,jdbcType=INTEGER})

@@ -19,7 +19,7 @@
 
     select
            count(1)
-    from t_trade t
+    from t_trade_view t
                     left join sysuser u on u.id = t.user_id
                     left join t_symbol s on s.id = t.symbol_id
     where 1 = 1
@@ -27,7 +27,7 @@
           and u.account = #{account,jdbcType=VARCHAR}
         </if>
         <if test="side != null">
-          and t.side = #{side,jdbcType=VARCHAR}
+          and t.side = #{side, jdbcType="VARCHAR"}
         </if>
         <if test="symbol != null">
           and t.symbol_id = #{symbol,jdbcType=INTEGER}
@@ -39,7 +39,7 @@
     select
             t.side, t.price, t.amount, t.fee, t.time, s.name, u.account
     from
-         t_trade t
+      t_trade_view t
                 left join sysuser u on u.id = t.user_id
                 left join t_symbol s on s.id = t.symbol_id
     where 1 = 1
@@ -47,7 +47,7 @@
                 and u.account = #{account,jdbcType=VARCHAR}
               </if>
               <if test="side != null">
-                and t.side = #{side,jdbcType=VARCHAR}
+                and t.side = #{side, jdbcType="VARCHAR"}
               </if>
               <if test="symbol != null">
                 and t.symbol_id = #{symbol,jdbcType=INTEGER}
