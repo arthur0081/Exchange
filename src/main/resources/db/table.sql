@@ -60,7 +60,7 @@ COMMENT ON TABLE public.bought_amount
 
 CREATE TABLE public.permission
 (
-    id integer NOT NULL DEFAULT nextval('function_id_seq'::regclass),
+    id integer NOT NULL DEFAULT nextval('permission_id_seq'::regclass),
     name character varying(128) COLLATE pg_catalog."default",
     per_code character varying(128) COLLATE pg_catalog."default",
     CONSTRAINT function_pkey PRIMARY KEY (id)
