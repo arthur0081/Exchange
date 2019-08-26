@@ -5,6 +5,7 @@ import com.slabs.exchange.common.exception.RespCommMessageEnum;
 import com.slabs.exchange.common.exception.RespMessage;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,5 +122,40 @@ public class ExchangePreconditions {
         if (!isID) {
             throw new ExchangeException(RespCommMessageEnum.IDCARD_ERROR);
         }
+    }
+
+    public static boolean objCheckIsNull(Object object) {
+        if (object == null) {
+            return true;
+        }
+        // 得到类对象
+        Class clazz = object.getClass();
+        // 得到所有属性
+        Field[] fields = clazz.getDeclaredFields();
+        //定义返回结果，默认为true
+        for (Field field: fields) {
+            //设置权限（很重要，否则获取不到private的属性，不了解的同学补习一下反射知识）
+            field.setAccessible(true);
+            Object fieldValue = null;
+            String fieldName = null;
+            try {
+                //得到属性值
+                fieldValue = field.get(object);
+
+                //得到属性类型
+                Type fieldType = field.getGenericType();
+                //得到属性名
+                fieldName = field.getName();
+
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (fieldName.equals("certificateType")) {
+                if (fieldValue == null || "".equals(fieldValue)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -44,8 +44,9 @@
     <result column="other" jdbcType="VARCHAR" property="other" />
     <result column="area_type" jdbcType="INTEGER" property="areaType" />
     <result column="init_price" jdbcType="NUMERIC" property="initPrice" />
-    <result column="coin" jdbcType="INTEGER" property="coin" />
+    <result column="coin_id" jdbcType="INTEGER" property="coinId" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="collect_coin_amount" jdbcType="NUMERIC" property="collectCoinAmount" />
   </resultMap>
   <sql id="Base_Column_List">
     id, name, addr, invest_amount, collect_amount, invest_tender, project_type, fund_use, 
@@ -54,7 +55,7 @@
     admin_fee, hold_cost, bonus_fee, bonus_resource, guarantee, brief_introduction, perimeter_match, 
     market_analysis, city_condition, cost_analysis, bonus_analysis, risk_analysis, admin_introduction, 
     project_platform_account, symbol, status, create_user, create_time, modify_user, 
-    modify_time, other, area_type, init_price, coin, user_id
+    modify_time, other, area_type, init_price, coin_id, user_id, collect_coin_amount
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -81,7 +82,8 @@
       symbol, status, create_user, 
       create_time, modify_user, modify_time, 
       other, area_type, init_price, 
-      coin, user_id)
+      coin_id, user_id, collect_coin_amount
+      )
     values (#{name,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR},
       #{investAmount,jdbcType=NUMERIC}, #{collectAmount,jdbcType=NUMERIC}, #{investTender,jdbcType=VARCHAR}, 
       #{projectType,jdbcType=VARCHAR}, #{fundUse,jdbcType=VARCHAR}, #{investPeriod,jdbcType=INTEGER}, 
@@ -96,7 +98,8 @@
       #{symbol,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{modifyUser,jdbcType=BIGINT}, #{modifyTime,jdbcType=TIMESTAMP}, 
       #{other,jdbcType=VARCHAR}, #{areaType,jdbcType=INTEGER}, #{initPrice,jdbcType=NUMERIC}, 
-      #{coin,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER})
+      #{coinId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{collectCoinAmount,jdbcType=NUMERIC}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Project">
     insert into project
@@ -227,11 +230,14 @@
       <if test="initPrice != null">
         init_price,
       </if>
-      <if test="coin != null">
-        coin,
+      <if test="coinId != null">
+        coin_id,
       </if>
       <if test="userId != null">
         user_id,
+      </if>
+      <if test="collectCoinAmount != null">
+        collect_coin_amount,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -361,11 +367,14 @@
       <if test="initPrice != null">
         #{initPrice,jdbcType=NUMERIC},
       </if>
-      <if test="coin != null">
-        #{coin,jdbcType=INTEGER},
+      <if test="coinId != null">
+        #{coinId,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="collectCoinAmount != null">
+        #{collectCoinAmount,jdbcType=NUMERIC},
       </if>
     </trim>
   </insert>
@@ -495,11 +504,14 @@
       <if test="initPrice != null">
         init_price = #{initPrice,jdbcType=NUMERIC},
       </if>
-      <if test="coin != null">
-        coin = #{coin,jdbcType=INTEGER},
+      <if test="coinId != null">
+        coin_id = #{coinId,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="collectCoinAmount != null">
+        collect_coin_amount = #{collectCoinAmount,jdbcType=NUMERIC},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -547,8 +559,9 @@
       other = #{other,jdbcType=VARCHAR},
       area_type = #{areaType,jdbcType=INTEGER},
       init_price = #{initPrice,jdbcType=NUMERIC},
-      coin = #{coin,jdbcType=INTEGER},
-      user_id = #{userId,jdbcType=INTEGER}
+      coin_id = #{coinId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      collect_coin_amount = #{collectCoinAmount,jdbcType=NUMERIC}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

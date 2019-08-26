@@ -102,10 +102,11 @@ public class Project implements Serializable {
 
     private BigDecimal initPrice;
 
-    private Integer coin;
+    private Integer coinId;
 
     private Integer userId;
 
-    private static final long serialVersionUID = 1L;
+    private BigDecimal collectCoinAmount;
 
+    private static final long serialVersionUID = 1L;
 }

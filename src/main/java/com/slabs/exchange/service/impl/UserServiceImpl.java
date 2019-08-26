@@ -383,24 +383,27 @@ public class UserServiceImpl extends BaseService implements IUserService {
         User user = userMapper.selectByPrimaryKey(userId);
         UserDto userDto = map(user, UserDto.class);
         Map<String, List<AttachFileDto>> idcardMap = new HashMap<>();
-        if (user.getCertificateType() == 1) {//idcard
-            List<AttachFile>  idcardFront = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_FRONT.getKey(), userId.longValue());
-            List<AttachFileDto> idcardFrontDtos = map(idcardFront, AttachFileDto.class);
-            idcardMap.put(CertificateEnum.IDCARD_FRONT.getKey(), idcardFrontDtos);
-
-            List<AttachFile>  idcardBack = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_BACK.getKey(), userId.longValue());
-            List<AttachFileDto> idcardBackDtos = map(idcardBack, AttachFileDto.class);
-            idcardMap.put(CertificateEnum.IDCARD_BACK.getKey(), idcardBackDtos);
-            userDto.setAttachFileDtoMap(idcardMap);
-
-        } else if(user.getCertificateType() == 2) {//passport
-            List<AttachFile> attachFiles = attachFileMapper.selectByTypeAndRefId(CertificateEnum.PASSPORT.getKey(), userId.longValue());
-            List<AttachFileDto> attachFileDtos = map(attachFiles, AttachFileDto.class);
-            userDto.setAttachFileList(attachFileDtos);
-        } else {
+        if (ExchangePreconditions.objCheckIsNull(user)) {
             //do nothing
-        }
+        } else {
+            if (user.getCertificateType() == 1) {//idcard
+                List<AttachFile>  idcardFront = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_FRONT.getKey(), userId.longValue());
+                List<AttachFileDto> idcardFrontDtos = map(idcardFront, AttachFileDto.class);
+                idcardMap.put(CertificateEnum.IDCARD_FRONT.getKey(), idcardFrontDtos);
 
+                List<AttachFile>  idcardBack = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_BACK.getKey(), userId.longValue());
+                List<AttachFileDto> idcardBackDtos = map(idcardBack, AttachFileDto.class);
+                idcardMap.put(CertificateEnum.IDCARD_BACK.getKey(), idcardBackDtos);
+                userDto.setAttachFileDtoMap(idcardMap);
+
+            } else if(user.getCertificateType() == 2) {//passport
+                List<AttachFile> attachFiles = attachFileMapper.selectByTypeAndRefId(CertificateEnum.PASSPORT.getKey(), userId.longValue());
+                List<AttachFileDto> attachFileDtos = map(attachFiles, AttachFileDto.class);
+                userDto.setAttachFileList(attachFileDtos);
+            } else {
+                //do nothing
+            }
+        }
         return new ResponseBean(200, "", userDto);
     }
 

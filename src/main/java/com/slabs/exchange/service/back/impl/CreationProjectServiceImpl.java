@@ -88,7 +88,7 @@ public class CreationProjectServiceImpl extends BaseService implements ICreation
         }
         // todo ShiroUtil.getUserId();
         project.setCreateTime(new Date());
-        project.setCoin(symbol.getCommodity());
+        project.setCoinId(symbol.getCommodity());
         projectMapper.insert(project);
 
         // 跟项目管理的币对这里设置成无效的

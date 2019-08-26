@@ -27,7 +27,7 @@
           and u.account = #{account,jdbcType=VARCHAR}
         </if>
         <if test="side != null">
-          and t.side = #{side, jdbcType="VARCHAR"}
+          and t.side = #{side, jdbcType=VARCHAR}::side
         </if>
         <if test="symbol != null">
           and t.symbol_id = #{symbol,jdbcType=INTEGER}
@@ -47,7 +47,7 @@
                 and u.account = #{account,jdbcType=VARCHAR}
               </if>
               <if test="side != null">
-                and t.side = #{side, jdbcType="VARCHAR"}
+                and t.side = #{side, jdbcType=VARCHAR}::side
               </if>
               <if test="symbol != null">
                 and t.symbol_id = #{symbol,jdbcType=INTEGER}

@@ -95,9 +95,17 @@ public class ProjectDto implements Serializable {
 
     private BigDecimal initPrice;
 
-    private Integer coin;
+    /**
+     * 募集的项目币种
+     */
+    private Integer coinId;
 
     private Integer userId;
+
+    /**
+     * 募集的项目币数量
+     */
+    private BigDecimal collectCoinAmount;
 
     /**
      * 附件

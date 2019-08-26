@@ -39,7 +39,7 @@
 
   <select id="getSymbols" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
-      s.id, c.name, pc.amount
+      s.id, s.name, pc.amount
     from
       t_coin c, project_coin pc, t_symbol s
     where

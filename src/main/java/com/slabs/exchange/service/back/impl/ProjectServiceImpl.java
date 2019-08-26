@@ -83,7 +83,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         }
         // todo ShiroUtil.getUserId();
         project.setCreateTime(new Date());
-        project.setCoin(symbol.getCommodity());
+        project.setCoinId(symbol.getCommodity());
         projectMapper.insert(project);
 
         // 跟项目管理的币对这里设置成无效的
@@ -336,13 +336,14 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
 
         // 计算出认购金额 (认购金额表中求和)
         // 对每个项目id都要 求和
-        List<BoughtAmountDto> boughtAmountDtos = boughtAmountExtMapper.getBoughtAmount(foreProjectList);
-
-        // 构建返回信息
-        for (ForeProjectDto foreProjectDto : foreProjectList) {
-            for (BoughtAmountDto boughtAmountDto: boughtAmountDtos) {
-                if (foreProjectDto.getId().intValue() == boughtAmountDto.getProjectId()) {
-                    foreProjectDto.setBoughtAmount(boughtAmountDto.getAmount());
+        if (foreProjectList.size() > 0) {
+            List<BoughtAmountDto> boughtAmountDtos = boughtAmountExtMapper.getBoughtAmount(foreProjectList);
+            // 构建返回信息
+            for (ForeProjectDto foreProjectDto : foreProjectList) {
+                for (BoughtAmountDto boughtAmountDto: boughtAmountDtos) {
+                    if (foreProjectDto.getId().intValue() == boughtAmountDto.getProjectId()) {
+                        foreProjectDto.setBoughtAmount(boughtAmountDto.getAmount());
+                    }
                 }
             }
         }
@@ -566,7 +567,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         BigDecimal coinAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice()).setScale(6, BigDecimal.ROUND_HALF_DOWN);
         boughtAmount.setCoinAmount(coinAmount);
         // 购买的币种
-        boughtAmount.setCoinId(project.getCoin());
+        boughtAmount.setCoinId(project.getCoinId());
         // 购买的项目
         boughtAmount.setProjectId(buyDto.getProjectId());
         // 给的预期年化收益（手工转平台币）
