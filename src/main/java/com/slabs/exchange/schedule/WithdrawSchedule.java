@@ -7,15 +7,12 @@ import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.config.ScheduleProperties;
 import com.slabs.exchange.mapper.fore.UserFundRequestMapper;
 import com.slabs.exchange.mapper.fore.WithdrawMapper;
-import com.slabs.exchange.model.entity.UserFundRequest;
-import com.slabs.exchange.model.entity.Withdraw;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 /**
  * 定时扫描表中的txid字段，看txid是否有效的

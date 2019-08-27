@@ -8,6 +8,7 @@ import com.slabs.exchange.common.config.ScheduleProperties;
 import com.slabs.exchange.common.enums.WithdrawStatusEnum;
 import com.slabs.exchange.mapper.back.BoughtAmountMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
+import com.slabs.exchange.model.dto.ExchangeApiResDto;
 import com.slabs.exchange.model.dto.WithdrawRequestDto;
 import com.slabs.exchange.model.entity.BoughtAmount;
 import com.slabs.exchange.model.entity.Symbol;
@@ -63,6 +64,8 @@ public class OrderWithdrawSchedule {
                symbolNameAndOrderIdMap.put("orderId", data);
                Symbol symbol = symbolMapper.selectByPrimaryKey(ba.getSymbolId());
                symbolNameAndOrderIdMap.put("symbolName", symbol.getName());
+
+               symbolNameAndOrderIdMap.put("userId", ba.getUserId().toString());
                list.add(symbolNameAndOrderIdMap);
                allOrderList.add(ba.getOrderId());
            }
@@ -71,6 +74,7 @@ public class OrderWithdrawSchedule {
            for (Map<String, String> map: list) {
                String orderId = "";
                String symbolName = "";
+               String userId = "";
                for(Map.Entry<String, String> entry : map.entrySet()){
                    if ("orderId".equals(entry.getKey())) {
                        orderId = entry.getValue();
@@ -78,27 +82,34 @@ public class OrderWithdrawSchedule {
                    if ("symbolName".equals(entry.getKey())) {
                        symbolName = entry.getValue();
                    }
+                   if ("userId".equals(entry.getKey())) {
+                       userId = entry.getValue();
+                   }
                }
                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
                Request request = new Request.Builder()
                        .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw() + symbolName)
                        .post(RequestBody.create(mediaType, orderId))
-                       .header("Authorization", "Bearer" + " " + JWTUtil.encode("3"))//使用平台方用户的token进行撤单
+                       .header("Authorization", "Bearer" + " " + JWTUtil.encode(userId))
                        .build();
                OkHttpClient okHttpClient = new OkHttpClient();
+               String resData = "";
                try {
-                   Response response = okHttpClient.newCall(request).execute();
+                   resData = okHttpClient.newCall(request).execute().body().toString();
                } catch (IOException e) {
                    e.printStackTrace();
                    log.error("order id:" + orderId + "withdraw failed." + "dateTime:" +  sdf.format(new Date()));
-                   WithdrawRequestDto wd = gson.fromJson(orderId, WithdrawRequestDto.class);
-                   failedList.add(wd.getOrder_id());
+               }
+               ExchangeApiResDto ear = gson.fromJson(resData, ExchangeApiResDto.class);
+               if (ear.getId() == null) {
+                   failedList.add(orderId);
                }
            }
 
            for (String orderId: failedList) {
                allOrderList.remove(orderId);
            }
+
            // 根据订单id更新撤销状态为3
            if (allOrderList.size() > 0) {
                boughtAmountMapper.updateWithdrawStatusByOrderId(allOrderList);

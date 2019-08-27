@@ -465,7 +465,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                     projectMapper.updateByPrimaryKey(project);
 
                     OrderDto orderDto = new OrderDto();
-                    orderDto.setSide(BuyAndSaleEnum.SALE.getKey());
+                    orderDto.setSide(BuyAndSaleEnum.SELL.getKey());
                     orderDto.setAmount(project.getCollectAmount());
                     orderDto.setPrice(initPrice);
                     String requestData = gson.toJson(orderDto);
@@ -482,8 +482,16 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                     } catch (IOException e) {
                         e.printStackTrace();
                         // 挂该项目的所有卖单失败！
-                        log.error("side: sale projectId:"+ projectId +  "ordered failed." + sdf.format(new Date()));
+                        log.error("side: sell projectId:"+ projectId +  "ordered failed." + sdf.format(new Date()));
                     }
+
+                    ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+                    if (exchangeApiResDto.getId() == null) {
+                        log.info("项目对应的项目方人user id:：" + project.getUserId() + "ordered failed." + sdf.format(new Date()));
+                    } else {
+
+                    }
+
                     // 更新认购记录状态为1（表达此项目认购成功）
                     boughtAmountMapper.updateWithdrawByProjectId(projectId.intValue(), Integer.valueOf(WithdrawStatusEnum.SUCCEED.getKey()));
                     // 更新币对为有效状态
@@ -499,14 +507,15 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                 // 找到这个项目的平台方用户，挂买单（回购）。
                 OrderDto orderDto = new OrderDto();
                 orderDto.setSide(BuyAndSaleEnum.BUY.getKey());
-                orderDto.setAmount(project.getCollectAmount());
+                // 这个是创建项目的时候，填写此项目需要多少项目币
+                orderDto.setAmount(project.getCollectCoinAmount());
                 orderDto.setPrice(initPrice);
                 String requestData = gson.toJson(orderDto);
                 MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
                 Request request = new Request.Builder()
                         .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
                         .post(RequestBody.create(mediaType, requestData))
-                        .header("Authorization", "Bearer" + " " + JWTUtil.encode(ShiroUtils.getUserId().toString()))
+                        .header("Authorization", "Bearer" + " " + JWTUtil.encode(project.getUserId().toString()))//项目方用户
                         .build();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 String resData = "";
@@ -516,6 +525,10 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
                     e.printStackTrace();
                     // 挂该项目的所有买单失败！
                     log.error("side: sale projectId:"+ projectId +  "ordered failed." + sdf.format(new Date()));
+                }
+                ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+                if (exchangeApiResDto.getId() == null) {
+                    log.info("项目对应的项目方人user id:：" + project.getUserId() + "ordered failed." + sdf.format(new Date()));
                 }
 
                 throw new ExchangeException("项目结束！");
@@ -554,13 +567,17 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             log.error("user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
             throw new ExchangeException("购买失败，请重新购买！");
         }
+        ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+        if (exchangeApiResDto.getId() == null) {
+            log.info("user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
+            throw new ExchangeException("购买失败，请重新购买！");
+        }
 
         // 购买成功
         BoughtAmount boughtAmount = new BoughtAmount();
         boughtAmount.setCreateTime(new Date());
         // 认购状态
         boughtAmount.setWithdraw(Integer.valueOf(WithdrawStatusEnum.DEFAULT.getKey()));
-        ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
         // 挂单返回的id
         boughtAmount.setOrderId(exchangeApiResDto.getId());
         // 购买项目币的数量

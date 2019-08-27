@@ -19,9 +19,7 @@
 
     <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
         select count(1) from project p, t_symbol s where s.id = p.symbol
-        and p.status = 'on_sale'
-        or p.status = 'end_sale'
-        or p.status = 'pre_sale'
+        and p.status in('on_sale', 'end_sale', 'pre_sale')
         and p.start_time > now()
     </select>
 
@@ -31,9 +29,7 @@
                p.brief_introduction, p.project_type
          from
             project p, t_symbol s where s.id = p.symbol
-        and p.status = 'on_sale'
-        or p.status = 'end_sale'
-        or p.status = 'pre_sale'
+        and p.status in('on_sale', 'end_sale', 'pre_sale')
         and p.start_time > now()
         limit #{pageSize} offset #{start}
     </select>

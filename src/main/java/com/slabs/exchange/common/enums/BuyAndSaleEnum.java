@@ -2,7 +2,7 @@ package com.slabs.exchange.common.enums;
 
 public enum BuyAndSaleEnum {
 
-    SALE("sale", "挂卖单"),
+    SELL("sell", "挂卖单"),
     BUY("buy", "挂买单");
 
     private String key;
