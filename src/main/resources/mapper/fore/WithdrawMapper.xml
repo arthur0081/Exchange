@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.fore.WithdrawMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.Withdraw">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="receiver_id" jdbcType="INTEGER" property="receiverId" />
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="txid" jdbcType="VARCHAR" property="txid" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="contract_addr" jdbcType="VARCHAR" property="contractAddr" />
+    <result column="api_response_id" jdbcType="VARCHAR" property="apiResponseId" />
+    <result column="sender" jdbcType="VARCHAR" property="sender" />
+    <result column="receiver" jdbcType="VARCHAR" property="receiver" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, receiver_id, coin, amount, txid, time, status, contract_addr, api_response_id, 
+    sender, receiver
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from withdraw
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from withdraw
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.Withdraw">
+    insert into withdraw (receiver_id, coin,
+      amount, txid, time, 
+      status, contract_addr, api_response_id, 
+      sender, receiver)
+    values (#{receiverId,jdbcType=INTEGER}, #{coin,jdbcType=VARCHAR},
+      #{amount,jdbcType=NUMERIC}, #{txid,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=BIT}, #{contractAddr,jdbcType=VARCHAR}, #{apiResponseId,jdbcType=VARCHAR}, 
+      #{sender,jdbcType=VARCHAR}, #{receiver,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.Withdraw">
+    insert into withdraw
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="receiverId != null">
+        receiver_id,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="txid != null">
+        txid,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="contractAddr != null">
+        contract_addr,
+      </if>
+      <if test="apiResponseId != null">
+        api_response_id,
+      </if>
+      <if test="sender != null">
+        sender,
+      </if>
+      <if test="receiver != null">
+        receiver,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="receiverId != null">
+        #{receiverId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="txid != null">
+        #{txid,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="contractAddr != null">
+        #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="apiResponseId != null">
+        #{apiResponseId,jdbcType=VARCHAR},
+      </if>
+      <if test="sender != null">
+        #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="receiver != null">
+        #{receiver,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.Withdraw">
+    update withdraw
+    <set>
+      <if test="receiverId != null">
+        receiver_id = #{receiverId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="txid != null">
+        txid = #{txid,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="contractAddr != null">
+        contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="apiResponseId != null">
+        api_response_id = #{apiResponseId,jdbcType=VARCHAR},
+      </if>
+      <if test="sender != null">
+        sender = #{sender,jdbcType=VARCHAR},
+      </if>
+      <if test="receiver != null">
+        receiver = #{receiver,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.Withdraw">
+    update withdraw
+    set receiver_id = #{receiverId,jdbcType=INTEGER},
+      coin = #{coin,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=NUMERIC},
+      txid = #{txid,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=BIT},
+      contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      api_response_id = #{apiResponseId,jdbcType=VARCHAR},
+      sender = #{sender,jdbcType=VARCHAR},
+      receiver = #{receiver,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

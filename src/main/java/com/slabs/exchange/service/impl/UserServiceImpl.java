@@ -1,5 +1,7 @@
 package com.slabs.exchange.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.enums.CertificateEnum;
 import com.slabs.exchange.common.enums.YNEnum;
@@ -9,12 +11,10 @@ import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.UserRoleMapper;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.ext.UserExtMapper;
+import com.slabs.exchange.mapper.fore.WithdrawMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
-import com.slabs.exchange.model.entity.AttachFile;
-import com.slabs.exchange.model.entity.Role;
-import com.slabs.exchange.model.entity.User;
-import com.slabs.exchange.model.entity.UserRole;
+import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.*;
@@ -30,11 +30,15 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
 @Service
 public class UserServiceImpl extends BaseService implements IUserService {
+    private static final Gson gson = new GsonBuilder().create();
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -49,6 +53,8 @@ public class UserServiceImpl extends BaseService implements IUserService {
     private RedisUtil redisUtil;
     @Resource
     private ExchangeApiProperties exchangeApiProperties;
+    @Resource
+    private WithdrawMapper withdrawMapper;
 
     /**
      * 新增用户
@@ -64,7 +70,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
         // 新增用户时间
         user.setRegTime(new Date());
         //TODO 调用钱包api
-
         user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
         // todo 当前登陆用户
 
@@ -183,19 +188,37 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setInvitationCode(invitationCode);
         userMapper.updateByPrimaryKeySelective(user);
 
+        // 给一个默认角色
+        List<Integer> roleList = new ArrayList<>();
+        roleList.add(5);//写死为5
+        userDto.setRoleList(roleList);
+        // 构建用户角色对应关系
+        List<UserRole> userRoleList = buildUserRoles(userDto, user);
+        // 批量插入用户角色对应关系信息
+        userRoleMapper.batchInsert(userRoleList);
+
+
         if (userDto.getInvitationCode() == null || userDto.getInvitationCode().equals("")) {
             // do nothing
         } else {
-            // 给主动邀请的人发放 平台币，直接调用充值接口。
+            // 给主动邀请的人发放 平台币，直接调用提现接口。（提现的概念来描述从一个钱包地址转账到另一个钱包地址）
             // todo
             User user1 = userMapper.selectByInvitationCode(userDto.getInvitationCode());
 
-            //对方ip地址
+            //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
+            ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
+            // 后期都修改成可配置
+            apiWithdrawDto.setAmount(new BigDecimal(30));
+            apiWithdrawDto.setCoin("hos");
+            apiWithdrawDto.setOperation("redeem");
+            // 暂时不知道这个含义
+            apiWithdrawDto.setTxid("");
+            String requestData = gson.toJson(apiWithdrawDto);
             MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-            String requestBody = "{}";
             Request request = new Request.Builder()
-                    .url(exchangeApiProperties.getHost() + exchangeApiProperties.getCharge())
-                    .post(RequestBody.create(mediaType, requestBody))
+                    .url("http://39.104.136.10:8000" + "/simulate_asset")
+                    .post(RequestBody.create(mediaType, requestData))
+                    .header("Authorization", "Bearer" + " " + JWTUtil.encode("10001"))//当前注册用户的id
                     .build();
             OkHttpClient okHttpClient = new OkHttpClient();
             String resData = "";
@@ -203,17 +226,26 @@ public class UserServiceImpl extends BaseService implements IUserService {
                 resData = okHttpClient.newCall(request).execute().body().string();
             } catch (IOException e) {
                 e.printStackTrace();
-                log.error("Register giving hos: user id is " + user1.getId() + " " + user1.getUsername() + " charging failed.");
+                log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+                throw new ExchangeException("奖励平台币失败！");
+            }
+            ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+            if (exchangeApiResDto.getId() == null) {
+                log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+                throw new ExchangeException("奖励平台币失败！");
             }
         }
-        // 给一个默认角色
-        List<Integer> roleList = new ArrayList<>();
-        roleList.add(5);
-        userDto.setRoleList(roleList);
-        // 构建用户角色对应关系
-        List<UserRole> userRoleList = buildUserRoles(userDto, user);
-        // 批量插入用户角色对应关系信息
-        userRoleMapper.batchInsert(userRoleList);
+
+        Withdraw withdraw = new Withdraw();
+        withdraw.setAmount(new BigDecimal(30));
+        withdraw.setCoin("hos");
+        withdraw.setStatus(false);
+        withdraw.setSender("发送人的钱包地址");
+        withdraw.setReceiver("接收人的钱包地址");
+        withdraw.setTime(new Date());
+        withdraw.setContractAddr("该币的合约地址");
+
+        withdrawMapper.insert(withdraw);
 
         return new ResponseBean(200, "", null);
     }
