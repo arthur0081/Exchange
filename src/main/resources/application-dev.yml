@@ -116,6 +116,9 @@ exchange-api:
   wallet-addr: http://192.168.50.200:10000/newAddress
   issue-token: http://192.168.50.200:10000/newContract
 
+platform-coin:
+  name: ddd
+  award-amount: 30
 
   ######################################################################################################################
   #

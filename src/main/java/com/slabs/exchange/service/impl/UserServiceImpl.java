@@ -219,7 +219,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
 
         // 给一个默认角色
         List<Integer> roleList = new ArrayList<>();
-        roleList.add(5);//写死为5
+        roleList.add(5);//写死为5,写成可配置
         userDto.setRoleList(roleList);
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);
@@ -258,7 +258,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
                 ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
                 if (exchangeApiResDto.getId() == null) {
                     log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
-                    throw new ExchangeException("奖励平台币失败！");
+                    throw new ExchangeException("奖励平台币失败！!" + resData);
                 }
 
                 Withdraw withdraw = new Withdraw();
@@ -269,6 +269,10 @@ public class UserServiceImpl extends BaseService implements IUserService {
                 withdraw.setReceiver(user1.getWalletAddr());
                 withdraw.setTime(new Date());
                 withdraw.setContractAddr(walletAndContractAddrDto.getContractAddr());
+                // 交易所提现接口返回id
+                withdraw.setApiResponseId(exchangeApiResDto.getId());
+                withdraw.setReceiverId(user1.getId());
+
                 withdrawMapper.insert(withdraw);
             }
 

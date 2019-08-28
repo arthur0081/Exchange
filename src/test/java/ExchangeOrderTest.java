@@ -4,6 +4,7 @@ import com.slabs.exchange.common.enums.BuyAndSaleEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
+import com.slabs.exchange.model.entity.Withdraw;
 import com.slabs.exchange.util.ExchangePreconditions;
 import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.ShiroUtils;
@@ -18,8 +19,12 @@ public class ExchangeOrderTest {
 
     public static void main(String[] args) {
 
-          //buyOrder("sell");
+        //buyOrder("sell");
+        //getWalletAddr();
 
+    }
+
+    private static void getWalletAddr() {
         NewWalletAddrDto walletAddrDto = new NewWalletAddrDto();
         walletAddrDto.setUserId(35);
         String requestData = gson.toJson(walletAddrDto);
@@ -37,8 +42,6 @@ public class ExchangeOrderTest {
             throw new ExchangeException("获取钱包地址失败！");
         }
         WalletResponseDto walletResponseDto =  gson.fromJson(resData, WalletResponseDto.class);
-
-
     }
 
     /**
