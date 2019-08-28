@@ -3,27 +3,31 @@ package com.slabs.exchange.service.back.impl;
 import com.slabs.exchange.common.enums.AttachEnum;
 import com.slabs.exchange.common.enums.CoinEnum;
 import com.slabs.exchange.common.enums.YNEnum;
+import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.back.CoinMapper;
 import com.slabs.exchange.mapper.back.ProjectCoinMapper;
 import com.slabs.exchange.model.common.ResponseBean;
-import com.slabs.exchange.model.dto.AttachFileDto;
-import com.slabs.exchange.model.dto.CoinDto;
-import com.slabs.exchange.model.dto.ProjectCoinDto;
+import com.slabs.exchange.model.dto.*;
 import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.back.ICoinService;
+import com.slabs.exchange.util.ExchangeApiUtil;
 import com.slabs.exchange.util.ShiroUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CoinServiceImpl extends BaseService implements ICoinService {
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     @Resource
     private CoinMapper coinMapper;
     @Resource
@@ -32,6 +36,8 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
     private ProjectCoinMapper projectCoinMapper;
     @Resource
     private AttachFileMapper attachFileMapper;
+    @Resource
+    private ExchangeApiUtil exchangeApiUtil;
 
     /**
      * 得到所有的 USDT 和 HOS
@@ -47,12 +53,26 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
      */
     @Override
     public ResponseBean insert(CoinDto coinDto) {
-        // todo 调用发币地址
         User user = userMapper.selectByPrimaryKey(coinDto.getUserId());
-        // wallet_add, amount, name
-        String contractAddr = "I am a project coin token addr.";
+        IssueTokenDto issueTokenDto = new IssueTokenDto();
+        // 给到项目方用户
+        issueTokenDto.setAddress(user.getWalletAddr());
+        issueTokenDto.setName(coinDto.getName());
+        issueTokenDto.setTotalAmount(coinDto.getAmount());
+        // 调用钱包服务
+        WalletResponseDto walletResponseDto = null;
+        try {
+            walletResponseDto = exchangeApiUtil.issueToken(issueTokenDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("create coin failed" + sdf.format(new Date()));
+            throw new ExchangeException("创建币失败！");
+        }
+        if (walletResponseDto.getCode() == 500) {
+            log.error("create coin failed." + "code: 500" + sdf.format(new Date()));
+            throw new ExchangeException("创建币失败！!");
+        }
 
-        // 如果捕获到异常，创建币种失败。
         // 如果成功的话，才执行后续逻辑过程。
         Coin coin = map(coinDto, Coin.class);
         coin.setPrecision(6);
@@ -64,7 +84,7 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
         projectCoin.setCoinId(coin.getId());
         // other 代表项目币
         projectCoin.setCoinType(CoinEnum.OTHER.getKey());
-        projectCoin.setContractAddr(contractAddr);
+        projectCoin.setContractAddr(walletResponseDto.getBody());
         projectCoinMapper.insert(projectCoin);
 
         // 构建附件信息

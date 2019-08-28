@@ -3,6 +3,7 @@ package com.slabs.exchange.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.config.ExchangeApiProperties;
+import com.slabs.exchange.common.config.PlatformCoinProperties;
 import com.slabs.exchange.common.enums.CertificateEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
@@ -10,6 +11,7 @@ import com.slabs.exchange.mapper.RoleMapper;
 import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.UserRoleMapper;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
+import com.slabs.exchange.mapper.back.CoinMapper;
 import com.slabs.exchange.mapper.ext.UserExtMapper;
 import com.slabs.exchange.mapper.fore.WithdrawMapper;
 import com.slabs.exchange.model.common.ResponseBean;
@@ -52,9 +54,15 @@ public class UserServiceImpl extends BaseService implements IUserService {
     @Resource
     private RedisUtil redisUtil;
     @Resource
+    private WithdrawMapper withdrawMapper;
+    @Resource
+    private ExchangeApiUtil exchangeApiUtil;
+    @Resource
     private ExchangeApiProperties exchangeApiProperties;
     @Resource
-    private WithdrawMapper withdrawMapper;
+    private CoinMapper coinMapper;
+    @Resource
+    private PlatformCoinProperties platformCoinProperties;
 
     /**
      * 新增用户
@@ -69,11 +77,21 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setFundPassword(ShiroUtils.encodeSalt("12345678", salt));
         // 新增用户时间
         user.setRegTime(new Date());
-        //TODO 调用钱包api
-        user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
-        // todo 当前登陆用户
-
         userMapper.insert(user);
+
+        WalletResponseDto walletResponseDto = null;
+        try {
+            walletResponseDto = exchangeApiUtil.getWalletAddr(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExchangeException("新增用户失败！");
+        }
+        if (walletResponseDto.getCode() == 500) {
+            log.error("insert user failed" + sdf.format(new Date()));
+            throw new ExchangeException("新增用户失败！！");
+        }
+        user.setWalletAddr(walletResponseDto.getBody());
+
         // 给用户生成一个邀请码
         String invitationCode = Sha256.getSHA256(user.getId().toString() + System.currentTimeMillis()).substring(0, 8);
         user.setInvitationCode(invitationCode);
@@ -178,11 +196,22 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setPassword(ShiroUtils.encodeSalt(plainPassword, salt));
         user.setFundPassword(ShiroUtils.encodeSalt(plainFundPassword, salt));
         user.setRegTime(new Date());
-        // 钱包地址
-        //TODO 调用钱包api
-
-        user.setWalletAddr("QOdsfsQWdfREHIsdfsafWEHFIDHFdfjdkjgasdjkl=ad");
         userMapper.insert(user);
+        // 钱包地址
+        WalletResponseDto walletResponseDto = null;
+        try {
+            walletResponseDto = exchangeApiUtil.getWalletAddr(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("register user failed, get wallet addr failed" + sdf.format(new Date()));
+            throw new ExchangeException("注册用户失败！");
+        }
+        if (walletResponseDto.getCode() == 500) {
+            log.error("register user failed," + "code:" + walletResponseDto.getCode() + sdf.format(new Date()));
+            throw new ExchangeException("注册用户失败！");
+        }
+        user.setWalletAddr(walletResponseDto.getBody());
+
         // 给注册用户插入邀请码(唯一性)
         String invitationCode = Sha256.getSHA256(user.getId().toString() + System.currentTimeMillis()).substring(0, 8);
         user.setInvitationCode(invitationCode);
@@ -201,48 +230,49 @@ public class UserServiceImpl extends BaseService implements IUserService {
             // do nothing
         } else {
             // 给主动邀请的人发放 平台币，直接调用提现接口。（提现的概念来描述从一个钱包地址转账到另一个钱包地址）
-            // todo
             User user1 = userMapper.selectByInvitationCode(userDto.getInvitationCode());
+            if (user1 != null) {
+                // 平台币持有人的钱包地址和平台比的合约地址
+                WalletAndContractAddrDto  walletAndContractAddrDto = coinMapper.getWalletAndContractAddrByCoinName(platformCoinProperties.getCoinName());
+                //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
+                ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
+                // 后期都修改成可配置
+                apiWithdrawDto.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
+                apiWithdrawDto.setCoin(platformCoinProperties.getCoinName());//hos
+                String requestData = gson.toJson(apiWithdrawDto);
+                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+                Request request = new Request.Builder()
+                        .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw())
+                        .post(RequestBody.create(mediaType, requestData))
+                        .header("Authorization", "Bearer" + " " + JWTUtil.encode(walletAndContractAddrDto.getUserId().toString()))//平台币的持有人
+                        .build();
+                OkHttpClient okHttpClient = new OkHttpClient();
+                String resData = "";
+                try {
+                    resData = okHttpClient.newCall(request).execute().body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+                    throw new ExchangeException("奖励平台币失败！");
+                }
+                ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+                if (exchangeApiResDto.getId() == null) {
+                    log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+                    throw new ExchangeException("奖励平台币失败！");
+                }
 
-            //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
-            ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
-            // 后期都修改成可配置
-            apiWithdrawDto.setAmount(new BigDecimal(30));
-            apiWithdrawDto.setCoin("hos");
-            String requestData = gson.toJson(apiWithdrawDto);
-            MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-            Request request = new Request.Builder()
-                    .url("http://39.104.136.10:8000" + "/simulate_asset")
-                    .post(RequestBody.create(mediaType, requestData))
-                    .header("Authorization", "Bearer" + " " + JWTUtil.encode("10001"))//当前注册用户的id
-                    .build();
-            OkHttpClient okHttpClient = new OkHttpClient();
-            String resData = "";
-            try {
-                resData = okHttpClient.newCall(request).execute().body().string();
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
-                throw new ExchangeException("奖励平台币失败！");
+                Withdraw withdraw = new Withdraw();
+                withdraw.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
+                withdraw.setCoin(platformCoinProperties.getCoinName());//hos
+                withdraw.setStatus(false);
+                withdraw.setSender(walletAndContractAddrDto.getWalletAddr());//平台币持有人的钱包地址
+                withdraw.setReceiver(user1.getWalletAddr());
+                withdraw.setTime(new Date());
+                withdraw.setContractAddr(walletAndContractAddrDto.getContractAddr());
+                withdrawMapper.insert(withdraw);
             }
-            ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
-            if (exchangeApiResDto.getId() == null) {
-                log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
-                throw new ExchangeException("奖励平台币失败！");
-            }
+
         }
-
-        Withdraw withdraw = new Withdraw();
-        withdraw.setAmount(new BigDecimal(30));
-        withdraw.setCoin("hos");
-        withdraw.setStatus(false);
-        withdraw.setSender("发送人的钱包地址");
-        withdraw.setReceiver("接收人的钱包地址");
-        withdraw.setTime(new Date());
-        withdraw.setContractAddr("该币的合约地址");
-
-        withdrawMapper.insert(withdraw);
-
         return new ResponseBean(200, "", null);
     }
 

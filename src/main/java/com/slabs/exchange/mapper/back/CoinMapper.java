@@ -1,7 +1,9 @@
 package com.slabs.exchange.mapper.back;
 
+import com.slabs.exchange.model.dto.WalletAndContractAddrDto;
 import com.slabs.exchange.model.entity.Coin;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -25,4 +27,8 @@ public interface CoinMapper {
     List<Coin> getNonsymbolCoin();
 
     List<Coin> getAllCoins();
+
+    @Select("select s.wallet_addr walletAddr, pc.contract_addr contractAddr, s.id userId from t_coin tc, project_coin pc, sysuser s where tc.id = pc.coin_id and pc.user_id = s.id and tc.name = #{coinName}")
+    WalletAndContractAddrDto getWalletAndContractAddrByCoinName(String coinName);
+
 }

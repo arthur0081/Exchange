@@ -109,13 +109,12 @@ oss:
   #
   ######################################################################################################################
 exchange-api:
-  host: 39.104.136.10:8000
-  withdraw: /cancel/
-  order: /limit/bvp_usdt
-  charge: /charge
-  wallet-addr: 39.104.136.10:8000/wallet-addr/get
-  issue:
-    token: 39.104.136.10:8000/issue/token
+  host: http://39.104.136.10:8000
+  order: /limit/
+  cancel: /cancel/
+  withdraw: /withdraw
+  wallet-addr: http://192.168.50.200:10000/newAddress
+  issue-token: http://192.168.50.200:10000/newContract
 
 
   ######################################################################################################################

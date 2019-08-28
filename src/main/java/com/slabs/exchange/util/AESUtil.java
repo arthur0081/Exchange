@@ -50,4 +50,9 @@ public class AESUtil {
             return null;
         }
     }
+
+    public static void main(String[] args) {
+        String aa = AESUtil.encrypt("123456");
+        System.out.println(aa);
+    }
 }

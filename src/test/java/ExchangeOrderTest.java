@@ -2,9 +2,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.enums.BuyAndSaleEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
-import com.slabs.exchange.model.dto.ExchangeApiResDto;
-import com.slabs.exchange.model.dto.OrderDto;
-import com.slabs.exchange.model.dto.WithdrawRequestDto;
+import com.slabs.exchange.model.common.ResponseBean;
+import com.slabs.exchange.model.dto.*;
+import com.slabs.exchange.util.ExchangePreconditions;
 import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.ShiroUtils;
 import okhttp3.*;
@@ -15,17 +15,29 @@ import java.util.Date;
 
 public class ExchangeOrderTest {
     private static final Gson gson = new GsonBuilder().create();
+
     public static void main(String[] args) {
-//        String side = BuyAndSaleEnum.BUY.getKey();
-//        buyOrder(side);
 
+          //buyOrder("sell");
 
-//          String side = BuyAndSaleEnum.SELL.getKey();
-//          buyOrder(side);
+        NewWalletAddrDto walletAddrDto = new NewWalletAddrDto();
+        walletAddrDto.setUserId(35);
+        String requestData = gson.toJson(walletAddrDto);
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        Request request = new Request.Builder()
+                .url("http://192.168.50.207:8081/newAddress")
+                .post(RequestBody.create(mediaType, requestData))
+                .build();
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String resData = "";
+        try {
+             resData = okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ExchangeException("获取钱包地址失败！");
+        }
+        WalletResponseDto walletResponseDto =  gson.fromJson(resData, WalletResponseDto.class);
 
-
-        //jwt带上用户id(只能自己撤自己的单)
-       withdrawOrder();
 
     }
 
@@ -85,5 +97,7 @@ public class ExchangeOrderTest {
         }
         System.out.println("我是请求后返回的交易txid:" + exchangeApiResDto.getId());
     }
+
+
 
 }

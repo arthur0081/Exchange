@@ -11,19 +11,34 @@ public class ExchangeApiProperties {
     @Value("${exchange-api.host}")
     private String host;
 
-    @Value("${exchange-api.withdraw}")
-    private String withdraw;
+    /**
+     * 取消挂单
+     */
+    @Value("${exchange-api.cancel}")
+    private String cancel;
 
+    /**
+     * 挂买单和挂卖单
+     */
     @Value("${exchange-api.order}")
     private String order;
 
-    @Value("${exchange-api.charge}")
-    private String charge;
+    /**
+     * 提现
+     */
+    @Value("${exchange-api.withdraw}")
+    private String withdraw;
 
+    /**
+     * 获取钱包地址
+     */
     @Value("${exchange-api.wallet-addr}")
     private String walletAddr;
 
-    @Value("${exchange-api.issue.token}")
+    /**
+     * 获取合约地址
+     */
+    @Value("${exchange-api.issue-token}")
     private String issueToken;
 
 }
