@@ -55,13 +55,10 @@ public class WithdrawServiceImpl extends BaseService implements IWithdrawService
         ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
         apiWithdrawDto.setAmount(withdrawDto.getAmount());
         apiWithdrawDto.setCoin(withdrawDto.getCoin());
-        apiWithdrawDto.setOperation("redeem");
-        // 暂时不知道这个含义
-        apiWithdrawDto.setTxid("");
         String requestData = gson.toJson(apiWithdrawDto);
         MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
         Request request = new Request.Builder()
-                .url("http://39.104.136.10:8000" + "/simulate_asset")
+                .url("http://39.104.136.10:8000" + "/withdraw")
                 .post(RequestBody.create(mediaType, requestData))
                 .header("Authorization", "Bearer" + " " + JWTUtil.encode("10001"))//当前登陆用户Id
                 .build();
@@ -90,6 +87,8 @@ public class WithdrawServiceImpl extends BaseService implements IWithdrawService
         withdraw.setReceiver("接收人的钱包地址");
         withdraw.setTime(new Date());
         withdraw.setContractAddr("该币的合约地址");
+        // 交易系统提现接口返回的id
+        withdraw.setApiResponseId(exchangeApiResDto.getId());
 
         withdrawMapper.insert(withdraw);
 

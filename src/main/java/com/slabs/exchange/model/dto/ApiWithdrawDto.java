@@ -17,17 +17,7 @@ public class ApiWithdrawDto {
     private String coin;
 
     /**
-     * 操作方式（deposit, redeem）
-     */
-    private String operation;
-
-    /**
      * 提取的数量
      */
     private BigDecimal amount;
-
-    /**
-     * ？
-     */
-    private String txid;
 }

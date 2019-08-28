@@ -158,4 +158,40 @@ public class ExchangePreconditions {
         }
         return false;
     }
+
+
+    public static boolean objCheckInviteCodeIsNull(Object object) {
+        if (object == null) {
+            return true;
+        }
+        // 得到类对象
+        Class clazz = object.getClass();
+        // 得到所有属性
+        Field[] fields = clazz.getDeclaredFields();
+        //定义返回结果，默认为true
+        for (Field field: fields) {
+            //设置权限（很重要，否则获取不到private的属性，不了解的同学补习一下反射知识）
+            field.setAccessible(true);
+            Object fieldValue = null;
+            String fieldName = null;
+            try {
+                //得到属性值
+                fieldValue = field.get(object);
+
+                //得到属性类型
+                Type fieldType = field.getGenericType();
+                //得到属性名
+                fieldName = field.getName();
+
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (fieldName.equals("invitationCode")) {
+                if (fieldValue == null || "".equals(fieldValue)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

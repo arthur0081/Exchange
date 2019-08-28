@@ -197,8 +197,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
         // 批量插入用户角色对应关系信息
         userRoleMapper.batchInsert(userRoleList);
 
-
-        if (userDto.getInvitationCode() == null || userDto.getInvitationCode().equals("")) {
+        if (ExchangePreconditions.objCheckInviteCodeIsNull(userDto)) {
             // do nothing
         } else {
             // 给主动邀请的人发放 平台币，直接调用提现接口。（提现的概念来描述从一个钱包地址转账到另一个钱包地址）
@@ -210,9 +209,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
             // 后期都修改成可配置
             apiWithdrawDto.setAmount(new BigDecimal(30));
             apiWithdrawDto.setCoin("hos");
-            apiWithdrawDto.setOperation("redeem");
-            // 暂时不知道这个含义
-            apiWithdrawDto.setTxid("");
             String requestData = gson.toJson(apiWithdrawDto);
             MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
             Request request = new Request.Builder()
@@ -383,7 +379,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
         }
         return attachFiles;
     }
-
 
     /**
      * 用户账户不能重复
