@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.back.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.OrderListDto">
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="side" jdbcType="VARCHAR" property="side" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="price" jdbcType="NUMERIC" property="price" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="account" jdbcType="NUMERIC" property="account" />
+  </resultMap>
+
+  <select id="count" parameterType="com.slabs.exchange.model.dto.OrderListDto" resultType="int">
+    select count(1)
+    from (
+        select s.name, o.side, o.amount, o.price, o.time, o.user_id
+            from
+                t_order o, t_symbol s
+            where o.symbol_id = s.id
+            <if test="symbol != null">
+              and s.id = #{symbol,jdbcType=INTEGER}
+            </if>
+            <if test="side != null">
+              and o.side = #{side, jdbcType=VARCHAR}::side
+            </if>
+        ) e,sysuser u
+    where u.id = e.user_id
+    <if test="account != null and account != ''">
+      and u.account = #{account,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+
+  <select id="list" parameterType="com.slabs.exchange.model.dto.OrderListDto" resultMap="BaseResultMap">
+    select e.name, e.side, e.amount, e.price, e.time, u.account
+    from (
+    select s.name, o.side, o.amount, o.price, o.time, o.user_id
+    from
+    t_order o, t_symbol s
+    where o.symbol_id = s.id
+    <if test="symbol != null">
+      and s.id = #{symbol,jdbcType=INTEGER}
+    </if>
+    <if test="side != null">
+      and o.side = #{side, jdbcType=VARCHAR}::side
+    </if>
+    ) e,sysuser u
+    where u.id = e.user_id
+    <if test="account != null and account != ''">
+      and u.account = #{account,jdbcType=VARCHAR}
+    </if>
+    limit #{pageSize} offset #{start}
+  </select>
+
+</mapper>

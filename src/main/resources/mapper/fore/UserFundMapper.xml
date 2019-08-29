@@ -108,8 +108,8 @@
     select * from t_user_fund where user_id = #{userId,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByUserIdAndUsdt" parameterType="int" resultMap="BaseResultMap">
-    select * from t_user_fund where user_id = #{userId,jdbcType=INTEGER} and coin = 'usdt'
+  <select id="selectByUserIdAndCoinName" parameterType="int" resultMap="BaseResultMap">
+    select * from t_user_fund where user_id = #{userId,jdbcType=INTEGER} and coin = #{coinName, jdbcType=VARCHAR}
   </select>
 
   <select id="selectHosAmount" resultType="decimal">

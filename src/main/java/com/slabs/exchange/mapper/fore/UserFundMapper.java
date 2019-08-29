@@ -27,7 +27,7 @@ public interface UserFundMapper {
 
     List<UserFund> selectByUserId(Integer userId);
 
-    UserFund selectByUserIdAndUsdt(Integer userId);
+    UserFund selectByUserIdAndCoinName(Integer userId, String coinName);
 
     BigDecimal selectHosAmount();
 

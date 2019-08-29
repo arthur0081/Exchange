@@ -75,6 +75,20 @@ NO MINVALUE
 NO MAXVALUE
 CACHE 1;
 
+CREATE SEQUENCE award_platform_coin_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+CREATE SEQUENCE invitation_record_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
 alter table attach_file alter column id set default nextval('attach_file_id_seq');
 alter table bought_amount alter column id set default nextval('bought_amount_id_seq');
 alter table bought_amount alter column id set default nextval('bought_amount_id_seq');
@@ -86,5 +100,8 @@ alter table sysuser alter column id set default nextval('sysuser_id_seq');
 alter table user_role alter column id set default nextval('user_role_id_seq');
 alter table role alter column id set default nextval('role_id_seq');
 alter table withdraw alter column id set default nextval('withdraw_id_seq');
+alter table award_platform_coin alter column id set default nextval('award_platform_coin_id_seq');
+alter table invitation_record alter column id set default nextval('invitation_record_id_seq');
+
 
 

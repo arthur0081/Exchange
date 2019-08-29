@@ -72,6 +72,8 @@ public class PageParamDto implements Serializable {
      */
     private Integer hourChange = 1;
 
+    private Integer userId;
+
 
     private static final long serialVersionUID = 1L;
 }

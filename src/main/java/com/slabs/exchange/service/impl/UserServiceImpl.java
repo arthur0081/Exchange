@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.config.PlatformCoinProperties;
 import com.slabs.exchange.common.enums.CertificateEnum;
+import com.slabs.exchange.common.enums.ExceptionReasonEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.RoleMapper;
@@ -13,6 +14,8 @@ import com.slabs.exchange.mapper.UserRoleMapper;
 import com.slabs.exchange.mapper.back.AttachFileMapper;
 import com.slabs.exchange.mapper.back.CoinMapper;
 import com.slabs.exchange.mapper.ext.UserExtMapper;
+import com.slabs.exchange.mapper.fore.AwardPlatformCoinMapper;
+import com.slabs.exchange.mapper.fore.InvitationRecordMapper;
 import com.slabs.exchange.mapper.fore.WithdrawMapper;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
@@ -29,6 +32,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -63,6 +67,10 @@ public class UserServiceImpl extends BaseService implements IUserService {
     private CoinMapper coinMapper;
     @Resource
     private PlatformCoinProperties platformCoinProperties;
+    @Resource
+    private AwardPlatformCoinMapper awardPlatformCoinMapper;
+    @Resource
+    private InvitationRecordMapper invitationRecordMapper;
 
     /**
      * 新增用户
@@ -162,31 +170,19 @@ public class UserServiceImpl extends BaseService implements IUserService {
     }
 
     /**
-     * 分页查询
+     * 注册前台用户(一旦获取用户钱包地址抛出异常，回滚)
      */
     @Override
-    public ResponseBean list(PageParamDto pageParamDto) {
-        // 获取总数
-        int total = userExtMapper.count();
-
-        // 获取列表
-        int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
-        pageParamDto.setStart(start);
-        List<UserListDto> list = userExtMapper.list(pageParamDto);
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("total", total);
-        data.put("pageSize", pageParamDto.getPageSize());
-        data.put("currentPage", pageParamDto.getCurrentPage());
-        data.put("list", list);
-        return new ResponseBean(200, "", data);
-    }
-
-    /**
-     * 注册前台用户
-     */
-    @Override
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public ResponseBean register(UserDto userDto) {
+        User benefitUser = null;
+        if (!ExchangePreconditions.objCheckInviteCodeIsNull(userDto)) {
+            benefitUser = userMapper.selectByInvitationCode(userDto.getInvitationCode());
+            if (benefitUser == null) {
+                throw new ExchangeException("该邀请码错误，请核对邀请码！");
+            }
+        }
+
         // 插入用户基础信息
         User user = map(userDto, User.class);
         String plainPassword = AESUtil.desEncrypt(userDto.getPassword());
@@ -197,6 +193,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setFundPassword(ShiroUtils.encodeSalt(plainFundPassword, salt));
         user.setRegTime(new Date());
         userMapper.insert(user);
+
         // 钱包地址
         WalletResponseDto walletResponseDto = null;
         try {
@@ -219,65 +216,124 @@ public class UserServiceImpl extends BaseService implements IUserService {
 
         // 给一个默认角色
         List<Integer> roleList = new ArrayList<>();
-        roleList.add(5);//写死为5,写成可配置
+        roleList.add(5);//todo 写死为5,写成可配置
         userDto.setRoleList(roleList);
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);
-        // 批量插入用户角色对应关系信息
+        // 批量插入用户角色对应关系
         userRoleMapper.batchInsert(userRoleList);
-
-        if (ExchangePreconditions.objCheckInviteCodeIsNull(userDto)) {
-            // do nothing
-        } else {
-            // 给主动邀请的人发放 平台币，直接调用提现接口。（提现的概念来描述从一个钱包地址转账到另一个钱包地址）
-            User user1 = userMapper.selectByInvitationCode(userDto.getInvitationCode());
-            if (user1 != null) {
-                // 平台币持有人的钱包地址和平台比的合约地址
-                WalletAndContractAddrDto  walletAndContractAddrDto = coinMapper.getWalletAndContractAddrByCoinName(platformCoinProperties.getCoinName());
-                //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
-                ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
-                // 后期都修改成可配置
-                apiWithdrawDto.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
-                apiWithdrawDto.setCoin(platformCoinProperties.getCoinName());//hos
-                String requestData = gson.toJson(apiWithdrawDto);
-                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-                Request request = new Request.Builder()
-                        .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw())
-                        .post(RequestBody.create(mediaType, requestData))
-                        .header("Authorization", "Bearer" + " " + JWTUtil.encode(walletAndContractAddrDto.getUserId().toString()))//平台币的持有人
-                        .build();
-                OkHttpClient okHttpClient = new OkHttpClient();
-                String resData = "";
-                try {
-                    resData = okHttpClient.newCall(request).execute().body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
-                    throw new ExchangeException("奖励平台币失败！");
-                }
-                ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
-                if (exchangeApiResDto.getId() == null) {
-                    log.error("user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
-                    throw new ExchangeException("奖励平台币失败！!" + resData);
-                }
-
-                Withdraw withdraw = new Withdraw();
-                withdraw.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
-                withdraw.setCoin(platformCoinProperties.getCoinName());//hos
-                withdraw.setStatus(false);
-                withdraw.setSender(walletAndContractAddrDto.getWalletAddr());//平台币持有人的钱包地址
-                withdraw.setReceiver(user1.getWalletAddr());
-                withdraw.setTime(new Date());
-                withdraw.setContractAddr(walletAndContractAddrDto.getContractAddr());
-                // 交易所提现接口返回id
-                withdraw.setApiResponseId(exchangeApiResDto.getId());
-                withdraw.setReceiverId(user1.getId());
-
-                withdrawMapper.insert(withdraw);
-            }
-
+        // 插入邀请记录
+        if (benefitUser != null) {
+            insertInvitationRecord(benefitUser, user);
         }
-        return new ResponseBean(200, "", null);
+//        // 给主动邀请的人发放 平台币，直接调用提现接口。（提现的概念来描述从一个钱包地址(总账户钱包地址)转账到另一个钱包地址）
+//        if (benefitUser != null) {
+//            // 该币的合约地址
+//            WalletAndContractAddrDto  walletAndContractAddrDto = coinMapper.getWalletAndContractAddrByCoinName(platformCoinProperties.getCoinName());
+//            //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
+//            ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
+//            apiWithdrawDto.setAmount(platformCoinProperties.getAwardAmount());
+//            apiWithdrawDto.setCoin(platformCoinProperties.getCoinName());//hos
+//            String requestData = gson.toJson(apiWithdrawDto);
+//            MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+//            Request request = new Request.Builder()
+//                    .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw())
+//                    .post(RequestBody.create(mediaType, requestData))
+//                    .header("Authorization", "Bearer" + " " + JWTUtil.encode("1"))//总账户
+//                    .build();
+//            OkHttpClient okHttpClient = new OkHttpClient();
+//            String resData = "";
+//            try {
+//                resData = okHttpClient.newCall(request).execute().body().string();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                log.error("network question：award hos:" + "user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+//                //记录平台币奖励失败的数据，定时任务扫描这张表继续进行平台币转账
+//                insertAwardPlatformCoin(benefitUser, walletAndContractAddrDto, ExceptionReasonEnum.NETWORK.getKey());
+//            }
+//            ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+//            if (exchangeApiResDto.getId() == null) {
+//                log.error("business question:award hos:" + "user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+//                //记录平台币奖励失败的数据，定时任务扫描这张表继续进行平台币转账
+//                insertAwardPlatformCoin(benefitUser, walletAndContractAddrDto, ExceptionReasonEnum.BUSINESS.getKey());
+//            } else {
+//                // 提现表（后台管理的）
+//                insertWithdraw(benefitUser, walletAndContractAddrDto, exchangeApiResDto);
+//                // 邀请记录表
+//                insertInvitationRecord(benefitUser, user);
+//            }
+//        }
+
+        return new ResponseBean(200, "", "注册成功");
+    }
+
+    /**
+     * 邀请记录表
+     */
+    private void insertInvitationRecord(User benefitUser, User user) {
+        InvitationRecord invitationRecord = new InvitationRecord();
+        // 持有邀请码的人就是 主动邀请人
+        invitationRecord.setBenefitUser(benefitUser.getId());
+        invitationRecord.setAmount(platformCoinProperties.getAwardAmount());
+        invitationRecord.setCoin(platformCoinProperties.getCoinName());
+        // 注册的用户就是 被动邀请人
+        invitationRecord.setInviteeUser(user.getId());
+        invitationRecord.setTime(new Date());
+        invitationRecordMapper.insert(invitationRecord);
+    }
+
+    private void insertWithdraw(User benefitUser, WalletAndContractAddrDto walletAndContractAddrDto, ExchangeApiResDto exchangeApiResDto) {
+        Withdraw withdraw = new Withdraw();
+        withdraw.setAmount(platformCoinProperties.getAwardAmount());
+        withdraw.setCoin(platformCoinProperties.getCoinName());//hos
+        withdraw.setStatus(false);
+        User adminUser = userMapper.selectByPrimaryKey(1);
+        withdraw.setSender(adminUser.getWalletAddr());//总账户钱包地址
+        withdraw.setReceiver(benefitUser.getWalletAddr());
+        withdraw.setTime(new Date());
+        withdraw.setContractAddr(walletAndContractAddrDto.getContractAddr());
+        // 交易所提现接口返回id
+        withdraw.setApiResponseId(exchangeApiResDto.getId());
+        // 发起提现的人(总账户)
+        withdraw.setReceiverId(1);
+        withdrawMapper.insert(withdraw);
+    }
+
+    /**
+     * //记录平台币奖励失败的数据
+     */
+    private void insertAwardPlatformCoin(User benefitUser, WalletAndContractAddrDto walletAndContractAddrDto, String reason) {
+        AwardPlatformCoin awardPlatformCoin = new AwardPlatformCoin();
+        awardPlatformCoin.setAmount(platformCoinProperties.getAwardAmount());
+        awardPlatformCoin.setCoin(platformCoinProperties.getCoinName());
+        awardPlatformCoin.setContractAddr(walletAndContractAddrDto.getContractAddr());
+        awardPlatformCoin.setWalletAddr(benefitUser.getWalletAddr());
+        awardPlatformCoin.setStatus(false);
+        awardPlatformCoin.setTime(new Date());
+        awardPlatformCoin.setUserId(benefitUser.getId());
+        awardPlatformCoin.setReason(reason);
+        awardPlatformCoinMapper.insert(awardPlatformCoin);
+    }
+
+    /**
+     * 分页查询
+     */
+    @Override
+    public ResponseBean list(PageParamDto pageParamDto) {
+        // 获取总数
+        int total = userExtMapper.count();
+
+        // 获取列表
+        int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
+        pageParamDto.setStart(start);
+        List<UserListDto> list = userExtMapper.list(pageParamDto);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("total", total);
+        data.put("pageSize", pageParamDto.getPageSize());
+        data.put("currentPage", pageParamDto.getCurrentPage());
+        data.put("list", list);
+        return new ResponseBean(200, "", data);
     }
 
     /**

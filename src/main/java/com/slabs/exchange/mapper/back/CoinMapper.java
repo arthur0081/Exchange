@@ -28,7 +28,7 @@ public interface CoinMapper {
 
     List<Coin> getAllCoins();
 
-    @Select("select s.wallet_addr walletAddr, pc.contract_addr contractAddr, s.id userId from t_coin tc, project_coin pc, sysuser s where tc.id = pc.coin_id and pc.user_id = s.id and tc.name = #{coinName}")
+    @Select("select pc.contract_addr contractAddr from t_coin tc, project_coin pc where tc.id = pc.coin_id and tc.name = #{coinName}")
     WalletAndContractAddrDto getWalletAndContractAddrByCoinName(String coinName);
 
 }

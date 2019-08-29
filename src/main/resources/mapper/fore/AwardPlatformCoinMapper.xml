@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.fore.AwardPlatformCoinMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.AwardPlatformCoin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="wallet_addr" jdbcType="VARCHAR" property="walletAddr" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="contract_addr" jdbcType="VARCHAR" property="contractAddr" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, coin, amount, wallet_addr, time, status, contract_addr, reason
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from award_platform_coin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from award_platform_coin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.AwardPlatformCoin">
+    insert into award_platform_coin (user_id, coin,
+      amount, wallet_addr, time, 
+      status, contract_addr, reason
+      )
+    values (#{userId,jdbcType=INTEGER}, #{coin,jdbcType=VARCHAR},
+      #{amount,jdbcType=NUMERIC}, #{walletAddr,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=BIT}, #{contractAddr,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.AwardPlatformCoin">
+    insert into award_platform_coin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="walletAddr != null">
+        wallet_addr,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="contractAddr != null">
+        contract_addr,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="walletAddr != null">
+        #{walletAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="contractAddr != null">
+        #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.AwardPlatformCoin">
+    update award_platform_coin
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="walletAddr != null">
+        wallet_addr = #{walletAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="contractAddr != null">
+        contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.AwardPlatformCoin">
+    update award_platform_coin
+    set user_id = #{userId,jdbcType=INTEGER},
+      coin = #{coin,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=NUMERIC},
+      wallet_addr = #{walletAddr,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=BIT},
+      contract_addr = #{contractAddr,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

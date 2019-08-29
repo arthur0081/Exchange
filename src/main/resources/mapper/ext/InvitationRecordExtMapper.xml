@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.ext.back.InvitationRecordExtMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.InvitationRecordDto">
+    <id column="id" jdbcType="INTEGER" property="userId" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+  </resultMap>
+
+    <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+        select  count(1)
+            from (
+                select ir.benefit_user user_id, sum(amount) amount
+                    from invitation_record ir group by ir.benefit_user
+                ) tt, sysuser s
+        where s.id = tt.user_id
+        <if test="account != null and account != ''">
+            and s.account = #{account,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+        select  s.id, s.account, tt.amount,s.user_name userName
+        from (
+        select ir.benefit_user user_id, sum(amount) amount
+        from invitation_record ir group by ir.benefit_user
+        ) tt, sysuser s
+        where s.id = tt.user_id
+        <if test="account != null and account != ''">
+            and s.account = #{account,jdbcType=VARCHAR}
+        </if>
+        limit #{pageSize} offset #{start}
+    </select>
+
+    <select id="getInviteeUsers" parameterType="int" resultMap="BaseResultMap">
+        select s.account from invitation_record  ir
+            left join sysuser s
+            on ir.invitee_user = s.id and ir.benefit_user = #{userId}
+    </select>
+
+    <select id="myInvitationCount" resultType="int" parameterType="int">
+        select count(1) from invitation_record ir
+            where ir.benefit_user = #{userId}
+    </select>
+
+    <select id="myInvitationList" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+        select s.account, ir.amount
+        from
+             invitation_record ir, sysuser s
+        where
+              ir.invitee_user = s.id and ir.benefit_user = #{userId}
+        limit #{pageSize} offset #{start}
+    </select>
+
+</mapper>
