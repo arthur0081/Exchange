@@ -1,30 +1,42 @@
 package com.slabs.exchange.service.fore.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.slabs.exchange.common.config.ExchangeApiProperties;
+import com.slabs.exchange.common.config.PlatformCoinProperties;
 import com.slabs.exchange.common.enums.CoinEnum;
+import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.UserMapper;
+import com.slabs.exchange.mapper.back.CoinMapper;
 import com.slabs.exchange.mapper.back.SymbolMapper;
 import com.slabs.exchange.mapper.back.TradeMapper;
 import com.slabs.exchange.mapper.fore.UserFundMapper;
+import com.slabs.exchange.mapper.fore.WithdrawMapper;
 import com.slabs.exchange.model.common.ResponseBean;
-import com.slabs.exchange.model.dto.ForeUserFundDto;
-import com.slabs.exchange.model.entity.Symbol;
-import com.slabs.exchange.model.entity.Trade;
-import com.slabs.exchange.model.entity.User;
-import com.slabs.exchange.model.entity.UserFund;
+import com.slabs.exchange.model.dto.*;
+import com.slabs.exchange.model.entity.*;
 import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.fore.IUserFundService;
+import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.ShiroUtils;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
+@Slf4j
 public class UserFundServiceImpl extends BaseService implements IUserFundService {
+    private static final Gson gson = new GsonBuilder().create();
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     @Resource
     private UserFundMapper userFundMapper;
@@ -34,6 +46,14 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
     private TradeMapper tradeMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private WithdrawMapper withdrawMapper;
+    @Resource
+    private CoinMapper coinMapper;
+    @Resource
+    private ExchangeApiProperties exchangeApiProperties;
+    @Resource
+    private PlatformCoinProperties platformCoinProperties;
 
     /**
      *  各种币跟USDT的换算方式最新交易。求和。
@@ -181,12 +201,64 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
 
 
     /**
-     *  充值和提现 都是通过 钱包(服务) 调用 黄奕提供的接口，而黄毅的接口都是直接修改数据库表的。
+     *  充值和提现，黄毅的接口（交易引擎服务）都是直接修改数据库表的。
      */
     @Override
     public ResponseBean getWalletAddr() {
         User user = userMapper.selectByPrimaryKey(ShiroUtils.getUserId());
         return new ResponseBean(200, "", user.getWalletAddr());
+    }
+
+    /**
+     * 提现
+     */
+    @Override
+    public ResponseBean withdraw(WithdrawDto withdrawDto) {
+        // 该币持有人的钱包地址和该币的合约地址
+        WalletAndContractAddrDto walletAndContractAddrDto = coinMapper.getWalletAndContractAddrByCoinName(platformCoinProperties.getCoinName());
+        //调用交易引擎的提现接口， 它会返回id（数字的字符串类型）
+        ApiWithdrawDto apiWithdrawDto = new ApiWithdrawDto();
+        apiWithdrawDto.setAmount(withdrawDto.getAmount());
+        apiWithdrawDto.setCoin(withdrawDto.getCoin());
+        String requestData = gson.toJson(apiWithdrawDto);
+        MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+        Request request = new Request.Builder()
+                .url(exchangeApiProperties.getHost() + exchangeApiProperties.getWithdraw())
+                .post(RequestBody.create(mediaType, requestData))
+                .header("Authorization", "Bearer" + " " + JWTUtil.encode(walletAndContractAddrDto.getUserId().toString()))//平台币的持有人
+                .build();
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String resData = "";
+        try {
+            resData = okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("network question: user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+            throw new ExchangeException("提现失败！");
+        }
+        ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+        if (exchangeApiResDto.getId() == null) {
+            log.error("business question: user id:" + ShiroUtils.getUserId() + "withdraw failed." + sdf.format(new Date()));
+            throw new ExchangeException("提现失败！!" + resData);
+        }
+
+        Withdraw withdraw = new Withdraw();
+        withdraw.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
+        withdraw.setCoin(platformCoinProperties.getCoinName());//hos
+        withdraw.setStatus(false);
+        withdraw.setSender(walletAndContractAddrDto.getWalletAddr());//该币持有人的钱包地址（usdt总地址或者项目币控制人的地址）
+        withdraw.setReceiver(withdrawDto.getWalletAddr());
+        withdraw.setTime(new Date());
+        withdraw.setContractAddr(walletAndContractAddrDto.getContractAddr());
+        // 交易所提现接口返回id
+        withdraw.setApiResponseId(exchangeApiResDto.getId());
+
+        withdraw.setReceiverId(ShiroUtils.getUserId());
+
+        withdrawMapper.insert(withdraw);
+
+        return new ResponseBean(200, "","提现成功！");
+
     }
 
 }

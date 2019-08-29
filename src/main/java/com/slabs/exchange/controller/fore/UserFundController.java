@@ -1,6 +1,7 @@
 package com.slabs.exchange.controller.fore;
 
 import com.slabs.exchange.model.common.ResponseBean;
+import com.slabs.exchange.model.dto.WithdrawDto;
 import com.slabs.exchange.service.fore.IUserFundService;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public class UserFundController {
     }
 
     /**
-     * 充值（给当前登陆者返回用户的钱包地址）
+     * 充值（给当前登陆者返回用户的钱包地址）（充值对于后台：就这一个功能）
      */
     @PostMapping("get-wallet-addr")
     public ResponseBean getWalletAddr() {
@@ -36,6 +37,15 @@ public class UserFundController {
     }
 
     /**
-     * 充值和提现 都是通过 钱包 调用 黄奕提供的接口，而黄毅的接口都是直接修改数据库表的。
+     * 提现通过调用黄奕的提现接口，而黄毅的接口都是直接修改数据库表的。
      */
+
+    /**
+     * 提现（给当前登陆者返回用户的钱包地址）
+     */
+    @PostMapping("withdraw")
+    public ResponseBean withdraw(WithdrawDto withdrawDto) {
+        return userFundService.withdraw(withdrawDto);
+    }
+
 }
