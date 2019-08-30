@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Data
 public class BoughtAmount implements Serializable {
-
+    
     private Integer id;
 
     private Integer userId;
@@ -32,6 +32,8 @@ public class BoughtAmount implements Serializable {
     private BigDecimal hosAmount;
 
     private Integer symbolId;
+
+    private BigDecimal usdtAmount;
 
     private static final long serialVersionUID = 1L;
 }

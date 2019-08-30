@@ -13,7 +13,6 @@ import com.slabs.exchange.model.dto.WithdrawRequestDto;
 import com.slabs.exchange.model.entity.BoughtAmount;
 import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.util.JWTUtil;
-import com.slabs.exchange.util.ShiroUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -110,7 +109,7 @@ public class OrderWithdrawSchedule {
                allOrderList.remove(orderId);
            }
 
-           // 根据订单id更新撤销状态为3
+           // 根据订单id更新撤销状态为3  (3代表撤回成功的交易)（项目失败的订单需要撤回）
            if (allOrderList.size() > 0) {
                boughtAmountMapper.updateWithdrawStatusByOrderId(allOrderList);
            }

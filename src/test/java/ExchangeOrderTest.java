@@ -12,11 +12,14 @@ public class ExchangeOrderTest {
     private static final Gson gson = new GsonBuilder().create();
 
     public static void main(String[] args) {
-
-        //buyOrder("sell");
-        //getWalletAddr();
+        BigDecimal aa = new BigDecimal(0.50);
+        BigDecimal bb = new BigDecimal(100);
+        System.out.println(aa.divide(bb));
 
     }
+
+
+
 
     private static void getWalletAddr() {
         NewWalletAddrDto walletAddrDto = new NewWalletAddrDto();

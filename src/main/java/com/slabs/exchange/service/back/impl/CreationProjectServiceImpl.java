@@ -368,7 +368,7 @@ public class CreationProjectServiceImpl extends BaseService implements ICreation
         Integer userId = ShiroUtils.getUserId();
 
         // 得到当前登陆用户的账户余额(user_fund表)
-        UserFund userFund = userFundMapper.selectByUserIdAndUsdt(userId);
+        UserFund userFund = userFundMapper.selectByUserIdAndCoinName(userId, CoinEnum.USDT.getKey());
 
         // 得到当前登陆用户的钱包地址(wallet表)
         User user = userMapper.selectByPrimaryKey(userId);

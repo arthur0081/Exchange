@@ -12,10 +12,11 @@
     <result column="coin_amount" jdbcType="NUMERIC" property="coinAmount" />
     <result column="hos_amount" jdbcType="NUMERIC" property="hosAmount" />
     <result column="symbol_id" jdbcType="INTEGER" property="symbolId" />
+    <result column="usdt_amount" jdbcType="NUMERIC" property="usdtAmount" />
   </resultMap>
   <sql id="Base_Column_List">
     id, user_id, project_id, coin_id, create_time, order_id, withdraw, coin_amount, hos_amount, 
-    symbol_id
+    symbol_id, usdt_amount
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -31,11 +32,11 @@
     insert into bought_amount (user_id, project_id,
       coin_id, create_time, order_id, 
       withdraw, coin_amount, hos_amount, 
-      symbol_id)
+      symbol_id, usdt_amount)
     values (#{userId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER},
       #{coinId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{orderId,jdbcType=VARCHAR}, 
       #{withdraw,jdbcType=INTEGER}, #{coinAmount,jdbcType=NUMERIC}, #{hosAmount,jdbcType=NUMERIC}, 
-      #{symbolId,jdbcType=INTEGER})
+      #{symbolId,jdbcType=INTEGER}, #{usdtAmount,jdbcType=NUMERIC})
   </insert>
   <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.BoughtAmount">
     insert into bought_amount
@@ -70,6 +71,9 @@
       <if test="symbolId != null">
         symbol_id,
       </if>
+      <if test="usdtAmount != null">
+        usdt_amount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -101,6 +105,9 @@
       </if>
       <if test="symbolId != null">
         #{symbolId,jdbcType=INTEGER},
+      </if>
+      <if test="usdtAmount != null">
+        #{usdtAmount,jdbcType=NUMERIC},
       </if>
     </trim>
   </insert>
@@ -134,6 +141,9 @@
       <if test="symbolId != null">
         symbol_id = #{symbolId,jdbcType=INTEGER},
       </if>
+      <if test="usdtAmount != null">
+        usdt_amount = #{usdtAmount,jdbcType=NUMERIC},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -147,24 +157,8 @@
       withdraw = #{withdraw,jdbcType=INTEGER},
       coin_amount = #{coinAmount,jdbcType=NUMERIC},
       hos_amount = #{hosAmount,jdbcType=NUMERIC},
-      symbol_id = #{symbolId,jdbcType=INTEGER}
+      symbol_id = #{symbolId,jdbcType=INTEGER},
+      usdt_amount = #{usdtAmount,jdbcType=NUMERIC}
     where id = #{id,jdbcType=INTEGER}
-  </update>
-
-  <update id="updateWithdrawByProjectId" parameterType="int">
-    update bought_amount set withdraw = #{status, jdbcType=INTEGER} where project_id = #{projectId,jdbcType=INTEGER}
-  </update>
-
-  <select id="getWithdrawsByNum" resultMap="BaseResultMap">
-    select * from bought_amount where withdraw = #{status,jdbcType=INTEGER}
-    limit #{num,jdbcType=INTEGER}
-  </select>
-
-  <update id="updateWithdrawStatusByOrderId" parameterType="java.util.List">
-    <foreach collection="list" item="orderId" index="index" open="" close=";" separator=";">
-      update bought_amount set
-      withdraw = 3
-      where order_id = #{orderId,jdbcType=VARCHAR}
-    </foreach>
   </update>
 </mapper>

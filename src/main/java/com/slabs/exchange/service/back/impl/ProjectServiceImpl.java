@@ -401,7 +401,11 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         BigDecimal boughtAmount = buyDto.getBoughtAmount();
         BigDecimal amount = initPrice.multiply(boughtAmount);
         UserFund userFund = userFundMapper.selectByUserIdAndCoinName(ShiroUtils.getUserId(), CoinEnum.USDT.getKey());
-        if (userFund.getAmount() == null || userFund.getAmount().compareTo(amount) < 0) {
+
+        // 计算出可用余额
+        BigDecimal availableAmount = userFund.getAmount().subtract(userFund.getOrderLocked()).subtract(userFund.getWithdrawLocked());
+
+        if (userFund.getAmount() == null || availableAmount.compareTo(amount) < 0) {
             throw new ExchangeException("用户余额不足！");
         }
 
@@ -598,16 +602,18 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         // 挂单返回的id
         boughtAmount.setOrderId(exchangeApiResDto.getId());
         // 购买项目币的数量
-        BigDecimal coinAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice()).setScale(6, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal coinAmount = buyDto.getBoughtAmount();
         boughtAmount.setCoinAmount(coinAmount);
         // 购买的币种
         boughtAmount.setCoinId(project.getCoinId());
         // 购买的项目
         boughtAmount.setProjectId(buyDto.getProjectId());
         // 给的预期年化收益（手工转平台币）
-        BigDecimal hosAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice()).multiply(project.getExpectYearBonus()).setScale(6, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal expectYearBonus =  project.getExpectYearBonus().divide(new BigDecimal(100), 6, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal hosAmount = buyDto.getBoughtAmount().multiply(buyDto.getInitPrice()).multiply(expectYearBonus).setScale(6, BigDecimal.ROUND_HALF_DOWN);
         boughtAmount.setHosAmount(hosAmount);
         boughtAmount.setSymbolId(project.getSymbol().intValue());
+        boughtAmount.setUsdtAmount(coinAmount.multiply(project.getInitPrice()).setScale(6, BigDecimal.ROUND_HALF_DOWN));
 
         boughtAmountMapper.insert(boughtAmount);
     }

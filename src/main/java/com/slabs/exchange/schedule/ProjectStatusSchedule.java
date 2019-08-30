@@ -145,7 +145,6 @@ public class ProjectStatusSchedule {
                         }
                     }
                 }
-                //认购结束如何更改为项目结束（项目方挂买）
                 //认购结束（项目方挂卖单）
                 if (ProjectStatusEnum.END_SALE.getKey().equals(project.getStatus())) {
                     //项目开始时间大于当前时间
@@ -255,10 +254,7 @@ public class ProjectStatusSchedule {
         //b,考虑认购中，可能修改成认购结束，或者项目结束。
         //c,考虑认购结束，可能修改成项目结束。
         while (true) {
-            List<BoughtAmount> boughtAmounts = boughtAmountMapper.getWithdrawsByNum(scheduleProperties.getNum(), Integer.valueOf(WithdrawStatusEnum.WITHDRAW_NEED.getKey()));
-            if (boughtAmounts.size() == 0) {
-                return;
-            }
+
         }
     }
 

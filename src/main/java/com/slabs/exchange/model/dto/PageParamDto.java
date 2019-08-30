@@ -74,6 +74,8 @@ public class PageParamDto implements Serializable {
 
     private Integer userId;
 
+    private Integer projectId;
+
 
     private static final long serialVersionUID = 1L;
 }

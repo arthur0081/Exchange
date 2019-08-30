@@ -243,9 +243,10 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         }
 
         Withdraw withdraw = new Withdraw();
-        withdraw.setAmount(new BigDecimal(platformCoinProperties.getAwardAmount()));
+        withdraw.setAmount(platformCoinProperties.getAwardAmount());
         withdraw.setCoin(platformCoinProperties.getCoinName());//hos
         withdraw.setStatus(false);
+
         withdraw.setSender(walletAndContractAddrDto.getWalletAddr());//该币持有人的钱包地址（usdt总地址或者项目币控制人的地址）
         withdraw.setReceiver(withdrawDto.getWalletAddr());
         withdraw.setTime(new Date());
