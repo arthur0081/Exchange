@@ -564,4 +564,12 @@
       collect_coin_amount = #{collectCoinAmount,jdbcType=NUMERIC}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="getAfterPublish" resultMap="BaseResultMap">
+    select *
+    from
+      project p
+    where
+     p.status in('on_sale', 'end_sale', 'pre_sale')
+  </select>
 </mapper>

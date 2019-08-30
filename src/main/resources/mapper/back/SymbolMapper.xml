@@ -199,8 +199,8 @@
     select * from t_symbol
   </select>
 
-  <update id="updateValid2True" parameterType="int">
-    update t_symbol set valid = true where id = #{symbolId,jdbcType=INTEGER}
+  <update id="updateValid">
+    update t_symbol set valid = #{valid, jdbcType=BOOLEAN} where id = #{symbolId,jdbcType=INTEGER}
   </update>
 
   <select id="getAllStableSymbols" resultMap="BaseResultMap" parameterType="int">

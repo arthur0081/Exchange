@@ -1,6 +1,6 @@
 package com.slabs.exchange.common.enums;
 
-public enum BuyAndSaleEnum {
+public enum BuyAndSellEnum {
 
     SELL("sell", "挂卖单"),
     BUY("buy", "挂买单");
@@ -8,7 +8,7 @@ public enum BuyAndSaleEnum {
     private String key;
     private String value;
 
-    BuyAndSaleEnum(String key, String value) {
+    BuyAndSellEnum(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -21,10 +21,10 @@ public enum BuyAndSaleEnum {
         return value;
     }
 
-    public static BuyAndSaleEnum getByKey(String key){
-        for(BuyAndSaleEnum buyAndSaleEnum : values()){
-            if (buyAndSaleEnum.getKey().equals(key)) {
-                return buyAndSaleEnum;
+    public static BuyAndSellEnum getByKey(String key){
+        for(BuyAndSellEnum buyAndSellEnum : values()){
+            if (buyAndSellEnum.getKey().equals(key)) {
+                return buyAndSellEnum;
             }
         }
         return null;

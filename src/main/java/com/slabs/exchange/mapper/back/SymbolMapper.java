@@ -37,7 +37,7 @@ public interface SymbolMapper {
 
     List<Symbol> getAllSymbols();
 
-    void updateValid2True(Integer symbolId);
+    void updateValid(Integer symbolId, boolean valid);
 
     List<Symbol> getAllStableSymbols(Integer symbolId);
 

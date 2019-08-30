@@ -1,18 +1,12 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.slabs.exchange.common.enums.BuyAndSaleEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
-import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.*;
-import com.slabs.exchange.model.entity.Withdraw;
-import com.slabs.exchange.util.ExchangePreconditions;
 import com.slabs.exchange.util.JWTUtil;
-import com.slabs.exchange.util.ShiroUtils;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class ExchangeOrderTest {
     private static final Gson gson = new GsonBuilder().create();

@@ -376,7 +376,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         Integer userId = ShiroUtils.getUserId();
 
         // 得到当前登陆用户的账户余额(user_fund表)
-        UserFund userFund = userFundMapper.selectByUserIdAndUsdt(userId);
+        UserFund userFund = userFundMapper.selectByUserIdAndCoinName(userId, CoinEnum.USDT.getKey());
 
         // 得到当前登陆用户的钱包地址(wallet表)
         User user = userMapper.selectByPrimaryKey(userId);
@@ -400,7 +400,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         BigDecimal initPrice = buyDto.getInitPrice();
         BigDecimal boughtAmount = buyDto.getBoughtAmount();
         BigDecimal amount = initPrice.multiply(boughtAmount);
-        UserFund userFund = userFundMapper.selectByUserIdAndUsdt(ShiroUtils.getUserId());
+        UserFund userFund = userFundMapper.selectByUserIdAndCoinName(ShiroUtils.getUserId(), CoinEnum.USDT.getKey());
         if (userFund.getAmount() == null || userFund.getAmount().compareTo(amount) < 0) {
             throw new ExchangeException("用户余额不足！");
         }
@@ -443,10 +443,11 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             if (project.getStartTime().after(new Date())
                 && project.getStartTime().after(nowDate)) {
                 // 在预售中，但是项目开始时间大于当前时间 且 项目开始时间  >  当前时间 - 认购天数
-                // 满足认购条件后去调用第三方挂单逻辑接口
                 //  /limit/bvp_usdt post {"side":"buy","price":初始价,"amount":12}
                 //  响应：{"id":"string"}
-                holdOrder(buyDto, project);
+                if (project.getCollectAmount().compareTo(boughtAmountDto.getAmount().add(boughtAmount)) >= 0) {
+                    holdOrder(buyDto, project);
+                }
             }
         }
 
@@ -455,82 +456,17 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             // 项目开始时间  >  当前时间 - 认购周期
             if (project.getStartTime().after(nowDate)) {
                 // 认购额度 + 当前认购额度 <= 项目总金额
-                if (project.getCollectAmount().compareTo(boughtAmountDto.getAmount().add(boughtAmount)) != 1) {
-
+                if (project.getCollectAmount().compareTo(boughtAmountDto.getAmount().add(boughtAmount)) >= 0) {
                     holdOrder(buyDto, project);
-
                 } else {
-                    // 更新项目状态
-                    project.setStatus(ProjectStatusEnum.END_SALE.getKey());
-                    projectMapper.updateByPrimaryKey(project);
-
-                    OrderDto orderDto = new OrderDto();
-                    orderDto.setSide(BuyAndSaleEnum.SELL.getKey());
-                    orderDto.setAmount(project.getCollectAmount());
-                    orderDto.setPrice(initPrice);
-                    String requestData = gson.toJson(orderDto);
-                    MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-                    Request request = new Request.Builder()
-                            .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
-                            .post(RequestBody.create(mediaType, requestData))
-                            .header("Authorization", "Bearer" + " " + JWTUtil.encode(project.getUserId().toString()))
-                            .build();
-                    OkHttpClient okHttpClient = new OkHttpClient();
-                    String resData = "";
-                    try {
-                        resData = okHttpClient.newCall(request).execute().body().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        // 挂该项目的所有卖单失败！
-                        log.error("side: sell projectId:"+ projectId +  "ordered failed." + sdf.format(new Date()));
-                    }
-
-                    ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
-                    if (exchangeApiResDto.getId() == null) {
-                        log.info("项目对应的项目方人user id:：" + project.getUserId() + "ordered failed." + sdf.format(new Date()));
-                    } else {
-
-                    }
-
-                    // 更新认购记录状态为1（表达此项目认购成功）
-                    boughtAmountMapper.updateWithdrawByProjectId(projectId.intValue(), Integer.valueOf(WithdrawStatusEnum.SUCCEED.getKey()));
-                    // 更新币对为有效状态
-                    symbolMapper.updateValid2True(project.getSymbol().intValue());
-
+                    // 认购结束
+                    // 项目方挂当前项目对应的币的所有卖单
+                    projectThirdOrderSell(project);
                     throw new ExchangeException("此项目认购结束，请认购其他项目！");
                 }
             } else {
                 // 项目结束
-                project.setStatus(ProjectStatusEnum.PROJECT_END.getKey());
-                projectMapper.updateByPrimaryKey(project);
-
-                // 找到这个项目的平台方用户，挂买单（回购）。
-                OrderDto orderDto = new OrderDto();
-                orderDto.setSide(BuyAndSaleEnum.BUY.getKey());
-                // 这个是创建项目的时候，填写此项目需要多少项目币
-                orderDto.setAmount(project.getCollectCoinAmount());
-                orderDto.setPrice(initPrice);
-                String requestData = gson.toJson(orderDto);
-                MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
-                Request request = new Request.Builder()
-                        .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
-                        .post(RequestBody.create(mediaType, requestData))
-                        .header("Authorization", "Bearer" + " " + JWTUtil.encode(project.getUserId().toString()))//项目方用户
-                        .build();
-                OkHttpClient okHttpClient = new OkHttpClient();
-                String resData = "";
-                try {
-                    resData = okHttpClient.newCall(request).execute().body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    // 挂该项目的所有买单失败！
-                    log.error("side: sale projectId:"+ projectId +  "ordered failed." + sdf.format(new Date()));
-                }
-                ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
-                if (exchangeApiResDto.getId() == null) {
-                    log.info("项目对应的项目方人user id:：" + project.getUserId() + "ordered failed." + sdf.format(new Date()));
-                }
-
+                projectThirdOrderBuy(project);
                 throw new ExchangeException("项目结束！");
             }
         }
@@ -542,19 +478,100 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         return new ResponseBean(200, "", "成功买入");
     }
 
+    /**
+     * 项目结束，项目方挂买单
+     */
+    private void projectThirdOrderBuy(Project project) {
+        // 找到这个项目的平台方用户，挂买单（回购）。
+        OrderDto orderDto = new OrderDto();
+        orderDto.setSide(BuyAndSellEnum.BUY.getKey());
+        // 这个是创建项目的时候，填写此项目需要多少项目币
+        orderDto.setAmount(project.getCollectCoinAmount());
+        orderDto.setPrice(project.getInitPrice());
+        String requestData = gson.toJson(orderDto);
+        Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
+        MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+        Request request = new Request.Builder()
+                .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder() + symbol.getName())
+                .post(RequestBody.create(mediaType, requestData))
+                .header("Authorization", "Bearer" + " " + JWTUtil.encode(project.getUserId().toString()))//项目方用户
+                .build();
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String resData = "";
+        try {
+            resData = okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 挂该项目的所有买单失败！(网络原因)
+            log.error("network question: project third, side: sell, projectId:"+ project.getId() +  "ordered failed." + sdf.format(new Date()));
+        }
+        ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+        if (exchangeApiResDto.getId() == null) {
+            // 挂该项目的所有买单失败！(业务原因)
+            log.error("business question: project third, side: sell, projectId:"+ project.getId() +  "ordered failed." + sdf.format(new Date()));
+        } else {
+            // 项目结束
+            project.setStatus(ProjectStatusEnum.PROJECT_END.getKey());
+            projectMapper.updateByPrimaryKey(project);
+            //币对失效（对于交易系统的挂单无任何影响）
+            symbolMapper.updateValid(project.getSymbol().intValue(), false);
+        }
+    }
+
+    /**
+     * 项目方挂卖单
+     */
+    private void projectThirdOrderSell(Project project) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setSide(BuyAndSellEnum.SELL.getKey());
+        orderDto.setAmount(project.getCollectCoinAmount());
+        orderDto.setPrice(project.getInitPrice());
+        String requestData = gson.toJson(orderDto);
+        Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
+        MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
+        Request request = new Request.Builder()
+                .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder() + symbol.getName())
+                .post(RequestBody.create(mediaType, requestData))
+                .header("Authorization", "Bearer" + " " + JWTUtil.encode(project.getUserId().toString()))
+                .build();
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String resData = "";
+        try {
+            resData = okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 挂该项目的所有卖单失败！网络原因
+            log.error("network question: project third, side: sell, projectId:"+ project.getId() +  "ordered failed." + sdf.format(new Date()));
+        }
+
+        ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
+        if (exchangeApiResDto.getId() == null) {
+            //业务原因
+            log.error("business question: project third, side: sell, projectId:"+ project.getId() +  "ordered failed." + sdf.format(new Date()));
+        } else {
+            project.setStatus(ProjectStatusEnum.END_SALE.getKey());
+            projectMapper.updateByPrimaryKey(project);
+            // 更新认购记录状态为1（表达此项目认购成功）
+            boughtAmountMapper.updateWithdrawByProjectId(project.getId().intValue(), Integer.valueOf(WithdrawStatusEnum.SUCCEED.getKey()));
+            // 更新币对为有效状态
+            symbolMapper.updateValid(project.getSymbol().intValue(), true);
+        }
+    }
+
 
     /**
      *  调用挂单逻辑和插入认购份额表数据
      */
     private void holdOrder(BuyDto buyDto, Project project) {
         OrderDto orderDto = new OrderDto();
-        orderDto.setSide(BuyAndSaleEnum.BUY.getKey());
+        orderDto.setSide(BuyAndSellEnum.BUY.getKey());
         orderDto.setAmount(buyDto.getBoughtAmount());
-        orderDto.setPrice(buyDto.getInitPrice());
+        orderDto.setPrice(project.getInitPrice());
         String requestData = gson.toJson(orderDto);
+        Symbol symbol = symbolMapper.selectByPrimaryKey(project.getSymbol().intValue());
         MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
         Request request = new Request.Builder()
-                .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder())
+                .url(exchangeApiProperties.getHost() + exchangeApiProperties.getOrder() + symbol.getName())
                 .post(RequestBody.create(mediaType, requestData))
                 .header("Authorization", "Bearer" + " " + JWTUtil.encode(ShiroUtils.getUserId().toString()))
                 .build();
@@ -564,12 +581,12 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             resData = okHttpClient.newCall(request).execute().body().string();
         } catch (IOException e) {
             e.printStackTrace();
-            log.error("user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
+            log.error("network question: user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
             throw new ExchangeException("购买失败，请重新购买！");
         }
         ExchangeApiResDto exchangeApiResDto = gson.fromJson(resData, ExchangeApiResDto.class);
         if (exchangeApiResDto.getId() == null) {
-            log.info("user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
+            log.info("business question: user id:" + ShiroUtils.getUserId() + "ordered failed." + sdf.format(new Date()));
             throw new ExchangeException("购买失败，请重新购买！");
         }
 

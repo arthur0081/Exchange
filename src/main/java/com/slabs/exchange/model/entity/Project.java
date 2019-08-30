@@ -106,6 +106,7 @@ public class Project implements Serializable {
 
     private Integer userId;
 
+    // 募集项目币的额度
     private BigDecimal collectCoinAmount;
 
     private static final long serialVersionUID = 1L;

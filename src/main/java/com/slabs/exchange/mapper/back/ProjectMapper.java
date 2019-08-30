@@ -3,6 +3,8 @@ package com.slabs.exchange.mapper.back;
 import com.slabs.exchange.model.entity.Project;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface ProjectMapper {
 
@@ -19,4 +21,6 @@ public interface ProjectMapper {
     int updateByPrimaryKey(Project record);
 
     Project selectBySymbolId(Integer symbolId);
+
+    List<Project> getAfterPublish();
 }
