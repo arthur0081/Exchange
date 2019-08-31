@@ -175,10 +175,6 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="getAllValid" resultMap="BaseResultMap">
-    select * from t_symbol where valid = true
-  </select>
-
   <select id="getHosByName" parameterType="java.lang.String" resultMap="BaseResultMap">
     select * from t_symbol where name = #{symbolName,jdbcType=VARCHAR}
   </select>

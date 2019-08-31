@@ -63,11 +63,13 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
     @Override
     public ResponseBean list() {
         // 根据用户id得到所有的资金列表
-        Integer userId = ShiroUtils.getUserId();
+//        Integer userId = ShiroUtils.getUserId();
+        Integer userId = 10006;
+
         List<UserFund> userFunds = userFundMapper.selectByUserId(userId);
 
-        // 只有有效的币对，对币换算才有意义。
-        List<Symbol> symbols = symbolMapper.getAllValid();
+        // 得到所有币对
+        List<Symbol> symbols = symbolMapper.getAllSymbols();
 
         // 用户所持有的币种关联币对，根据币对找到最新交易，通过交易计算单价，
         // 由单价乘以用户的总额（本质上是数量），或者冻结额度（本质上也是数量）。
@@ -76,26 +78,42 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         List<Integer> symbolIds = new ArrayList<>();
         Map<Integer, String> matchMap = new HashMap<>();
         for (Symbol symbol: symbols) {
-            String coinName = symbol.getName().split("_")[0];// 人为控制不会出现 usdt_xxxx 情况。
-            for (UserFund userFund: userFunds) {
-                if (coinName.equals(userFund.getCoin())) {
-                    symbolIds.add(symbol.getId());
-                    matchMap.put(symbol.getId(), userFund.getCoin());
+            String[] name = symbol.getName().split("_");
+            String coinName = name[0];// 人为控制不会出现 usdt_xxxx 情况。
+            String specialCoinName = name[1];
+            if (CoinEnum.USDT.getKey().equals(specialCoinName)) {
+                for (UserFund userFund: userFunds) {
+                    if (coinName.equals(userFund.getCoin())) {
+                        symbolIds.add(symbol.getId());
+                        matchMap.put(symbol.getId(), symbol.getName());
+                    }
+                }
+            }else {//hos
+                for (UserFund userFund: userFunds) {
+                    if (coinName.equals(userFund.getCoin())) {
+                        symbolIds.add(symbol.getId());
+                        matchMap.put(symbol.getId(), symbol.getName());
+                    }
                 }
             }
         }
 
-        // 得到币种跟USDT的最新交易价格
-        List<Trade> trades = null;
-        if (symbolIds.size() > 0) {
-            trades = tradeMapper.getLatestTrade(symbolIds);
+        // 用户没有任何币种
+        if (symbolIds.size() <= 0) {
+            return new ResponseBean(200, "", null);
         }
+
+        // 用户至少有一个币种
+        // 得到币种的最新交易价格(两种币对模式，xx_hos, xx_usdt)
+        List<Trade> trades = tradeMapper.getLatestTrade(symbolIds);
+
         List<ForeUserFundDto> foreUserFundDtos = new ArrayList<>();
         BigDecimal amount = new BigDecimal(0);
         BigDecimal lock = new BigDecimal(0);
+
         for(Map.Entry<Integer, String> entry : matchMap.entrySet()){
             Integer symId = entry.getKey();
-            String coinName = entry.getValue();
+            String symbolName = entry.getValue();
             if (trades != null) {
                 for (Trade trade: trades) {
                     if (symId.equals(trade.getSymbolId())) {
@@ -103,7 +121,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
                         BigDecimal perPrice = trade.getPrice();
                         for (UserFund uf: userFunds) {
                             //计算其他币转换usdt
-                            Map<String, BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, coinName, perPrice, uf);
+                            Map<String, BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, symbolName, perPrice, uf);
                             // usdt则不用换算
                             amount = map.get("amount");
                             lock = map.get("lock");
@@ -120,7 +138,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
                                 BigDecimal initPrice = symbol.getInitPrice();
                                 for (UserFund uf: userFunds) {
                                     //2.计算其他币转换usdt
-                                    Map<String,BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, coinName, initPrice, uf);
+                                    Map<String,BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, symbolName, initPrice, uf);
                                     amount = map.get("amount");
                                     lock = map.get("lock");
                                 }
@@ -136,7 +154,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
                         BigDecimal initPrice = symbol.getInitPrice();
                         for (UserFund uf: userFunds) {
                             //2.计算其他币转换usdt
-                            Map<String,BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, coinName, initPrice, uf);
+                            Map<String,BigDecimal> map = calculateMoney(foreUserFundDtos, amount, lock, symbolName, initPrice, uf);
                             amount = map.get("amount");
                             lock = map.get("lock");
                         }
@@ -163,37 +181,96 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
      * @param perPrice
      * @param uf
      */
-    private Map<String, BigDecimal> calculateMoney(List<ForeUserFundDto> foreUserFundDtos, BigDecimal amount, BigDecimal lock, String coinName, BigDecimal perPrice, UserFund uf) {
+    private Map<String, BigDecimal> calculateMoney(List<ForeUserFundDto> foreUserFundDtos, BigDecimal amount, BigDecimal lock, String symbolName, BigDecimal perPrice, UserFund uf) {
         Map<String, BigDecimal> map = new HashMap<>();
-        if (coinName.equals(uf.getCoin())) {
-            BigDecimal ufAmount = uf.getAmount();
-            BigDecimal ufOrderLock = uf.getOrderLocked();
-            BigDecimal ufWithdrawLock = uf.getWithdrawLocked();
+        String specialName = symbolName.split("_")[1];
+        if (CoinEnum.USDT.getKey().equals(specialName)) {
+            if (symbolName.split("_")[0].equals(uf.getCoin())) {
+                BigDecimal ufAmount = uf.getAmount();
+                BigDecimal ufOrderLock = uf.getOrderLocked();
+                BigDecimal ufWithdrawLock = uf.getWithdrawLocked();
+                // 总额
+                BigDecimal usdtAmount = perPrice.multiply(ufAmount);
+                amount = amount.add(usdtAmount);
+                // 冻结
+                BigDecimal orderLock = perPrice.multiply(ufOrderLock);
+                lock = lock.add(orderLock);
+                BigDecimal withdrawLock = perPrice.multiply(ufWithdrawLock);
+                lock = lock.add(withdrawLock);
+                // 构建响应dto
+                ForeUserFundDto fuf = new ForeUserFundDto();
+                fuf.setCoin(uf.getCoin());
+                BigDecimal avai = ufAmount.subtract(ufOrderLock.add(ufWithdrawLock));
+                fuf.setAvailable(avai.setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                fuf.setLock(ufOrderLock.add(ufWithdrawLock).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                // USDT估值是对可用余额的估值
+                fuf.setAmount(perPrice.multiply(avai).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                foreUserFundDtos.add(fuf);
+                // 基本数据类型，通过方法的时候，不是引用传递，而是值传递，所以需要返回值
+                // 如果是引用数据类型，则通过方法的时候，是引用传递，这个时候在同一个作用域依然有效（更改后）。
+            }
 
-            // 总额
-            BigDecimal usdtAmount = perPrice.multiply(ufAmount);
-            amount = amount.add(usdtAmount);
+        }else {//跟hos构建成币对话，需要多计算一步
+            if (symbolName.split("_")[0].equals(uf.getCoin())) {
+                BigDecimal ufAmount = uf.getAmount();
+                BigDecimal ufOrderLock = uf.getOrderLocked();
+                BigDecimal ufWithdrawLock = uf.getWithdrawLocked();
+                //计算hos数量
+                // 总额
+                BigDecimal hosAmount = perPrice.multiply(ufAmount);
+                // 冻结
+                BigDecimal hosOrderLockAmount = perPrice.multiply(ufOrderLock);
+                BigDecimal hosWithdrawLockAmount = perPrice.multiply(ufWithdrawLock);
+                //hos_usdt币对
+                Symbol symbol = symbolMapper.getHosByName("hos_usdt");
+                //得到hos_usdt的最新交易和币对
+                Trade trade = tradeMapper.getLatestHosTrade(symbol.getId());
+                if (trade == null) {//使用币对的初始价格计算
+                    // 总额
+                    BigDecimal price = symbol.getInitPrice();
+                    BigDecimal usdtAmount = price.multiply(hosAmount);
+                    amount = amount.add(usdtAmount);
+                    // 冻结
+                    BigDecimal orderLock = price.multiply(hosOrderLockAmount);
+                    lock = lock.add(orderLock);
+                    BigDecimal withdrawLock = price.multiply(hosWithdrawLockAmount);
+                    lock = lock.add(withdrawLock);
+                    // 构建响应dto
+                    ForeUserFundDto fuf = new ForeUserFundDto();
+                    fuf.setCoin(uf.getCoin());
+                    BigDecimal avai = usdtAmount.subtract(orderLock.add(withdrawLock));
+                    fuf.setAvailable(avai.setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    fuf.setLock(orderLock.add(withdrawLock).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    // USDT估值是对可用余额的估值
+                    fuf.setAmount(price.multiply(avai).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    foreUserFundDtos.add(fuf);
 
-            // 冻结
-            BigDecimal orderLock = perPrice.multiply(ufOrderLock);
-            lock = lock.add(orderLock);
-            BigDecimal withdrawLock = perPrice.multiply(ufWithdrawLock);
-            lock = lock.add(withdrawLock);
+                } else {//使用最新交易作为初始价格
+                    BigDecimal price = trade.getPrice();
+                    // 总额
+                    BigDecimal usdtAmount = price.multiply(hosAmount);
+                    amount = amount.add(usdtAmount);
+                    // 冻结
+                    BigDecimal orderLock = price.multiply(hosOrderLockAmount);
+                    lock = lock.add(orderLock);
+                    BigDecimal withdrawLock = price.multiply(hosWithdrawLockAmount);
+                    lock = lock.add(withdrawLock);
+                    // 构建响应dto
+                    ForeUserFundDto fuf = new ForeUserFundDto();
+                    fuf.setCoin(uf.getCoin());
+                    BigDecimal avai = usdtAmount.subtract(orderLock.add(withdrawLock));
+                    fuf.setAvailable(avai.setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    fuf.setLock(orderLock.add(withdrawLock).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    // USDT估值是对可用余额的估值
+                    fuf.setAmount(price.multiply(avai).setScale(6, BigDecimal.ROUND_HALF_DOWN));
+                    foreUserFundDtos.add(fuf);
+                }
 
-            // 构建响应dto
-            ForeUserFundDto fuf = new ForeUserFundDto();
-            fuf.setCoin(uf.getCoin());
-            BigDecimal avai = ufAmount.subtract(ufOrderLock.add(ufWithdrawLock));
-            fuf.setAvailable(avai.setScale(6, BigDecimal.ROUND_HALF_DOWN));
-            fuf.setLock(ufOrderLock.add(ufWithdrawLock).setScale(6, BigDecimal.ROUND_HALF_DOWN));
-            // USDT估值是对可用余额的估值
-            fuf.setAmount(perPrice.multiply(avai).setScale(6, BigDecimal.ROUND_HALF_DOWN));
-            foreUserFundDtos.add(fuf);
-            // 基本数据类型，通过方法的时候，不是引用传递，而是值传递，所以需要返回值
-            // 如果是引用数据类型，则通过方法的时候，是引用传递，这个时候在同一个作用域依然有效（更改后）。
-            map.put("amount", amount);
-            map.put("lock", lock);
+            }
         }
+
+        // 基本数据类型，通过方法的时候，不是引用传递，而是值传递，所以需要返回值
+        // 如果是引用数据类型，则通过方法的时候，是引用传递，这个时候在同一个作用域依然有效（更改后）。
         map.put("amount", amount);
         map.put("lock", lock);
         return map;
