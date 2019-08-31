@@ -12,4 +12,6 @@ public class UserListDto {
     private String roleName;
 
     private Integer roleId;
+
+    private Integer auditState;
 }

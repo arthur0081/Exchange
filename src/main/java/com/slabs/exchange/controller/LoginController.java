@@ -1,5 +1,6 @@
 package com.slabs.exchange.controller;
 
+import com.slabs.exchange.common.enums.LoginTypeEnum;
 import com.slabs.exchange.model.common.ResponseBean;
 import com.slabs.exchange.model.dto.OauthInfoDto;
 import com.slabs.exchange.model.dto.UserDto;
@@ -19,9 +20,18 @@ public class LoginController {
     @Autowired
     private IUserService userService ;
 
-    @PostMapping("login")
+    @PostMapping("back/login")
     @ApiOperation(value = "登录")
-    public ResponseBean login(@RequestBody UserDto userDto) {
+    public ResponseBean backLogin(@RequestBody UserDto userDto) {
+        userDto.setLoginType(LoginTypeEnum.BACK.getKey());
+        OauthInfoDto oauthInfoDto = userService.login(userDto);
+        return  new ResponseBean(200, "", oauthInfoDto);
+    }
+
+    @PostMapping("fore/login")
+    @ApiOperation(value = "登录")
+    public ResponseBean foreLogin(@RequestBody UserDto userDto) {
+        userDto.setLoginType(LoginTypeEnum.FORE.getKey());
         OauthInfoDto oauthInfoDto = userService.login(userDto);
         return  new ResponseBean(200, "", oauthInfoDto);
     }

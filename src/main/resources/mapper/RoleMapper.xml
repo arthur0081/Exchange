@@ -89,6 +89,6 @@
   </select>
 
   <select id="getRoles" resultMap="BaseResultMap">
-    select * from role where type = 'fore'
+    select * from role
   </select>
 </mapper>

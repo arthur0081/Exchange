@@ -40,6 +40,10 @@ public class UserDto {
 
     private String nationality;
 
+    /**
+     * 审核状态记录
+     */
+    private Integer auditState;
 
     /**
      * 护照
@@ -52,6 +56,11 @@ public class UserDto {
      */
     @ApiModelProperty(notes = "身份证")
     private Map<String, List<AttachFileDto>> attachFileDtoMap;
+
+    /**
+     * 前台登陆或者后台登陆
+     */
+    private String loginType;
 
     private static final long serialVersionUID = 1L;
 }

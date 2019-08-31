@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.slabs.exchange.common.config.ExchangeApiProperties;
 import com.slabs.exchange.common.config.PlatformCoinProperties;
 import com.slabs.exchange.common.enums.CertificateEnum;
-import com.slabs.exchange.common.enums.ExceptionReasonEnum;
 import com.slabs.exchange.common.enums.YNEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.RoleMapper;
@@ -24,10 +23,6 @@ import com.slabs.exchange.service.BaseService;
 import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.*;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -35,8 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -152,7 +145,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
     }
 
     /**
-     * 更新用户信息（前台用户）
+     * 更新用户信息（前台注册进来的用户）
      */
     @Override
     public ResponseBean update(UserDto userDto) {
@@ -192,6 +185,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setPassword(ShiroUtils.encodeSalt(plainPassword, salt));
         user.setFundPassword(ShiroUtils.encodeSalt(plainFundPassword, salt));
         user.setRegTime(new Date());
+        user.setAuditState(0);//默认状态
         userMapper.insert(user);
 
         // 钱包地址
@@ -216,7 +210,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
 
         // 给一个默认角色
         List<Integer> roleList = new ArrayList<>();
-        roleList.add(5);//todo 写死为5,写成可配置
+        roleList.add(4);//todo 写死为4,写成可配置（普通用户）
         userDto.setRoleList(roleList);
         // 构建用户角色对应关系
         List<UserRole> userRoleList = buildUserRoles(userDto, user);
@@ -386,7 +380,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
     public OauthInfoDto login(UserDto userDto) {
         Subject subject = ShiroUtils.getSubject();
         String plain = AESUtil.desEncrypt(userDto.getPassword());
-        UsernamePasswordToken token = new UsernamePasswordToken(userDto.getAccount(), plain);
+        UsernamePasswordToken token = new UsernamePasswordToken(userDto.getAccount() + "_" + userDto.getLoginType(), plain);
         subject.login(token);
         OauthInfoDto oauthInfoDto = ShiroUtils.getOauthInfoDto();
         oauthInfoDto.setToken(JWTUtil.encode(ShiroUtils.getUserId().toString()));
@@ -556,6 +550,35 @@ public class UserServiceImpl extends BaseService implements IUserService {
         user.setFundPassword(newPassword);
         userMapper.updateByPrimaryKeySelective(user);
         return new ResponseBean(200, "修改资金密码成功", null);
+    }
+
+
+    /**
+     * 身份认证的详情信息
+     */
+    @Override
+    public ResponseBean identifyDetail(Integer userId) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        UserDto userDto = map(user, UserDto.class);
+        Map<String, List<AttachFileDto>> idcardMap = new HashMap<>();
+        if (user.getCertificateType() == 1) {//idcard
+            List<AttachFile>  idcardFront = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_FRONT.getKey(), userId.longValue());
+            List<AttachFileDto> idcardFrontDtos = map(idcardFront, AttachFileDto.class);
+            idcardMap.put(CertificateEnum.IDCARD_FRONT.getKey(), idcardFrontDtos);
+
+            List<AttachFile>  idcardBack = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_BACK.getKey(), userId.longValue());
+            List<AttachFileDto> idcardBackDtos = map(idcardBack, AttachFileDto.class);
+            idcardMap.put(CertificateEnum.IDCARD_BACK.getKey(), idcardBackDtos);
+            userDto.setAttachFileDtoMap(idcardMap);
+
+        } else if(user.getCertificateType() == 2) {//passport
+            List<AttachFile> attachFiles = attachFileMapper.selectByTypeAndRefId(CertificateEnum.PASSPORT.getKey(), userId.longValue());
+            List<AttachFileDto> attachFileDtos = map(attachFiles, AttachFileDto.class);
+            userDto.setAttachFileList(attachFileDtos);
+        } else {
+            //do nothing
+        }
+        return new ResponseBean(200, "", userDto);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.slabs.exchange.common.config.shiro;
 
 
+import com.slabs.exchange.common.enums.LoginTypeEnum;
 import com.slabs.exchange.common.exception.ExchangeException;
 import com.slabs.exchange.mapper.UserMapper;
 import com.slabs.exchange.mapper.UserRoleMapper;
@@ -67,7 +68,9 @@ public class MyRealm extends AuthorizingRealm {
     @Override
 
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException, ExchangeException {
-        String account = (String) token.getPrincipal();
+        String accountLoginType = (String) token.getPrincipal();
+        String account = accountLoginType.split("_")[0];
+        String loginType = accountLoginType.split("_")[1];
         User userTemp = userMapper.queryByAccount(account);
         if(userTemp == null){
             throw new UnknownAccountException();
@@ -76,9 +79,29 @@ public class MyRealm extends AuthorizingRealm {
         OauthInfoDto oauthInfoDto = new OauthInfoDto();
         List<UserRole> ur = userRoleMapper.selectByUserId(userTemp.getId());
         Integer roleId = ur.get(0).getRoleId();
+        if (LoginTypeEnum.BACK.getKey().equals(loginType)) {
+            // todo 后续对魔法数字进行优化
+            if (roleId == 1) {//超级管理员放行
+                //do nothing
+            }
+            if (roleId == 3 || roleId == 4) {//项目方或者普通用户
+                throw new UnknownAccountException();
+            }
+        }
+
+        if (LoginTypeEnum.FORE.getKey().equals(loginType)) {
+            if (roleId == 1) {//超级管理员放行
+                //do nothing
+            }
+            if (roleId == 2) {//项目方或者普通用户
+                throw new UnknownAccountException();
+            }
+        }
+
         oauthInfoDto.setRoleId(roleId);
         oauthInfoDto.setAccount(userTemp.getAccount());
         oauthInfoDto.setUserId(userTemp.getId());
+        oauthInfoDto.setAuditState(userTemp.getAuditState());
 
         List<String> permissions = this.roleService.queryNamesByRoleId(roleId);
         //加入权限

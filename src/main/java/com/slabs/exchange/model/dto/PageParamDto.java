@@ -76,6 +76,10 @@ public class PageParamDto implements Serializable {
 
     private Integer projectId;
 
+    /**
+     * 审核状态
+     */
+    private Integer auditState;
 
     private static final long serialVersionUID = 1L;
 }

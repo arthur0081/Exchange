@@ -34,4 +34,6 @@ public interface IUserService {
     ResponseBean updateLoginPassword(UpdatePasswordDto updatePasswordDto);
 
     ResponseBean updateFundPassword(UpdatePasswordDto updatePasswordDto);
+
+    ResponseBean identifyDetail(Integer userId);
 }

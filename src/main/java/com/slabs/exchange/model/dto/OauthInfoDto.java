@@ -27,5 +27,7 @@ public class OauthInfoDto implements IBaseDto {
     private String sessionId;
     @ApiModelProperty(notes = "权限")
     private List<String> permissions;
+    @ApiModelProperty(notes = "审核状态")
+    private Integer auditState;
 
 }

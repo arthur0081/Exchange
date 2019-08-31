@@ -6,25 +6,30 @@
     <result column="account" jdbcType="VARCHAR" property="account" />
     <result column="name" jdbcType="VARCHAR" property="roleName" />
     <result column="role_id" jdbcType="INTEGER" property="roleId" />
+    <result column="audit_state" jdbcType="INTEGER" property="auditState" />
   </resultMap>
 
-  <select id="count" resultType="int">
+  <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
     select
            count(1)
     from
          sysuser u, user_role ur, role r
     where
           r.id = ur.role_id and u.id = ur.user_id
-    and r.type = 'fore'
+    <if test="auditState != null">
+        and u.audit_state = #{auditState}
+    </if>
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
     select
-        u.id, u.account, r.name, r.id role_id
+        u.id, u.account, r.name, r.id role_id, u.audit_state
     from
          sysuser u, user_role ur, role r
     where r.id = ur.role_id and u.id = ur.user_id
-    and r.type = 'fore'
+      <if test="auditState != null">
+          and u.audit_state = #{auditState}
+      </if>
     limit #{pageSize} offset #{start}
   </select>
 

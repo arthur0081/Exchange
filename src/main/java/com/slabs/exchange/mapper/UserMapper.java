@@ -1,11 +1,9 @@
 package com.slabs.exchange.mapper;
 
 import com.slabs.exchange.model.dto.AccountCheckDto;
-import com.slabs.exchange.model.dto.UserDto;
 import com.slabs.exchange.model.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 

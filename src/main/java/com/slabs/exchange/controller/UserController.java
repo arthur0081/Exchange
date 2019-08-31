@@ -11,6 +11,7 @@ import com.slabs.exchange.service.IUserService;
 import com.slabs.exchange.util.JWTUtil;
 import com.slabs.exchange.util.ShiroUtils;
 import org.springframework.web.bind.annotation.*;
+import scala.Int;
 
 import javax.annotation.Resource;
 
@@ -128,4 +129,11 @@ public class UserController {
         return userService.updateFundPassword(updatePasswordDto);
     }
 
+    /**
+     * 身份认证详情
+     */
+    @GetMapping("identify-detail")
+    public ResponseBean identifyDetail(@RequestParam Integer userId) {
+        return userService.identifyDetail(userId);
+    }
 }
