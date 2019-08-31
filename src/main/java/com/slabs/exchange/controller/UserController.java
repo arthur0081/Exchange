@@ -136,4 +136,13 @@ public class UserController {
     public ResponseBean identifyDetail(@RequestParam Integer userId) {
         return userService.identifyDetail(userId);
     }
+
+    /**
+     * 身份审核
+     */
+    @PostMapping("audit")
+    public ResponseBean audit(@RequestBody UserDto userDto) {
+        return userService.audit(userDto);
+    }
+
 }

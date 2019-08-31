@@ -166,7 +166,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
      * 注册前台用户(一旦获取用户钱包地址抛出异常，回滚)
      */
     @Override
-    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseBean register(UserDto userDto) {
         User benefitUser = null;
         if (!ExchangePreconditions.objCheckInviteCodeIsNull(userDto)) {
@@ -579,6 +579,19 @@ public class UserServiceImpl extends BaseService implements IUserService {
             //do nothing
         }
         return new ResponseBean(200, "", userDto);
+    }
+
+
+    /**
+     * 审核前台注册的用户的身份信息
+     */
+    @Override
+    public ResponseBean audit(UserDto userDto) {
+        User user = new User();
+        user.setId(userDto.getId());
+        user.setAuditState(userDto.getAuditState());
+        userMapper.updateByPrimaryKeySelective(user);
+        return new ResponseBean(200, "", null);
     }
 
 }

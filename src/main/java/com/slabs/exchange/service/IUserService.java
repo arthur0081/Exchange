@@ -36,4 +36,6 @@ public interface IUserService {
     ResponseBean updateFundPassword(UpdatePasswordDto updatePasswordDto);
 
     ResponseBean identifyDetail(Integer userId);
+
+    ResponseBean audit(UserDto userDto);
 }

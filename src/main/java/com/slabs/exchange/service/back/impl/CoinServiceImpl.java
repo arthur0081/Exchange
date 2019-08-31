@@ -57,6 +57,8 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
         IssueTokenDto issueTokenDto = new IssueTokenDto();
         // 给到项目方用户
         issueTokenDto.setAddress(user.getWalletAddr());
+//        issueTokenDto.setAddress("0x547a66e3481cd144ef6a8702433f69b68dfe4bcb");
+
         issueTokenDto.setName(coinDto.getName());
         issueTokenDto.setTotalAmount(coinDto.getAmount());
         // 调用钱包服务

@@ -70,8 +70,7 @@ public class WithdrawServiceImpl extends BaseService implements IWithdrawService
         }
 
         // 判断当前登陆用户是否有此币的足够余额
-        Integer userFundId = ShiroUtils.getUserId();
-        UserFund userFund = userFundMapper.selectByUserIdAndCoinName(userFundId, CoinEnum.USDT.getKey());
+        UserFund userFund = userFundMapper.selectByUserIdAndCoinName(userId, withdrawDto.getCoin());
         if (userFund == null || userFund.getAmount().compareTo(withdrawDto.getAmount()) < 0) {
             throw new ExchangeException("用户的"+ withdrawDto.getCoin() + "余额不足，请充值！");
         }
@@ -118,6 +117,7 @@ public class WithdrawServiceImpl extends BaseService implements IWithdrawService
         // 交易所提现接口返回id
         withdraw.setApiResponseId(exchangeApiResDto.getId());
         // 记录当前操作人是谁（这个很重要，他会跟总账户做 加或减）
+        // 充值的时候，充值用户做加，而总账户做减法；提现的时候，提现用户做减法，而总账户做加法。
         withdraw.setReceiverId(user.getId());
 
         withdrawMapper.insert(withdraw);

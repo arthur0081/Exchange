@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 撤回挂单逻辑
+ * 撤回挂单逻辑(当项目失效的时候需要的)
  */
 @Component
 @Slf4j

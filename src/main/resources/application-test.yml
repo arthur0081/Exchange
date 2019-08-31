@@ -113,8 +113,8 @@ exchange-api:
   order: /limit/
   cancel: /cancel/
   withdraw: /withdraw
-  wallet-addr: http://192.168.50.200:10000/newAddress
-  issue-token: http://192.168.50.200:10000/newContract
+  wallet-addr: http://192.168.50.197:10000/newAddress
+  issue-token: http://192.168.50.197:10000/newContract
 
 platform-coin:
   name: ddd

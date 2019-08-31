@@ -572,4 +572,8 @@
     where
      p.status in('on_sale', 'end_sale', 'pre_sale')
   </select>
+
+  <select id="selectBySymbolId" parameterType="int" resultMap="BaseResultMap">
+    select * from project where symbol = #{symbolId}
+  </select>
 </mapper>

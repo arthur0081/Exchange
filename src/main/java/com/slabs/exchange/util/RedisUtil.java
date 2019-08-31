@@ -210,7 +210,7 @@ public class RedisUtil {
 
 
     /**
-     * 当用户登陆的时候，传入id的值是 1 （成为当天的活跃用户）
+     * 当用户登陆的时候，传入用户id的值 （成为当天的活跃用户）
      *
      * @param id 传入1代表登陆
      * @param timeout 超时时间
@@ -262,4 +262,20 @@ public class RedisUtil {
         return 0;
     }
 
+
+    /**
+     * 根据币对名称，取消所有订单
+     */
+    public void cancelAllOrder(String symbolName) throws Exception {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+
+
+        } catch (Exception e){
+            throw  e;
+        } finally {
+            releaseRedis(jedis);
+        }
+    }
 }

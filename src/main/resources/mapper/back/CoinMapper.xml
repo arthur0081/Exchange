@@ -88,7 +88,7 @@
   <select id="getNonsymbolCoin" resultMap="BaseResultMap">
     select * from t_coin c, project_coin pc
     where c.id = pc.coin_id
-    and pc.coin_type = 'other' and c.id not in (select commodity from t_symbol)
+    and pc.coin_type = 'other'
   </select>
 
   <select id="getAllCoins" resultMap="BaseResultMap">

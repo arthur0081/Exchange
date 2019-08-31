@@ -154,7 +154,7 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
         //usdt
         if (pageParamDto.getCoin().equals(CoinEnum.USDT.getKey())) {
             // 去t_user_fund表中拿到总和
-            specialAmount = userFundMapper.selectSumByCoin(coin);
+            specialAmount = userFundMapper.selectSumByCoin(CoinEnum.USDT.getKey());
         } else {
             // 项目币(或者 hos有总量))
             projectCoin = projectCoinExtMapper.selectByCoin(coin);
@@ -164,7 +164,7 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
             HoldCoinUserDto dto = new HoldCoinUserDto();
             String rate;
             //计算比率
-            if(hcued.getCoin().equals(CoinEnum.HOS.getKey()) || hcued.getCoin().equals(CoinEnum.USDT.getKey())) {
+            if(hcued.getCoin().equals(CoinEnum.USDT.getKey())) {
                 rate = hcued.getAmount().divide(specialAmount, 6, BigDecimal.ROUND_HALF_DOWN).toString();
             } else {
                 rate = hcued.getAmount().divide(projectCoin.getAmount(), 6, BigDecimal.ROUND_HALF_DOWN).toString();

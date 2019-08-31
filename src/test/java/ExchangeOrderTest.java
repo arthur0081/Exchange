@@ -12,9 +12,7 @@ public class ExchangeOrderTest {
     private static final Gson gson = new GsonBuilder().create();
 
     public static void main(String[] args) {
-        BigDecimal aa = new BigDecimal(0.50);
-        BigDecimal bb = new BigDecimal(100);
-        System.out.println(aa.divide(bb));
+        getWalletAddr();
 
     }
 
@@ -23,11 +21,11 @@ public class ExchangeOrderTest {
 
     private static void getWalletAddr() {
         NewWalletAddrDto walletAddrDto = new NewWalletAddrDto();
-        walletAddrDto.setUserId(35);
+        walletAddrDto.setUserId(20000);
         String requestData = gson.toJson(walletAddrDto);
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         Request request = new Request.Builder()
-                .url("http://192.168.50.207:8081/newAddress")
+                .url("http://192.168.50.197:10000/newAddress")
                 .post(RequestBody.create(mediaType, requestData))
                 .build();
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -39,6 +37,7 @@ public class ExchangeOrderTest {
             throw new ExchangeException("获取钱包地址失败！");
         }
         WalletResponseDto walletResponseDto =  gson.fromJson(resData, WalletResponseDto.class);
+
     }
 
     /**
