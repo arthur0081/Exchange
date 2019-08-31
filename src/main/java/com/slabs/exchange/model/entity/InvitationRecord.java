@@ -25,5 +25,9 @@ public class InvitationRecord implements Serializable {
 
     private Date time;
 
+    private boolean awardValid;
+
+    private Date awardTime;
+
     private static final long serialVersionUID = 1L;
 }

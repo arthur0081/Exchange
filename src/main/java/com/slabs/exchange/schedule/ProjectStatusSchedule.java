@@ -15,7 +15,6 @@ import com.slabs.exchange.mapper.ext.back.BoughtAmountExtMapper;
 import com.slabs.exchange.model.dto.BoughtAmountDto;
 import com.slabs.exchange.model.dto.ExchangeApiResDto;
 import com.slabs.exchange.model.dto.OrderDto;
-import com.slabs.exchange.model.entity.BoughtAmount;
 import com.slabs.exchange.model.entity.Project;
 import com.slabs.exchange.model.entity.Symbol;
 import com.slabs.exchange.util.JWTUtil;

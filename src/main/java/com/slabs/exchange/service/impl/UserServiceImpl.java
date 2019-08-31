@@ -259,8 +259,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
 //            } else {
 //                // 提现表（后台管理的）
 //                insertWithdraw(benefitUser, walletAndContractAddrDto, exchangeApiResDto);
-//                // 邀请记录表
-//                insertInvitationRecord(benefitUser, user);
 //            }
 //        }
 

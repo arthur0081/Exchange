@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slabs.exchange.mapper.fore.InvitationRecordMapper">
+  <resultMap id="BaseResultMap" type="com.slabs.exchange.model.entity.InvitationRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="benefit_user" jdbcType="INTEGER" property="benefitUser" />
+    <result column="invitee_user" jdbcType="INTEGER" property="inviteeUser" />
+    <result column="coin" jdbcType="VARCHAR" property="coin" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="award_valid" jdbcType="BOOLEAN" property="awardValid" />
+    <result column="award_time" jdbcType="TIMESTAMP" property="awardTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, benefit_user, invitee_user, coin, amount, time, award_valid, award_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from invitation_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from invitation_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.slabs.exchange.model.entity.InvitationRecord">
+    insert into invitation_record (benefit_user, invitee_user,
+      coin, amount, time, 
+      award_valid, award_time)
+    values (#{benefitUser,jdbcType=INTEGER}, #{inviteeUser,jdbcType=INTEGER},
+      #{coin,jdbcType=VARCHAR}, #{amount,jdbcType=NUMERIC}, #{time,jdbcType=TIMESTAMP}, 
+      #{awardValid,jdbcType=BOOLEAN}, #{awardTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slabs.exchange.model.entity.InvitationRecord">
+    insert into invitation_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="benefitUser != null">
+        benefit_user,
+      </if>
+      <if test="inviteeUser != null">
+        invitee_user,
+      </if>
+      <if test="coin != null">
+        coin,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="awardValid != null">
+        award_valid,
+      </if>
+      <if test="awardTime != null">
+        award_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="benefitUser != null">
+        #{benefitUser,jdbcType=INTEGER},
+      </if>
+      <if test="inviteeUser != null">
+        #{inviteeUser,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="awardValid != null">
+        #{awardValid,jdbcType=BOOLEAN},
+      </if>
+      <if test="awardTime != null">
+        #{awardTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slabs.exchange.model.entity.InvitationRecord">
+    update invitation_record
+    <set>
+      <if test="benefitUser != null">
+        benefit_user = #{benefitUser,jdbcType=INTEGER},
+      </if>
+      <if test="inviteeUser != null">
+        invitee_user = #{inviteeUser,jdbcType=INTEGER},
+      </if>
+      <if test="coin != null">
+        coin = #{coin,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="awardValid != null">
+        award_valid = #{awardValid,jdbcType=BOOLEAN},
+      </if>
+      <if test="awardTime != null">
+        award_time = #{awardTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slabs.exchange.model.entity.InvitationRecord">
+    update invitation_record
+    set benefit_user = #{benefitUser,jdbcType=INTEGER},
+      invitee_user = #{inviteeUser,jdbcType=INTEGER},
+      coin = #{coin,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=NUMERIC},
+      time = #{time,jdbcType=TIMESTAMP},
+      award_valid = #{awardValid,jdbcType=BOOLEAN},
+      award_time = #{awardTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByAwardValid" parameterType="boolean" resultMap="BaseResultMap">
+    select * from invitation_record where award_valid = #{valid, jdbcType=BOOLEAN}
+  </select>
+
+  <update id="batchUpdateAwardValidByBenefitUser" parameterType="list">
+    <foreach collection="list" item="item" index="index" open="" close=";" separator=";">
+      update invitation_record set
+      award_valid = true, award_time = now()
+      where benefit_user = #{item.benefitUserId} and invitee_user = {item.inviteeUserId}
+    </foreach>
+  </update>
+</mapper>
