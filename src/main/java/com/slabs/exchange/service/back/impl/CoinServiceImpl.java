@@ -56,24 +56,23 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
         User user = userMapper.selectByPrimaryKey(coinDto.getUserId());
         IssueTokenDto issueTokenDto = new IssueTokenDto();
         // 给到项目方用户
-        issueTokenDto.setAddress(user.getWalletAddr());
-//        issueTokenDto.setAddress("0x547a66e3481cd144ef6a8702433f69b68dfe4bcb");
-
-        issueTokenDto.setName(coinDto.getName());
-        issueTokenDto.setTotalAmount(coinDto.getAmount());
-        // 调用钱包服务
-        WalletResponseDto walletResponseDto = null;
-        try {
-            walletResponseDto = exchangeApiUtil.issueToken(issueTokenDto);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("create coin failed" + sdf.format(new Date()));
-            throw new ExchangeException("创建币失败！");
-        }
-        if (walletResponseDto.getCode() == 500) {
-            log.error("create coin failed." + "code: 500" + sdf.format(new Date()));
-            throw new ExchangeException("创建币失败！!");
-        }
+//        issueTokenDto.setAddress(user.getWalletAddr());
+//
+//        issueTokenDto.setName(coinDto.getName());
+//        issueTokenDto.setTotalAmount(coinDto.getAmount());
+//        // 调用钱包服务
+//        WalletResponseDto walletResponseDto = null;
+//        try {
+//            walletResponseDto = exchangeApiUtil.issueToken(issueTokenDto);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error("create coin failed" + sdf.format(new Date()));
+//            throw new ExchangeException("创建币失败！");
+//        }
+//        if (walletResponseDto.getCode() == 500) {
+//            log.error("create coin failed." + "code: 500" + sdf.format(new Date()));
+//            throw new ExchangeException("创建币失败！!");
+//        }
 
         // 如果成功的话，才执行后续逻辑过程。
         Coin coin = map(coinDto, Coin.class);
@@ -86,7 +85,7 @@ public class CoinServiceImpl extends BaseService implements ICoinService {
         projectCoin.setCoinId(coin.getId());
         // other 代表项目币
         projectCoin.setCoinType(CoinEnum.OTHER.getKey());
-        projectCoin.setContractAddr(walletResponseDto.getBody());
+        //projectCoin.setContractAddr(walletResponseDto.getBody());
         projectCoinMapper.insert(projectCoin);
 
         // 构建附件信息

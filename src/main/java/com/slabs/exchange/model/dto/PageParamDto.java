@@ -46,6 +46,10 @@ public class PageParamDto implements Serializable {
      */
     private Integer debitor;
 
+    /**
+     * 债务人id
+     */
+    private Integer creditor;
 
     /**
      * 用户账户

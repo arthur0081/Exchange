@@ -21,7 +21,7 @@ public interface UserFundRequestMapper {
 
     int updateByPrimaryKey(UserFundRequest record);
 
-    int count(Integer debitor);
+    int count(Integer creditor);
 
     List<UserFundRequest> list(PageParamDto pageParamDto);
 }

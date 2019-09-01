@@ -90,6 +90,7 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
         Symbol sym = new Symbol();
         sym.setId(symbol.getId());
         sym.setValid(false);
+        sym.setInitPrice(project.getInitPrice());
         symbolMapper.updateByPrimaryKeySelective(sym);
 
         // 构建附件信息

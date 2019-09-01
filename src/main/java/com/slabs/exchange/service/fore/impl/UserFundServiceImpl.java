@@ -64,7 +64,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
     public ResponseBean list() {
         // 根据用户id得到所有的资金列表
         Integer userId = ShiroUtils.getUserId();
-//        Integer userId = 10006; 测试
+//        Integer userId = 10027; //测试
 
         List<UserFund> userFunds = userFundMapper.selectByUserId(userId);
 
@@ -114,7 +114,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         for(Map.Entry<Integer, String> entry : matchMap.entrySet()){
             Integer symId = entry.getKey();
             String symbolName = entry.getValue();
-            if (trades != null) {
+            if (trades.size() > 0) {
                 for (Trade trade: trades) {
                     if (symId.equals(trade.getSymbolId())) {
                         //单价

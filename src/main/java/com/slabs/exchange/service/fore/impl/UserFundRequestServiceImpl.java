@@ -32,7 +32,7 @@ public class UserFundRequestServiceImpl extends BaseService implements IUserFund
         int total = userFundRequestMapper.count(userId);
         int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
         pageParamDto.setStart(start);
-        pageParamDto.setDebitor(userId);
+        pageParamDto.setCreditor(userId);
         List<UserFundRequest> list = userFundRequestMapper.list(pageParamDto);
         Map<String, Object> data = new HashMap<>();
         data.put("currentPage", pageParamDto.getCurrentPage());

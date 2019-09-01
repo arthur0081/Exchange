@@ -9,7 +9,7 @@
     <result column="amount" jdbcType="NUMERIC" property="amount" />
     <result column="txid" jdbcType="VARCHAR" property="txid" />
     <result column="operation" jdbcType="VARCHAR" property="operation" />
-    <result column="time" jdbcType="ARRAY" property="time" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
     <result column="pg_txid" jdbcType="BIGINT" property="pgTxid" />
     <result column="extra" jdbcType="VARCHAR" property="extra" />
   </resultMap>
@@ -151,8 +151,7 @@
   </update>
 
   <select id="count" parameterType="int" resultType="int">
-    select count(1) from t_user_fund_request where debitor = #{debitor,jdbcType=INTEGER}
-    or creditor = #{debitor,jdbcType=INTEGER}
+    select count(1) from t_user_fund_request where creditor = #{creditor,jdbcType=INTEGER}
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
@@ -160,9 +159,7 @@
            *
     from
          t_user_fund_request
-    where
-          debitor = #{debitor,jdbcType=INTEGER}
-    or creditor = #{debitor,jdbcType=INTEGER}
+    where creditor = #{creditor,jdbcType=INTEGER}
     limit #{pageSize, jdbcType=INTEGER} offset #{start, jdbcType=INTEGER}
   </select>
 
