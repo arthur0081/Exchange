@@ -31,4 +31,4 @@ mvnw.cmd
 mvnw
 .mvn
 
-logs/
+/logs/
