@@ -165,7 +165,11 @@ public class BackIndexServiceImpl extends BaseService implements IBackIndexServi
             String rate;
             //计算比率
             if(hcued.getCoin().equals(CoinEnum.USDT.getKey())) {
-                rate = hcued.getAmount().divide(specialAmount, 6, BigDecimal.ROUND_HALF_DOWN).toString();
+                if (specialAmount.compareTo(new BigDecimal(0)) != 0) {
+                    rate = hcued.getAmount().divide(specialAmount, 6, BigDecimal.ROUND_HALF_DOWN).toString();
+                } else {
+                    rate = "0";
+                }
             } else {
                 rate = hcued.getAmount().divide(projectCoin.getAmount(), 6, BigDecimal.ROUND_HALF_DOWN).toString();
             }

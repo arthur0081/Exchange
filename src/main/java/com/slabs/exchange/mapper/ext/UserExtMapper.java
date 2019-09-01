@@ -10,5 +10,5 @@ import java.util.List;
 public interface UserExtMapper {
     List<UserListDto> list(PageParamDto pageParamDto);
 
-    int count();
+    int count(PageParamDto pageParamDto);
 }

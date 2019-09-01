@@ -4,11 +4,11 @@
   <resultMap id="BaseResultMap" type="com.slabs.exchange.model.dto.InvitationRecordDto">
     <id column="id" jdbcType="INTEGER" property="userId" />
     <result column="amount" jdbcType="NUMERIC" property="amount" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="username" jdbcType="VARCHAR" property="userName" />
     <result column="account" jdbcType="VARCHAR" property="account" />
   </resultMap>
 
-    <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
+    <select id="count" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultType="int">
         select  count(1)
             from (
                 select ir.benefit_user user_id, sum(amount) amount
@@ -21,7 +21,7 @@
     </select>
 
     <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
-        select  s.id, s.account, tt.amount,s.user_name userName
+        select  s.id, s.account, tt.amount,s.username userName
         from (
         select ir.benefit_user user_id, sum(amount) amount
         from invitation_record ir group by ir.benefit_user
@@ -51,6 +51,12 @@
         where
               ir.invitee_user = s.id and ir.benefit_user = #{userId}
         limit #{pageSize} offset #{start}
+    </select>
+
+    <select id="myInvitationAllAmount" resultType="decimal">
+        select sum(amount) from invitation_record ir
+        where ir.benefit_user = #{userId}
+        group by ir.benefit_user
     </select>
 
 </mapper>

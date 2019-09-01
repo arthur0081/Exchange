@@ -89,6 +89,6 @@
   </select>
 
   <select id="getRoles" resultMap="BaseResultMap">
-    select * from role
+    select * from role where id != 1
   </select>
 </mapper>

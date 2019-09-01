@@ -63,8 +63,8 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
     @Override
     public ResponseBean list() {
         // 根据用户id得到所有的资金列表
-//        Integer userId = ShiroUtils.getUserId();
-        Integer userId = 10006;
+        Integer userId = ShiroUtils.getUserId();
+//        Integer userId = 10006; 测试
 
         List<UserFund> userFunds = userFundMapper.selectByUserId(userId);
 
@@ -167,7 +167,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
         data.put("amount", amount.setScale(6, BigDecimal.ROUND_HALF_DOWN));
         data.put("lock", lock.setScale(6, BigDecimal.ROUND_HALF_DOWN));
         data.put("list", foreUserFundDtos);
-        User user = userMapper.selectByPrimaryKey(ShiroUtils.getUserId());
+        User user = userMapper.selectByPrimaryKey(userId);
         data.put("walletAddr", user.getWalletAddr());
         return new ResponseBean(200, "", data);
     }
@@ -177,7 +177,7 @@ public class UserFundServiceImpl extends BaseService implements IUserFundService
      * @param foreUserFundDtos
      * @param amount
      * @param lock
-     * @param coinName
+     * @param symbolName
      * @param perPrice
      * @param uf
      */

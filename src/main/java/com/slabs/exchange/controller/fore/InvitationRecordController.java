@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("fore")
+@RequestMapping("invitation-record")
 @Api(value = "邀请记录模块", description = "邀请记录：邀请记录相关接口")
 public class InvitationRecordController {
 
@@ -20,7 +20,7 @@ public class InvitationRecordController {
     /**
      * 邀请列表
      */
-    @PostMapping("list")
+    @PostMapping("back/list")
     public ResponseBean list(@RequestBody PageParamDto pageParamDto) {
         return iInvitationRecordService.list(pageParamDto);
     }
@@ -28,7 +28,7 @@ public class InvitationRecordController {
     /**
      * 具体某个用户的邀请详情
      */
-    @GetMapping("detail")
+    @GetMapping("back/detail")
     public ResponseBean getDetail(@RequestParam int userId) {
         return iInvitationRecordService.getDetail(userId);
     }
@@ -36,7 +36,7 @@ public class InvitationRecordController {
     /**
      * 我的邀请列表
      */
-    @PostMapping("my-list")
+    @PostMapping("fore/my-list")
     public ResponseBean getMyInvitation(@RequestBody PageParamDto pageParamDto) {
         return iInvitationRecordService.getMyInvitation(pageParamDto);
     }

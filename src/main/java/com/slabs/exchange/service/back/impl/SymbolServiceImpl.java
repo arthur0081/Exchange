@@ -137,4 +137,11 @@ public class SymbolServiceImpl  extends BaseService implements ISymbolService {
         List<Symbol> symbols = symbolMapper.getAllCreationSymbols(symbolId);
         return new ResponseBean(200, "", symbols);
     }
+
+    @Override
+    public ResponseBean getAllValidSymbols() {
+        List<Symbol> symbols = symbolMapper.getAllValidSymbols();
+
+        return new ResponseBean(200, "", symbols);
+    }
 }

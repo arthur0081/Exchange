@@ -19,6 +19,9 @@
     <if test="auditState != null">
         and u.audit_state = #{auditState}
     </if>
+      <if test="account != null">
+          and u.account = #{account}
+      </if>
   </select>
 
   <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
@@ -29,6 +32,9 @@
     where r.id = ur.role_id and u.id = ur.user_id
       <if test="auditState != null">
           and u.audit_state = #{auditState}
+      </if>
+      <if test="account != null">
+          and u.account = #{account}
       </if>
     limit #{pageSize} offset #{start}
   </select>

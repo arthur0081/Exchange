@@ -43,9 +43,15 @@
 </select>
 
     <select id="list" parameterType="com.slabs.exchange.model.dto.PageParamDto" resultMap="BaseResultMap">
-        select count(1) from bought_amount
-        where project_id = #{projectId}
-            and withdraw = 1
+        select
+               ba.coin_amount, ba.usdt_amount, u.account, u.wallet_addr
+        from
+             bought_amount ba
+        left join sysuser u
+        on ba.user_id = u.id
+        where
+              ba.project_id = #{projectId}
+            and ba.withdraw = 1
         limit #{pageSize} offset #{start}
     </select>
 </mapper>

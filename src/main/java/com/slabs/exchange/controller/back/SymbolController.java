@@ -62,10 +62,15 @@ public class SymbolController {
      */
     @ApiOperation(value = "所有有效的币对")
     @PostMapping("valid-symbol")
+    public ResponseBean getAllValidSymbols() {
+        return symbolService.getAllValidSymbols();
+    }
+
+    @ApiOperation(value = "所有的币对")
+    @PostMapping("all-symbol")
     public ResponseBean getAllSymbols() {
         return symbolService.getAllSymbols();
     }
-
 
     /**
      * 获取所有有效的稳定区币对(如果有参数则获取一个)

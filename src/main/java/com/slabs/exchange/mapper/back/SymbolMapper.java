@@ -40,4 +40,6 @@ public interface SymbolMapper {
     List<Symbol> getAllStableSymbols(Integer symbolId);
 
     List<Symbol> getAllCreationSymbols(Integer symbolId);
+
+    List<Symbol> getAllValidSymbols();
 }

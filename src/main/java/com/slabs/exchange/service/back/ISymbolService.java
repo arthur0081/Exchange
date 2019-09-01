@@ -18,4 +18,6 @@ public interface ISymbolService {
     ResponseBean getAllStableSymbols(Integer symbolId);
 
     ResponseBean getAllCreationSymbols(int symbolId);
+
+    ResponseBean getAllValidSymbols();
 }

@@ -216,4 +216,8 @@
       and s.id = #{symbolId,jdbcType=INTEGER}
     </if>
   </select>
+
+  <select id="getAllValidSymbols">
+    select * from t_symbol where valid = true
+  </select>
 </mapper>

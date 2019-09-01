@@ -83,6 +83,9 @@ public class UserController {
     }
 
     /**
+     *
+     * //todo 后续需要花时间理清楚
+     * // todo shiro的使用也是这样的
      * 刷新用户jwt(jwt的有效时间和缓存的失效时间是一致的)
      */
     @PostMapping("get-jwt")

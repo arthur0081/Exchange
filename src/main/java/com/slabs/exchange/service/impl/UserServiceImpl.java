@@ -189,19 +189,19 @@ public class UserServiceImpl extends BaseService implements IUserService {
         userMapper.insert(user);
 
         // 钱包地址
-        WalletResponseDto walletResponseDto = null;
-        try {
-            walletResponseDto = exchangeApiUtil.getWalletAddr(user.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("register user failed, get wallet addr failed" + sdf.format(new Date()));
-            throw new ExchangeException("注册用户失败！");
-        }
-        if (walletResponseDto.getCode() == 500) {
-            log.error("register user failed," + "code:" + walletResponseDto.getCode() + sdf.format(new Date()));
-            throw new ExchangeException("注册用户失败！");
-        }
-        user.setWalletAddr(walletResponseDto.getBody());
+//        WalletResponseDto walletResponseDto = null;
+//        try {
+//            walletResponseDto = exchangeApiUtil.getWalletAddr(user.getId());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error("register user failed, get wallet addr failed" + sdf.format(new Date()));
+//            throw new ExchangeException("注册用户失败！");
+//        }
+//        if (walletResponseDto.getCode() == 500) {
+//            log.error("register user failed," + "code:" + walletResponseDto.getCode() + sdf.format(new Date()));
+//            throw new ExchangeException("注册用户失败！");
+//        }
+//        user.setWalletAddr(walletResponseDto.getBody());
 
         // 给注册用户插入邀请码(唯一性)
         String invitationCode = Sha256.getSHA256(user.getId().toString() + System.currentTimeMillis()).substring(0, 8);
@@ -313,7 +313,7 @@ public class UserServiceImpl extends BaseService implements IUserService {
     @Override
     public ResponseBean list(PageParamDto pageParamDto) {
         // 获取总数
-        int total = userExtMapper.count();
+        int total = userExtMapper.count(pageParamDto);
 
         // 获取列表
         int start = (pageParamDto.getCurrentPage() - 1) * pageParamDto.getPageSize();
@@ -552,7 +552,6 @@ public class UserServiceImpl extends BaseService implements IUserService {
         return new ResponseBean(200, "修改资金密码成功", null);
     }
 
-
     /**
      * 身份认证的详情信息
      */
@@ -561,6 +560,10 @@ public class UserServiceImpl extends BaseService implements IUserService {
         User user = userMapper.selectByPrimaryKey(userId);
         UserDto userDto = map(user, UserDto.class);
         Map<String, List<AttachFileDto>> idcardMap = new HashMap<>();
+        if (ExchangePreconditions.objCheckIsNull(user)) {//用户没有证件
+            return new ResponseBean(200, "", userDto);
+        }
+
         if (user.getCertificateType() == 1) {//idcard
             List<AttachFile>  idcardFront = attachFileMapper.selectByTypeAndRefId(CertificateEnum.IDCARD_FRONT.getKey(), userId.longValue());
             List<AttachFileDto> idcardFrontDtos = map(idcardFront, AttachFileDto.class);

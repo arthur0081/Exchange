@@ -329,6 +329,14 @@ public class ProjectServiceImpl extends BaseService implements IProjectService {
             ZonedDateTime et = endTime.toLocalDate().atStartOfDay(zoneId);
             Date endTimeDate = Date.from(et.toInstant());
             foreProjectDto.setEndTime(endTimeDate);
+
+            //如果项目是预售中话
+            if (foreProjectDto.getStatus().equals(ProjectStatusEnum.PRE_SALE.getKey())) {
+                if (endTimeDate.after(new Date())) {//截止时间大于当前时间
+                    foreProjectDto.setStatus(ProjectStatusEnum.ON_SALE.getKey());
+                }
+            }
+
             // 获取项目图片
             List<AttachFile> files = attachFileMapper.selectByTypeAndRefId(AttachEnum.PRO_PICTURE.getKey(), foreProjectDto.getId());
             foreProjectDto.setFileList(files);

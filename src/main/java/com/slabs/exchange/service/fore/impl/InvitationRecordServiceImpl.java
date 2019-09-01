@@ -11,6 +11,7 @@ import com.slabs.exchange.util.ShiroUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +53,14 @@ public class InvitationRecordServiceImpl extends BaseService implements IInvitat
         pageParamDto.setUserId(userId);
         List<InvitationRecordDto> list = invitationRecordExtMapper.myInvitationList(pageParamDto);
 
+        BigDecimal allAmount = invitationRecordExtMapper.myInvitationAllAmount(userId);
+
         Map<String, Object> data = new HashMap<>();
         data.put("total", total);
         data.put("pageSize", pageParamDto.getPageSize());
         data.put("currentPage", pageParamDto.getCurrentPage());
         data.put("list", list);
-
+        data.put("allAmount", allAmount);
         return new ResponseBean(200, "", data);
     }
 }
